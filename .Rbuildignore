@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\./Example/example\.R$
+^\./Example/example_nosib\.R$
+^\./Example/example_multi\.R$
