@@ -1,10 +1,29 @@
 
+#'
+#' Constructs the correlation matrix
+#'
+#' @param corr_mat Correlation matrix for each of the traits being analysed. 
+#' @param phen.list list of tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.
+#' @param thr.list list of tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.
+#' @param status_cols Vector with the names of the columns that has the status of each family. default is c("child_stat", "father_stat", "mother_stat").
+#' @param ids Column names of IDs for family members. 
+#' @param ind Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.
+#' @param nthreads number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available. 
+#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.1
+#'
+#' @return Returns the estimated genetic liabilities.
+#'
+#' @examples
+#'
+#' @export
+#' 
 estimate_gen_liability_multi_trait = function(phen.list,
                                               thr.list, 
-                                              nthreads = 10,
                                               corr_mat,
-                                              ids = c("FID", "pid_f", "pid_m"),
                                               status_cols = c("child_stat", "father_stat", "mother_stat"),
+                                              ids = c("FID", "pid_f", "pid_m"),
+                                              ind = c(1,5),
+                                              nthreads = 10,
                                               tol = 0.01) {
   
   n_trait = length(phen.list)
@@ -18,10 +37,10 @@ estimate_gen_liability_multi_trait = function(phen.list,
   iterations = nrow(phen)
   
   cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
-  cl = makeCluster(nthreads, type = "SOCK")
-  registerDoSNOW(cl)
+  cl =   parallel::makeCluster(nthreads, type = "SOCK")
+  doParallel::registerDoParallel(cl)
   
-  pb = progress_bar$new(
+  pb = progress::progress_bar$new(
     format = "[:bar] :percent",
     total = iterations,
     width = 100)
@@ -34,9 +53,8 @@ estimate_gen_liability_multi_trait = function(phen.list,
   opts = list(progress = progress)
   
   
-  ph = foreach(i = 1:nrow(phen),
+  ph = foreach::foreach(i = 1:nrow(phen),
                .options.snow = opts,
-               .packages = "LTFHPlus",
                .inorder = T) %dopar% { 
                  #fam = c(phen$FID[i], phen$pid_f[i], phen$pid_m[i], phen$sib_ids[[i]])
                  fam = unlist(phen[i,ids])
@@ -83,7 +101,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
                  #calculate the final values
                  batchmeans::bm(unlist(vals))
                }
-  
+  parallel::stopCluster(cl)
   phen$post_gen_liab      = sapply(ph, FUN = function(x) x$est)
   phen$post_gen_liab_se   = sapply(ph, FUN = function(x) x$se)
   

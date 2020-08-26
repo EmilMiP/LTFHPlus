@@ -13,6 +13,19 @@ double dot_col(const NumericMatrix& P, int j, const NumericVector& x) {
   return cp;
 } 
 
+//' Gibbs Sampler for the truncated Normal distribution.
+//'  
+//' @param P conditional covariance matrix
+//' @param sd  covariance matrix
+//' @param lower lower limit
+//' @param upper upper limit
+//' @param fixed logical vector, which entries are fixed?
+//' @param to_return Which entries to return
+//' @param x #starting value
+//' @param n_sim number of simulations to perform after the burn in period
+//' @param burn_in burn in period
+//' 
+//' @export
 // [[Rcpp::export]]
 NumericMatrix rtmvnorm_gibbs_cpp(const NumericMatrix& P,
                                  const NumericVector& sd,

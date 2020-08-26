@@ -1,9 +1,24 @@
-#Rcpp::sourceCpp('./src/gibbs-sampler.cpp')
+
+
+#'
+#' Gibbs Sampler for the truncated multivariate normal distribution
+#'
+#' @param n_sim number of draws after burn in.
+#' @param sigma covariance matrix for the normal distribution
+#' @param lower lower truncation for the normal distribution. It can be -Inf
+#' @param upper upper truncation for the normal distribution. It can be Inf
+#' @param fixed Are any entries fixed ? Logical vector with an entry for each dimension
+#' @param ind Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.
+#' @param burn_in Number of iterations that count as burn in for the gibbs sampler.
+#'
+#' @return Returns the estimated genetic liabilities.
+#'
+#' @examples
+#'
+#' @export
+#' 
 
 rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1,  burn_in = 1000) {
-  # vector entries to return. Baseline is genetic liability for first phenotype. e.g. ind = c(1,5) for two phenotypes with no siblings.
-  to_return <- rep(-1, d)
-  to_return[ind] <- seq_along(ind) - 1L
 
   # Start value from support region,
   # may be lower or upper bound if they are finite,
@@ -20,6 +35,11 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1,  burn_in 
     P[, j] <- P_j
     sd[j] <- drop(sqrt(sigma[j, j] - crossprod(P_j, sigma[, j])))
   }
+  # vector entries to return. Baseline is genetic liability for first phenotype. e.g. ind = c(1,5) for two phenotypes with no siblings.
+  to_return <- rep(-1, d)
+  to_return[ind] <- seq_along(ind) - 1L
+  
+  
 #  print(P)
   # Actual Gibbs sampler
   rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, to_return, x0, n_sim, burn_in)

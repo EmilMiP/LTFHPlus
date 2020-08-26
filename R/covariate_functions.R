@@ -1,3 +1,16 @@
+
+#'
+#' Creates the covariance matrix needed for LT-FH++
+#'
+#' @param h2 Heritability estimate on liability scale to construct the covariance matrix off of.
+#' @param n_sib Number of Siblings to include in the covariance matrix.
+#'
+#' @return None
+#'
+#' @examples
+#' get_cov(.5)
+#'
+#' @export
 #constructs covariance matrix with a baseling of 2 parents and n_sib siblings (with-in disorder):
 get_cov = function(h2, n_sib = 0) {
   cov <- matrix(h2/2, 4 + n_sib, 4 + n_sib)
@@ -6,12 +19,39 @@ get_cov = function(h2, n_sib = 0) {
   cov[1:2, 1] <- cov[1, 1:2] <- h2
   cov
 }
+
+#'
+#' Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.
+#'
+#' @param h2_1 Heritability estimate on liability scale for the first phenotype to construct the correlation entries of the covariance matrix off of.
+#' @param h2_2 Heritability estimate on liability scale for the second phenotype to construct the correlation entries of the covariance matrix off of.
+#' @param rho Correlation between the two phenotypes.
+#' @param n_sib Number of Siblings to include in the matrix.
+#'
+#' @return 
+#'
+#' @examples
+#' get_between_trait_cov(.5, .5, .5)
+#'
+#' @export
 #gets the correlation between two disorders (between disorder)
 get_between_trait_cov <- function(h2_1, h2_2, rho, n_sib = 0) {
   corr = get_cov(1, n_sib = n_sib)
   corr * sqrt(h2_1 * h2_2) * rho
 }
 
+#'
+#' Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.
+#'
+#' @param corr_mat Matrix containing the heritabilities and correlations for each of the phenotypes provided. Heritabilities should be on the diagonal with the corresponing off-diagonal entry holding the correlation between two phenotypes.
+#' @param n_sib Number of Siblings to include in the matrix.
+#'
+#' @return Returns the full covariance matrix based off of the heritabilities and corralations provided in corr_mat.
+#'
+#' @examples
+#' get_full_cov(matrix(.5, 2, 2))
+#'
+#' @export
 #constructs the full covariate matrix based off of the provided.
 get_full_cov = function(corr_mat, n_sib = 0) {
 
@@ -35,6 +75,21 @@ get_full_cov = function(corr_mat, n_sib = 0) {
   return(full_cov)
 }
 
+
+#'
+#' Verifies that the covariance matrix is positive definite (a properti of gaussian covariance matrices) by checking if all eigen values are positive. 
+#'
+#' @param full_cov The full covariance matrix for the LT-FH++ method.
+#' @param corr_mat Matrix containing the heritabilities and correlations for each of the phenotypes provided. Heritabilities should be on the diagonal with the corresponing off-diagonal entry holding the correlation between two phenotypes.
+#' @param correction_val value to multiply to off-diagonal entries in an attempt to force positive definite.
+#' @param n_sib Number of Siblings to include in the matrix.
+#'
+#' @return Returns the full covariance matrix based off of the heritabilities and corralations provided in corr_mat.
+#'
+#' @examples
+#' check_positive_definite(get_cov(.5), matrix(.5, 1, 1))
+#'
+#' @export
 check_positive_definite = function(full_cov, corr_mat, correction_val = .99, n_sib = 0) {
   stop_ctr = 1
   ctr = 1
@@ -57,6 +112,24 @@ check_positive_definite = function(full_cov, corr_mat, correction_val = .99, n_s
   }
   return(full_cov)
 }
+
+
+
+
+
+#'
+#' Constructs the correlation matrix
+#'
+#' @param names Names of disorders to include
+#' @param heri list, data.frame, or tibble with the heritabilities stored under the provded names
+#' @param corr similar, but for correlations.
+#' @param heritability_col Name of column that contains the heritabilities.
+#'
+#' @return Returns the correlation matrix needed as input for get_full_cov(), the LT-FH++ method and similar.
+#'
+#' @examples
+#'
+#' @export
 
 generate_corr_matrix = function(names, heri, corr, heritability_col = "h2 (Liability Scale)") {
   n_len = length(names)

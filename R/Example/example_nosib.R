@@ -23,7 +23,7 @@ get_cov = function(h2, n_sib = 0) {
   cov
 } 
 #covariate matrix
-cov = get_cov(h2)
+cov = LTFHPlus:::get_cov(h2)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
 aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)

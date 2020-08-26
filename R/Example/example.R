@@ -1,4 +1,4 @@
-#library(LTFHPlus)
+library(LTFHPlus)
 library(tidyverse)
 library(doSNOW)
 library(progress)
@@ -15,7 +15,7 @@ prev = c(0.08, .02) * multiplier
 (thr = qnorm(1 - prev))
 
 #covariate matrix
-cov = get_cov(h2)
+cov = LTFHPlus:::get_cov(h2)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
 aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
@@ -48,8 +48,21 @@ thr = tibble(
 )
 
 
-data = estimate_gen_liability(h2 = h2,
+data = LTFHPlus::estimate_gen_liability(h2 = h2,
                               phen = simu_liab,
                               thr = thr,
                               ids = c("FID", "pid_f", "pid_m"),
                               status_cols = c("child_stat", "father_stat", "mother_stat"))
+
+cov(data[, c("child_gen", "post_gen_liab", "child_stat")])
+
+library(ggplot2)
+ggplot(data, aes(x = post_gen_liab, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat")]) > 0)) +
+  geom_point(alpha = .5) +
+  geom_abline(slope = 1, intercept = 0) + 
+  labs(color = "Status in Family") +
+  xlab("Estimated Genetic Liability (LTFH++) ") +
+  ylab("True Genetic Liability") + 
+  ggtitle("True vs Estimated Genetic Liability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))

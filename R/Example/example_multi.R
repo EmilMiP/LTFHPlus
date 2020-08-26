@@ -20,7 +20,7 @@ K = .05
 #(thr = qnorm(1 - prev))
 
 #covariate matrix
-cov = get_full_cov(corr_mat = corr_mat)
+cov = LTFHPlus:::get_full_cov(corr_mat = corr_mat)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
 aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
@@ -63,7 +63,7 @@ for (i in 1:2) { #The two tables are identical here, but in real data, we would 
 }
 
 
-data = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
+data = LTFHPlus:::estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                           phen.list = all_phen,
                                           thr.list = all_thr,
                                           ids = c("FID", "pid_f", "pid_m"),
