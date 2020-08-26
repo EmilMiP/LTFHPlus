@@ -10,13 +10,12 @@ License: GPL (>= 2)
 Imports: 
     Rcpp (>= 1.0.4),
 	batchmeans,
-    dplyr,
     data.table,
-    stringr,
     doSNOW,
     foreach,
     parallel,
-    progress
+    progress,
+	tidyverse
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
