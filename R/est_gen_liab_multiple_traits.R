@@ -1,4 +1,4 @@
-source("./R/covariate_functions.R")
+
 estimate_gen_liability_multi_trait = function(phen.list,
                                               thr.list, 
                                               nthreads = 10,

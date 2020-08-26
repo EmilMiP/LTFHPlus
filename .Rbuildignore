@@ -3,3 +3,5 @@
 ^\./Example/example\.R$
 ^\./Example/example_nosib\.R$
 ^\./Example/example_multi\.R$
+^\.travis\.yml$
+^appveyor\.yml$

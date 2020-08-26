@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // rtmvnorm_gibbs_cpp
-NumericVector rtmvnorm_gibbs_cpp(const NumericMatrix& P, const NumericVector& sd, const NumericVector& lower, const NumericVector& upper, const LogicalVector& fixed, NumericVector& x, int n_sim, int burn_in);
-RcppExport SEXP _LTFHPlus_rtmvnorm_gibbs_cpp(SEXP PSEXP, SEXP sdSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP fixedSEXP, SEXP xSEXP, SEXP n_simSEXP, SEXP burn_inSEXP) {
+NumericMatrix rtmvnorm_gibbs_cpp(const NumericMatrix& P, const NumericVector& sd, const NumericVector& lower, const NumericVector& upper, const LogicalVector& fixed, const IntegerVector& to_return, NumericVector& x, int n_sim, int burn_in);
+RcppExport SEXP _LTFHPlus_rtmvnorm_gibbs_cpp(SEXP PSEXP, SEXP sdSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP fixedSEXP, SEXP to_returnSEXP, SEXP xSEXP, SEXP n_simSEXP, SEXP burn_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,16 +16,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type lower(lowerSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type upper(upperSEXP);
     Rcpp::traits::input_parameter< const LogicalVector& >::type fixed(fixedSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type to_return(to_returnSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type n_sim(n_simSEXP);
     Rcpp::traits::input_parameter< int >::type burn_in(burn_inSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, x, n_sim, burn_in));
+    rcpp_result_gen = Rcpp::wrap(rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, to_return, x, n_sim, burn_in));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_LTFHPlus_rtmvnorm_gibbs_cpp", (DL_FUNC) &_LTFHPlus_rtmvnorm_gibbs_cpp, 8},
+    {"_LTFHPlus_rtmvnorm_gibbs_cpp", (DL_FUNC) &_LTFHPlus_rtmvnorm_gibbs_cpp, 9},
     {NULL, NULL, 0}
 };
 

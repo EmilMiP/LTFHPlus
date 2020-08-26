@@ -1,6 +1,9 @@
-Rcpp::sourceCpp('./src/gibbs-sampler.cpp')
+#Rcpp::sourceCpp('./src/gibbs-sampler.cpp')
 
-rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, burn_in = 1000) {
+rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1,  burn_in = 1000) {
+  # vector entries to return. Baseline is genetic liability for first phenotype. e.g. ind = c(1,5) for two phenotypes with no siblings.
+  to_return <- rep(-1, d)
+  to_return[ind] <- seq_along(ind) - 1L
 
   # Start value from support region,
   # may be lower or upper bound if they are finite,
@@ -19,7 +22,7 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, burn_in = 1000) {
   }
 #  print(P)
   # Actual Gibbs sampler
-  rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, x0, n_sim, burn_in)
+  rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, to_return, x0, n_sim, burn_in)
 }
 
 if (FALSE) {

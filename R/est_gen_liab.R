@@ -40,7 +40,7 @@ estimate_gen_liability = function(h2,
                  fam = unlist(full_fam[,ids])
                  n_sib = length(fam) - 3
                  
-                 cov = LTFHPlus::get_cov(h2 = h2, n_sib = n_sib)
+                 cov = get_cov(h2 = h2, n_sib = n_sib)
                  
                  cov_size = nrow(cov)
                  

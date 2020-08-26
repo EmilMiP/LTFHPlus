@@ -67,6 +67,7 @@ data = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                           phen.list = all_phen,
                                           thr.list = all_thr,
                                           ids = c("FID", "pid_f", "pid_m"),
+                                          ind = c(1,5), 
                                           status_cols = c("child_stat", "father_stat", "mother_stat"))
 
 library(ggplot2)
