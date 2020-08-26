@@ -14,41 +14,40 @@ double dot_col(const NumericMatrix& P, int j, const NumericVector& x) {
 } 
 
 // [[Rcpp::export]]
-NumericVector rtmvnorm_gibbs_cpp(const NumericMatrix& P,
+NumericMatrix rtmvnorm_gibbs_cpp(const NumericMatrix& P,
                                  const NumericVector& sd,
                                  const NumericVector& lower,
                                  const NumericVector& upper,
                                  const LogicalVector& fixed,
+                                 const IntegerVector& to_return,
                                  NumericVector& x,
                                  int n_sim,
                                  int burn_in) {
   
- // Rcout << sum(fixed) << std::endl;
+  // Rcout << sum(fixed) << std::endl;
+  // to_return <- rep(-1, d)
+  // to_return[ind] <- seq_along(ind) - 1L
   
-  std::vector<double> res;
+  
+  NumericMatrix res(n_sim, Rcpp::sum(to_return >= 0));
   
   int n_total = n_sim + burn_in;
   int d = sd.size();
   
   for (int k = 0; k < n_total; k++) {
-    
-    // first dimension with no bounds
-    double mu_0 = dot_col(P, 0, x);
-    x[0] = ::Rf_rnorm(mu_0, sd[0]);
-    
-    if (k >= burn_in) res.push_back(mu_0);
-    
-    // all other dimensions
-    for (int j = 1; j < d; j++) {
+    for (int j = 0; j < d; j++) {
       if (!fixed[j]) {
         double mu_j = dot_col(P, j, x);
         double Fa = ::Rf_pnorm5(lower[j], mu_j, sd[j], 1, 0);
         double Fb = ::Rf_pnorm5(upper[j], mu_j, sd[j], 1, 0);
         double U_ab = ::Rf_runif(Fa, Fb);
         x[j] = ::Rf_qnorm5(U_ab, mu_j, sd[j], 1, 0);
+        if (k >= burn_in && to_return[j] >= 0) {
+          res(k - burn_in, to_return[j]) = x[j];
+        }
       }
     }
   }
   
-  return wrap(res);
+  return res;
 }
