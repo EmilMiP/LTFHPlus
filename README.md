@@ -1,3 +1,3 @@
-# LTFH_plusplus
+# LTFHPlus
 Implementation of LTFH++
 
