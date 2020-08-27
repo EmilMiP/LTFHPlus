@@ -63,13 +63,13 @@ estimate_gen_liability = function(h2,
                  
                  lower = rep(-Inf, cov_size)
                  upper = rep(Inf, cov_size) 
-                 
+                 cur_status = unlist(phen[i, status_cols])
                 for (ii in 1:length(fam) + 1) {
                     cur_indiv = thr[thr$ids == fam[ii - 1], ]
                     
-                    if (is.na(full_fam[[status_cols[ii - 1]]])) {
+                    if (is.na(cur_status[ii - 1])) {
                       #here to deal with NAs for now 
-                    } else if (full_fam[[status_cols[ii - 1]]] == 1) {
+                    } else if (cur_status[ii - 1] == 1) {
                       lower[ii] <- upper[ii] <- cur_indiv$thr
                     } else {
                       upper[ii] <- cur_indiv$thr
