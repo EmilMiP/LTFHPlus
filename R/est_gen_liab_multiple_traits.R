@@ -54,7 +54,6 @@ estimate_gen_liability_multi_trait = function(phen.list,
   
   
   ph = foreach::foreach(i = 1:nrow(phen),
-                        .packages = "LTFHPlus",
                .inorder = T) %dopar% { 
                  #fam = c(phen$FID[i], phen$pid_f[i], phen$pid_m[i], phen$sib_ids[[i]])
                  fam = unlist(phen[i,ids])
