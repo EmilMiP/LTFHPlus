@@ -70,6 +70,7 @@ data = LTFHPlus:::estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                           ind = c(1,5), 
                                           status_cols = c("child_stat", "father_stat", "mother_stat"))
 
+cov(data[,c("child_gen", "post_gen_liab_1", "post_gen_liab_2", "child_stat")])
 library(ggplot2)
 ggplot(data, aes(x = post_gen_liab, y = child_gen, color = rowSums(all_phen[[2]][,c("child_stat", "father_stat", "mother_stat")]) > 0)) +
   geom_point(alpha = .5) +

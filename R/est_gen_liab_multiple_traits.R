@@ -31,8 +31,8 @@ estimate_gen_liability_multi_trait = function(phen.list,
   phen = phen.list[[1]]
   
   
-  phen$post_gen_liab <- NA
-  phen$post_gen_liab_se <- NA
+#  phen$post_gen_liab <- NA
+#  phen$post_gen_liab_se <- NA
   
   iterations = nrow(phen)
   
@@ -54,7 +54,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
   
   
   ph = foreach::foreach(i = 1:nrow(phen),
-               .options.snow = opts,
+                        .packages = "LTFHPlus",
                .inorder = T) %dopar% { 
                  #fam = c(phen$FID[i], phen$pid_f[i], phen$pid_m[i], phen$sib_ids[[i]])
                  fam = unlist(phen[i,ids])
@@ -93,17 +93,35 @@ estimate_gen_liability_multi_trait = function(phen.list,
                                               sigma = full_cov,
                                               lower = lower, 
                                               upper = upper,
+                                              ind = ind,
                                               fixed = fixed)
                    vals[[vals.ctr]] = gen_liabs
                    se = batchmeans::bm(unlist(vals))$se
                    vals.ctr =  vals.ctr + 1
                  }
                  #calculate the final values
-                 batchmeans::bm(unlist(vals))
+                 vals = do.call("rbind", vals)
+                 sapply(1:length(ind), FUN = function(n) {
+                   batchmeans::bm(vals[,n])
+                 })
+                 #batchmeans::bm(unlist(vals))
                }
   parallel::stopCluster(cl)
-  phen$post_gen_liab      = sapply(ph, FUN = function(x) x$est)
-  phen$post_gen_liab_se   = sapply(ph, FUN = function(x) x$se)
+  if (n_trait > 1) {
+    tmp <- t(sapply(ph, FUN = function(x) x[1,]))
+    for (ii in 1:n_trait) {
+      phen[[paste("post_gen_liab_", ii, sep = "")]] = unlist(tmp[,ii])
+    }
+    tmp <- t(sapply(ph, FUN = function(x) x[2,]))
+    for (ii in 1:n_trait) {
+      phen[[paste("post_gen_liab_", ii,"_se", sep = "")]] = unlist(tmp[,ii])
+    }
+    
+  } else {
+    phen$post_gen_liab      = t(sapply(ph, FUN = function(x) x[1,]))
+    phen$post_gen_liab_se   = t(sapply(ph, FUN = function(x) x[2,]))
+  }
+
   
   return(phen)
 }

@@ -1,4 +1,4 @@
-#library(LTFHPlus)
+library(LTFHPlus)
 library(tidyverse)
 library(doSNOW)
 library(progress)
