@@ -71,7 +71,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
                    full_fam = cur_phen[i,]
                    cur_status = unlist(cur_phen[i, status_cols])
                    for (ii in 1:length(fam) + 1) {
-                     indiv_thr = cur_thr[cur_thr$ids == fam[ii - 1], ]
+                     indiv_thr = cur_thr[cur_thr[[ids[1]]] == fam[ii - 1], ]
                      if (is.na(cur_status[ii - 1])) {
                        #here to deal with NAs  
                      } else if (cur_status[ii - 1] == 1) {
@@ -107,7 +107,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
                  #batchmeans::bm(unlist(vals))
                }
   parallel::stopCluster(cl)
-  if (n_trait > 1) {
+  if (length(ind) > 1) {
     tmp <- t(sapply(ph, FUN = function(x) x[1,]))
     for (ii in 1:n_trait) {
       phen[[paste("post_gen_liab_", ii, sep = "")]] = unlist(tmp[,ii])
@@ -118,8 +118,8 @@ estimate_gen_liability_multi_trait = function(phen.list,
     }
     
   } else {
-    phen$post_gen_liab      = t(sapply(ph, FUN = function(x) x[1,]))
-    phen$post_gen_liab_se   = t(sapply(ph, FUN = function(x) x[2,]))
+    phen$post_gen_liab      = unlist(sapply(ph, FUN = function(x) x[1,]))
+    phen$post_gen_liab_se   = unlist(sapply(ph, FUN = function(x) x[2,]))
   }
 
   
