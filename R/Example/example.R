@@ -56,7 +56,6 @@ data = estimate_gen_liability(h2 = h2,
 
 cov(data[, c("child_gen", "post_gen_liab", "child_stat")])
 
-library(ggplot2)
 ggplot(data, aes(x = post_gen_liab, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat")]) > 0)) +
   geom_point(alpha = .5) +
   geom_abline(slope = 1, intercept = 0) + 

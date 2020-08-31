@@ -2,6 +2,8 @@ library(LTFHPlus)
 library(tidyverse)
 library(doSNOW)
 library(progress)
+library(ggplot2) 
+library(gridExtra)
 
 N = 5000 
 h2 = .5 
@@ -129,8 +131,7 @@ ltfh = create_pheno(data = as.data.frame(res),
 simu_liab = left_join(simu_liab, as.data.frame(ltfh))
 
 
-library(ggplot2) 
-library(gridExtra)
+
 
 
 with(simu_liab, c(cov(child_gen, post_gen_liab), cov(child_gen, ltfh)))^2

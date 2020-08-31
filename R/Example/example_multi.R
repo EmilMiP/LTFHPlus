@@ -1,7 +1,5 @@
 library(LTFHPlus)
 library(tidyverse)
-library(doSNOW)
-library(progress)
 
 
 N = 5000
