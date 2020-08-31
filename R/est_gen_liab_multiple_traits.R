@@ -13,7 +13,8 @@
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples See the example_multi.R for an example of use and input.
+#' @examples 
+#' # See R/Example/example_multi.R for an example of use and input.
 #'
 #' @export
 #' 
@@ -40,7 +41,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
   cl =   parallel::makeCluster(nthreads, type = "SOCK")
   doParallel::registerDoParallel(cl)
   
-  ph = foreach::foreach(i = 1:nrow(phen),
+  ph = foreach(i = 1:nrow(phen),
                .export = c("get_full_cov", "check_positive_definite","rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
                .inorder = T) %dopar% { 
                  #fam = c(phen$FID[i], phen$pid_f[i], phen$pid_m[i], phen$sib_ids[[i]])

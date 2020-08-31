@@ -13,8 +13,6 @@
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples
-#'
 #' @export
 #' 
 

@@ -27,6 +27,3 @@ Returns the estimated genetic liabilities.
 \description{
 Gibbs Sampler for the truncated multivariate normal distribution
 }
-\examples{
-
-}

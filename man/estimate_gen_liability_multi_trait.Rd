@@ -39,6 +39,6 @@ Returns the estimated genetic liabilities.
 Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.
 }
 \examples{
-See the example_multi.R for an example of use and input.
+# See R/Example/example_multi.R for an example of use and input.
 
 }

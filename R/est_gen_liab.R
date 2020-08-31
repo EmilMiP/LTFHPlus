@@ -1,3 +1,4 @@
+utils::globalVariables("i")
 
 #'
 #' Estimate genetic liability based off of family history and temporal information.
@@ -13,7 +14,10 @@
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples See the example.R for an example of use and input.
+#' @examples 
+#' # See R/Example/example.R for an example of use and input.
+#' 
+#' @importFrom foreach foreach %dopar%
 #'
 #' @export
 
@@ -35,7 +39,7 @@ estimate_gen_liability = function(h2,
   cl = parallel::makeCluster(nthreads, type = "SOCK")
   doParallel::registerDoParallel(cl)
   
-  ph = foreach::foreach(i = 1:nrow(phen),
+  ph = foreach(i = 1:nrow(phen),
                  .export = c("get_cov", "rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
                  .inorder = T) %dopar% {
 

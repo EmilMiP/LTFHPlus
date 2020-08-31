@@ -15,9 +15,6 @@ get_between_trait_cov(h2_1, h2_2, rho, n_sib = 0)
 
 \item{n_sib}{Number of Siblings to include in the matrix.}
 }
-\value{
-
-}
 \description{
 Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.
 }

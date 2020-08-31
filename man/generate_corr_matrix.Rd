@@ -26,6 +26,3 @@ Returns the correlation matrix needed as input for get_full_cov(), the LT-FH++ m
 \description{
 Constructs the correlation matrix
 }
-\examples{
-
-}

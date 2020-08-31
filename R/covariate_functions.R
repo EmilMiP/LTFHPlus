@@ -28,8 +28,6 @@ get_cov = function(h2, n_sib = 0) {
 #' @param rho Correlation between the two phenotypes.
 #' @param n_sib Number of Siblings to include in the matrix.
 #'
-#' @return 
-#'
 #' @examples
 #' get_between_trait_cov(.5, .5, .5)
 #'
@@ -126,8 +124,6 @@ check_positive_definite = function(full_cov, corr_mat, correction_val = .99, n_s
 #' @param heritability_col Name of column that contains the heritabilities.
 #'
 #' @return Returns the correlation matrix needed as input for get_full_cov(), the LT-FH++ method and similar.
-#'
-#' @examples
 #'
 #' @export
 

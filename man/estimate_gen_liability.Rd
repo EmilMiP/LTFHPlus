@@ -39,6 +39,6 @@ Returns the estimated genetic liabilities.
 Estimate genetic liability based off of family history and temporal information.
 }
 \examples{
-See the example.R for an example of use and input.
+# See R/Example/example.R for an example of use and input.
 
 }
