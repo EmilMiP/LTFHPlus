@@ -11,7 +11,7 @@ h2_2 = .5
 gen_cor = .5
 corr_mat = diag(c(h2_1, h2_2))
 corr_mat[1,2] <- corr_mat[2,1] <- gen_cor
-nthreads = 8  # number of threads to use for ltfh++
+nthreads = 6  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
 K = .05
@@ -69,7 +69,7 @@ data = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                           ids = c("FID", "pid_f", "pid_m"),
                                           ind = c(1,5), 
                                           status_cols = c("child_stat", "father_stat", "mother_stat"),
-                                          nthreads = 6)
+                                          nthreads = nthreads)
 
 cov(data[,c("child_gen", "post_gen_liab_1", "post_gen_liab_2", "child_stat")])
 library(ggplot2)

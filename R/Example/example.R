@@ -6,7 +6,7 @@ library(progress)
 N = 5000
 nsib = 0 # doesnt actaully do anthing, shows we have 0 siblings in the below example.
 h2 = .5
-nthreads = 8  # number of threads to use for ltfh++
+nthreads = 6  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
 K = .05
@@ -53,7 +53,7 @@ data = estimate_gen_liability(h2 = h2,
                               thr = thr,
                               ids = c("FID", "pid_f", "pid_m"),
                               status_cols = c("child_stat", "father_stat", "mother_stat"), 
-                              nthreads = 4)
+                              nthreads = nthreads)
 
 cov(data[, c("child_gen", "post_gen_liab", "child_stat")])
 
