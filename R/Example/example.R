@@ -10,7 +10,7 @@ nthreads = 6  # number of threads to use for ltfh++
 #calculates the thresholds used to determine status:
 K = .05
 multiplier = 1
-prev = c(0.08, .02) * multiplier
+prev = c(0.08, .02) * multiplier 
 (thr = qnorm(1 - prev))
 
 #covariate matrix
