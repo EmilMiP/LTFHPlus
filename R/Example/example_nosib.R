@@ -4,7 +4,7 @@ library(doSNOW)
 library(progress)
 
 N = 5000
-h2 = .5
+h2 = .5 
 nthreads = 6  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
