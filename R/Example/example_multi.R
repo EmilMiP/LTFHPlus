@@ -5,7 +5,6 @@ library(progress)
 
 
 N = 5000
-nsib = 0 # doesnt actaully do anthing, shows we have 0 siblings in the below example.
 h2_1 = .5
 h2_2 = .5
 gen_cor = .5
