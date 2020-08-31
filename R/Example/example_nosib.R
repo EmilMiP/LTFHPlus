@@ -5,6 +5,7 @@ library(progress)
 library(ggplot2) 
 library(gridExtra)
 
+
 N = 5000 
 h2 = .5 
 nthreads = 6  # number of threads to use for ltfh++

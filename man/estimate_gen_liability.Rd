@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab.R
 \name{estimate_gen_liability}
 \alias{estimate_gen_liability}
-\title{Constructs the correlation matrix}
+\title{Estimate genetic liability based off of family history and temporal information.}
 \usage{
 estimate_gen_liability(
   h2,
@@ -30,14 +30,15 @@ estimate_gen_liability(
 
 \item{nthreads}{number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available.}
 
-\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.1}
+\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
 \value{
 Returns the estimated genetic liabilities.
 }
 \description{
-Constructs the correlation matrix
+Estimate genetic liability based off of family history and temporal information.
 }
 \examples{
+See the example.R for an example of use and input.
 
 }

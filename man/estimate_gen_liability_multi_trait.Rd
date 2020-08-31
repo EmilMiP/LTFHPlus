@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab_multiple_traits.R
 \name{estimate_gen_liability_multi_trait}
 \alias{estimate_gen_liability_multi_trait}
-\title{Constructs the correlation matrix}
+\title{Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.}
 \usage{
 estimate_gen_liability_multi_trait(
   phen.list,
@@ -30,14 +30,15 @@ estimate_gen_liability_multi_trait(
 
 \item{nthreads}{number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available.}
 
-\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.1}
+\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
 \value{
 Returns the estimated genetic liabilities.
 }
 \description{
-Constructs the correlation matrix
+Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.
 }
 \examples{
+See the example_multi.R for an example of use and input.
 
 }

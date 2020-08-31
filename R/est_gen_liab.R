@@ -35,7 +35,7 @@ estimate_gen_liability = function(h2,
   cl = parallel::makeCluster(nthreads, type = "SOCK")
   doParallel::registerDoParallel(cl)
   
-  ph = foreach::foreach(i = 1:nrow(phen)
+  ph = foreach::foreach(i = 1:nrow(phen),
                  .export = c("get_cov", "rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
                  .inorder = T) %dopar% {
 
