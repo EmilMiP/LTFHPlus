@@ -10,10 +10,10 @@ License: GPL (>= 2)
 Imports: 
     Rcpp,
     batchmeans,
-    data.table,
     doParallel,
     foreach,
-    parallel,
+    parallel
+Suggests:
     progress,
     tidyverse
 LinkingTo: Rcpp
