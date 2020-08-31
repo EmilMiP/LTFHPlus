@@ -1,6 +1,6 @@
 
 #'
-#' Constructs the correlation matrix
+#' Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.
 #'
 #' @param corr_mat Correlation matrix for each of the traits being analysed. 
 #' @param phen.list list of tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.
@@ -13,7 +13,7 @@
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples
+#' @examples See the example_multi.R for an example of use and input.
 #'
 #' @export
 #' 
@@ -39,19 +39,6 @@ estimate_gen_liability_multi_trait = function(phen.list,
   cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
   cl =   parallel::makeCluster(nthreads, type = "SOCK")
   doParallel::registerDoParallel(cl)
-  
-  pb = progress::progress_bar$new(
-    format = "[:bar] :percent",
-    total = iterations,
-    width = 100)
-  
-  progress_num = 1:iterations
-  progress = function(n){
-    pb$tick(tokens = list(letter = progress_num[n]))
-  }
-  
-  opts = list(progress = progress)
-  
   
   ph = foreach::foreach(i = 1:nrow(phen),
                .inorder = T) %dopar% { 

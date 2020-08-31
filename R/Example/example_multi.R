@@ -20,7 +20,7 @@ K = .05
 #(thr = qnorm(1 - prev))
 
 #covariate matrix
-cov = LTFHPlus:::get_full_cov(corr_mat = corr_mat)
+cov = get_full_cov(corr_mat = corr_mat)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
 aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
@@ -57,18 +57,19 @@ for (i in 1:2) {
 all_thr = list() 
 for (i in 1:2) { #The two tables are identical here, but in real data, we would see differences depending on age of onset, cohort effects etc.
   all_thr[[i]] = tibble(
-    ids = c(all_phen[[i]]$FID, all_phen[[i]]$pid_f, all_phen[[i]]$pid_m),
+    FID = c(all_phen[[i]]$FID, all_phen[[i]]$pid_f, all_phen[[i]]$pid_m),
     thr = c(aoo_to_liab(all_phen[[i]]$child_age), aoo_to_liab(all_phen[[i]]$father_age), aoo_to_liab(all_phen[[i]]$mother_age))
   )
 }
 
 
-data = LTFHPlus:::estimate_gen_liability_multi_trait(corr_mat = corr_mat,
+data = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                           phen.list = all_phen,
                                           thr.list = all_thr,
                                           ids = c("FID", "pid_f", "pid_m"),
                                           ind = c(1,5), 
-                                          status_cols = c("child_stat", "father_stat", "mother_stat"))
+                                          status_cols = c("child_stat", "father_stat", "mother_stat"),
+                                          nthreads = 6)
 
 cov(data[,c("child_gen", "post_gen_liab_1", "post_gen_liab_2", "child_stat")])
 library(ggplot2)

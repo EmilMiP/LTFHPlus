@@ -1,6 +1,6 @@
 
 #'
-#' Constructs the correlation matrix
+#' Estimate genetic liability based off of family history and temporal information.
 #'
 #' @param h2 Liability scale heritability of the trait being analysed.
 #' @param phen tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.
@@ -13,7 +13,7 @@
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples
+#' @examples See the example.R for an example of use and input.
 #'
 #' @export
 
@@ -35,20 +35,7 @@ estimate_gen_liability = function(h2,
   cl = parallel::makeCluster(nthreads, type = "SOCK")
   doParallel::registerDoParallel(cl)
   
-  pb = progress::progress_bar$new(
-    format = "[:bar] :percent",
-    total = iterations,
-    width = 100)
-  
-  progress_num = 1:iterations
-  progress = function(n){
-    pb$tick(tokens = list(letter = progress_num[n]))
-  }
-  
-  opts = list(progress = progress)
-  
-  ph = foreach::foreach(i = 1:nrow(phen),
-                 .options.snow = opts,
+  ph = foreach::foreach(i = 1:nrow(phen)
                  .export = c("get_cov", "rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
                  .inorder = T) %dopar% {
 

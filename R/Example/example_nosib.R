@@ -14,6 +14,10 @@ multiplier = 1
 prev = c(0.08, .02) * multiplier
 (thr = qnorm(1 - prev))
 
+#### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
+source("C:/Code/LTFH/assign_ltfh.R")
+
+
 #constructs covariance matrix with a baseling of 2 parents and n_sib siblings (with-in disorder):
 get_cov = function(h2, n_sib = 0) {
   cov <- matrix(h2/2, 4 + n_sib, 4 + n_sib)
@@ -101,8 +105,6 @@ stopCluster(cl)
 simu_liab[["post_gen_liab"]]    = sapply(ph, FUN = function(x) x$est)
 simu_liab[["post_gen_liab_se"]] = sapply(ph, FUN = function(x) x$se)
 
-#### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("../Project1/LTFH/software v2/assign_ltfh.R")
 
 res = as_tibble(as.data.frame(matrix(NA, nrow = nrow(simu_liab), ncol = 7)))
 res[,1] = as.double(simu_liab$FID)

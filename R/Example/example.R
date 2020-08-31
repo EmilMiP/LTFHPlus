@@ -15,7 +15,7 @@ prev = c(0.08, .02) * multiplier
 (thr = qnorm(1 - prev))
 
 #covariate matrix
-cov = LTFHPlus:::get_cov(h2)
+cov = get_cov(h2)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
 aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
@@ -48,11 +48,12 @@ thr = tibble(
 )
 
 
-data = LTFHPlus::estimate_gen_liability(h2 = h2,
+data = estimate_gen_liability(h2 = h2,
                               phen = simu_liab,
                               thr = thr,
                               ids = c("FID", "pid_f", "pid_m"),
-                              status_cols = c("child_stat", "father_stat", "mother_stat"))
+                              status_cols = c("child_stat", "father_stat", "mother_stat"), 
+                              nthreads = 4)
 
 cov(data[, c("child_gen", "post_gen_liab", "child_stat")])
 
