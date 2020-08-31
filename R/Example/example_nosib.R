@@ -3,7 +3,7 @@ library(tidyverse)
 library(doSNOW)
 library(progress)
 
-N = 5000
+N = 5000 
 h2 = .5 
 nthreads = 6  # number of threads to use for ltfh++
 
