@@ -9,6 +9,7 @@ library(gridExtra)
 N = 5000 
 h2 = .5 
 nthreads = 6  # number of threads to use for ltfh++
+nsib = 0
 
 #calculates the thresholds used to determine status:
 K = .05
@@ -18,7 +19,7 @@ prev = c(0.08, .02) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
 source("C:/Code/LTFH/assign_ltfh.R")
-
+## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 #constructs covariance matrix with a baseling of 2 parents and n_sib siblings (with-in disorder):
 get_cov = function(h2, n_sib = 0) {
