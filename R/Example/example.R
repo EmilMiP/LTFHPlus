@@ -6,6 +6,7 @@ library(progress)
 N = 5000
 h2 = .5
 nthreads = 6  # number of threads to use for ltfh++
+nsib = 0
 
 #calculates the thresholds used to determine status:
 K = .05

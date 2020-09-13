@@ -9,6 +9,7 @@ gen_cor = .5
 corr_mat = diag(c(h2_1, h2_2))
 corr_mat[1,2] <- corr_mat[2,1] <- gen_cor
 nthreads = 6  # number of threads to use for ltfh++
+nsib = 0
 
 #calculates the thresholds used to determine status:
 K = .05
