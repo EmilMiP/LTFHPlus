@@ -12,7 +12,8 @@ Imports:
     batchmeans,
     doParallel,
     foreach,
-    parallel
+    parallel, 
+	dplyr
 Suggests:
     progress,
     tidyverse
