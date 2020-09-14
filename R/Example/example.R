@@ -9,6 +9,7 @@ N = 5000
 h2 = .5
 nsib = 0
 nthreads = 6  # number of threads to use for ltfh++
+nsib = 0
 
 
 #calculates the thresholds used to determine status:
