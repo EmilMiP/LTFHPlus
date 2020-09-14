@@ -1,13 +1,13 @@
 library(LTFHPlus)
-library(tidyverse)
-library(doSNOW)
-library(progress)
+library(dplyr)
+library(stringr)
 library(ggplot2) 
 library(gridExtra)
 
 
 N = 5000 
 h2 = .5 
+nsib = 0
 nthreads = 6  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
@@ -18,16 +18,10 @@ prev = c(0.08, .02) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
 source("C:/Code/LTFH/assign_ltfh.R")
+## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 
-#constructs covariance matrix with a baseling of 2 parents and n_sib siblings (with-in disorder):
-get_cov = function(h2, n_sib = 0) {
-  cov <- matrix(h2/2, 4 + n_sib, 4 + n_sib)
-  diag(cov) <- 1
-  cov[3,4] <- cov[4,3] <- 0
-  cov[1:2, 1] <- cov[1, 1:2] <- h2
-  cov
-} 
+
 #covariate matrix
 cov = LTFHPlus:::get_cov(h2)
 
@@ -46,67 +40,38 @@ simu_liab = tibble(
   child_full  = liabs[,2],
   father_full = liabs[,3],
   mother_full = liabs[,4],
-  child_stat  = (child_full  > qnorm(K, lower.tail = F)) + 0L,
-  father_stat = (father_full > qnorm(K, lower.tail = F)) + 0L,
-  mother_stat = (mother_full > qnorm(K, lower.tail = F)) + 0L,
+  child_sex   = sample(1:2, size = N, replace = TRUE),
+  child_stat  = (child_full  > qnorm(prev[child_sex], lower.tail = F)) + 0L,
+  father_stat = (father_full > qnorm(prev[1], lower.tail = F)) + 0L,
+  mother_stat = (mother_full > qnorm(prev[2], lower.tail = F)) + 0L,
   child_age   = runif(N, 10, 60),
   father_age  = child_age + runif(N, 20, 35),
   mother_age  = child_age + runif(N, 20, 35),
+  pid_f       = paste(FID, "_f", sep = ""),
+  pid_m       = paste(FID, "_m", sep = "")
 )
 
-simu_liab[["post_gen_liab"]]    <- NA
-simu_liab[["post_gen_liab_se"]] <- NA
+thr2 = tibble(
+  ids = c(simu_liab$FID, simu_liab$pid_f, simu_liab$pid_m),
+  thr = mean(qnorm(K, lower.tail = F)))
 
 
-stat = paste(c("child", "father", "mother"), "_stat", sep = "")
-age  = paste(c("child", "father", "mother"), "_age" , sep = "")
-liab = paste(c("child", "father", "mother"), "_full", sep = "")
+## more elegant implementaion of estimate_gen_liability_ltfh is pending ##
+data = estimate_gen_liability_ltfh(h2 = h2,
+                               phen = simu_liab,
+                               thr = thr2,
+                               ids = c("FID", "pid_f", "pid_m"),
+                               status_cols = c("child_stat", "father_stat", "mother_stat"))
 
+colnames(data)[ncol(data) - 1:0 ] = paste(colnames(data)[ncol(data) - 1:0 ], "_fast", sep = "")
 
-
-cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
-cl = makeCluster(nthreads, type = "SOCK")
-registerDoSNOW(cl)
-iterations = nrow(simu_liab)
-
-pb = progress_bar$new(
-  format = "[:bar] :percent",
-  total = iterations,
-  width = 100)
-
-progress_num = 1:iterations
-progress = function(n){
-  pb$tick(tokens = list(letter = progress_num[n]))
-}
-
-opts = list(progress = progress)
-
-ph = foreach(i = 1:nrow(simu_liab),
-             .options.snow = opts,
-             .inorder = TRUE) %dopar% {
-               #  if (i %% 500 == 0) print(i)
-               lower = rep(-Inf, ncol(cov))
-               upper = rep(Inf, ncol(cov))
-               x <- simu_liab[i, ]
-               for (ii in 1:3) {
-                 if (x[[stat[ii]]] == 1) {
-                   lower[1 + ii] <- upper[1 + ii] <- x[[liab[ii]]]
-                 } else {
-                   upper[1 + ii] <- aoo_to_liab(x[[age[ii]]])
-                 }
-                 
-               }
-               
-               fixed <- (upper - lower) < 1e-4
-               
-               gen_liabs <- LTFHPlus::rtmvnorm.gibbs(10e3, burn_in = 1000, sigma = cov, ### Using GibbsSampler Package ####
-                                                         lower = lower, upper = upper, fixed = fixed)
-               batchmeans::bm(gen_liabs)
-             }
-stopCluster(cl)
-simu_liab[["post_gen_liab"]]    = sapply(ph, FUN = function(x) x$est)
-simu_liab[["post_gen_liab_se"]] = sapply(ph, FUN = function(x) x$se)
-
+data2 = LTFHPlus::estimate_gen_liability(h2 = h2,
+                                         phen = simu_liab,
+                                         thr = thr2,
+                                         ids = c("FID", "pid_f", "pid_m"),
+                                         status_cols = c("child_stat", "father_stat", "mother_stat"),
+                                         nthreads = nthreads)
+data = left_join(data, data2)
 
 res = as_tibble(as.data.frame(matrix(NA, nrow = nrow(simu_liab), ncol = 7)))
 res[,1] = as.double(simu_liab$FID)
@@ -129,21 +94,35 @@ ltfh = create_pheno(data = as.data.frame(res),
                     relevant_trait_sib = "SIB_STATUS",
                     maximum_siblings_to_compute = 0)
 
-simu_liab = left_join(simu_liab, as.data.frame(ltfh))
+simu_liab = left_join(data, as.data.frame(ltfh))
 
 
 
 
+#Morale of this example: The estimatation methods all perform similarly, but with a threshold for each group, estimate_gen_liability_ltfh, is the fastest.
 
-with(simu_liab, c(cov(child_gen, post_gen_liab), cov(child_gen, ltfh)))^2
+with(simu_liab, c(cov(child_gen, post_gen_liab), cov(child_gen, post_gen_liab_fast), cov(child_gen, ltfh)))^2
+
+q1 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = ltfh, color = as.factor(child_stat))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+
+q2 = ggplot(simu_liab, aes(x = post_gen_liab, y = ltfh, color = as.factor(child_stat))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+grid.arrange(q1, q2)
 
 p1 = ggplot(simu_liab, aes(x = post_gen_liab, y = child_gen, color = as.factor(child_stat))) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1) 
 
+p2 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = child_gen, color = as.factor(child_stat))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) 
 
-p2 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = as.factor(child_stat))) +
+
+p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = as.factor(child_stat))) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1)
 
-grid.arrange(p1, p2)
+grid.arrange(p1, p2, p3)
