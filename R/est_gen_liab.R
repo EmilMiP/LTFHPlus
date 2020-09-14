@@ -56,7 +56,7 @@ estimate_gen_liability = function(h2,
                  upper = rep(Inf, cov_size) 
                  cur_status = unlist(phen[i, status_cols])
                 for (ii in 1:length(fam) + 1) {
-                    cur_indiv = thr[thr$ids == fam[ii - 1], ]
+                    cur_indiv = thr[thr[[1]] == fam[ii - 1], ]
                     
                     if (is.na(cur_status[ii - 1])) {
                       #here to deal with NAs for now 
@@ -142,7 +142,7 @@ estimate_gen_liability_ltfh = function(h2,
       upper = rep(Inf, cov_size) 
       cur_status = unlist(reduced[i, status_cols])
       for (ii in 1:length(fam) + 1) {
-        cur_indiv = thr[thr$ids == fam[ii - 1], ]
+        cur_indiv = thr[thr[[1]] == fam[ii - 1], ]
         
         if (is.na(cur_status[ii - 1])) {
           #here to deal with NAs for now 
