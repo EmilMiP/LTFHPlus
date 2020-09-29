@@ -126,3 +126,13 @@ p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = as.factor(child_stat
   geom_abline(intercept = 0, slope = 1)
 
 grid.arrange(p1, p2, p3)
+
+0.000964305 / sqrt(105979)
+qnorm(0.7805/2)
+
+se = sqrt(1 / (36306.88 ) * 0.8470 * 2 * (1 - 0.8470))
+se * -0.279
+P = 0.0002707
+CHISQ = 13.26
+SE = 0.02414
+1 / sqrt(2 * 0.152364 * (1 - 0.152364) * (105979 + (qnorm(6.8e-1/2))^2) )

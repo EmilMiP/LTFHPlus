@@ -160,7 +160,7 @@ estimate_gen_liability_ltfh = function(h2,
       vals = list() #store simulated values
       vals.ctr = 1
       while (is.null(se) || se > tol) {
-        gen_liabs = rtmvnorm.gibbs(10e4, burn_in = 1000,
+        gen_liabs = rtmvnorm.gibbs(1e5, burn_in = 1000,
                                    sigma = cov,
                                    lower = lower, 
                                    upper = upper,
