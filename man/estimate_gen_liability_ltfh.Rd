@@ -7,25 +7,34 @@
 estimate_gen_liability_ltfh(
   h2,
   phen,
-  thr,
-  ids = c("FID", "pid_f", "pid_m"),
-  ind = c(1),
-  status_cols = c("child_stat", "father_stat", "mother_stat"),
+  child_threshold,
+  parent_threshold,
+  status_col_offspring = "CHILD_STATUS",
+  status_col_father = "P1_STATUS",
+  status_col_mother = "P2_STATUS",
+  status_col_siblings = "SIB_STATUS",
+  number_of_siblings_col = "NUM_SIBS",
   tol = 0.01
 )
 }
 \arguments{
 \item{h2}{Liability scale heritability of the trait being analysed.}
 
-\item{phen}{tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.}
+\item{phen}{tibble or data.frame with status of the genotyped individual, parents and siblings.}
 
-\item{thr}{tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.}
+\item{child_threshold}{single numeric value that is used as threshold for the offspring and siblings.}
 
-\item{ids}{Column names of IDs for family members.}
+\item{parent_threshold}{single numeric value that is used as threshold for both parents}
 
-\item{ind}{Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
+\item{status_col_offspring}{Column name of status for the offspring}
 
-\item{status_cols}{Vector with the names of the columns that has the status of each family. default is c("child_stat", "father_stat", "mother_stat").}
+\item{status_col_father}{Column name of status for the father}
+
+\item{status_col_mother}{Column name of status for the mother}
+
+\item{status_col_siblings}{Column name of status for the siblings}
+
+\item{number_of_siblings_col}{Column name for the number of siblings for a given individual}
 
 \item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
@@ -36,6 +45,5 @@ Returns the estimated genetic liabilities.
 Estimate genetic liability similar to LT-FH
 }
 \examples{
-# See R/Example/example.R for an example of use and input.
-
+# See R/Example/example_nosib.R for an example of use and input.
 }

@@ -61,7 +61,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
                    full_fam = cur_phen[i,]
                    cur_status = unlist(cur_phen[i, status_cols])
                    for (ii in 1:length(fam) + 1) {
-                     indiv_thr = cur_thr[cur_thr[[ids[1]]] == fam[ii - 1], ]
+                     indiv_thr = cur_thr[cur_thr[[1]] == fam[ii - 1], ]
                      if (is.na(cur_status[ii - 1])) {
                        #here to deal with NAs  
                      } else if (cur_status[ii - 1] == 1) {
