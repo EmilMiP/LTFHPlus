@@ -122,60 +122,75 @@ estimate_gen_liability_ltfh = function(h2,
                                    thr,
                                    ids = c("FID", "pid_f", "pid_m"),
                                    ind = c(1),
-                                   status_cols = c("child_stat", "father_stat", "mother_stat"),
+                                   status_col_offspring = "child_stat",
+                                   status_col_parents   = c("father_stat", "mother_stat"),
+                                   status_col_siblings  = "NONE",
                                    tol = 0.01) {
   
-    phen[["string"]] = as.factor(do.call(paste, phen[,status_cols] + 0L))
-    reduced = phen %>% dplyr::group_by(string) %>% dplyr::slice_head()
-    reduced$post_gen_liab <- NA
-    reduced$post_gen_liab_se <- NA
-    for (i in 1:nrow(reduced)) {
-      full_fam = reduced[i,]
-      fam = unlist(full_fam[,ids])
-      n_sib = length(fam) - 3
+  phen[["combined_parent_status"]] = rowSums(phen[,status_col_parents], na.rm = TRUE)
+  if(!any(grepl("NONE", status_col_siblings))) {
+    phen[["combined_sibling_status"]] = (rowSums(phen[,status_col_siblings], na.rm = TRUE) > 0 ) + 0L
+  }
+  status_cols = c(status_col_offspring, "combined_parent_status", if(!any(grepl("NONE", status_col_siblings))) "combined_sibling_status")
+  phen[["string"]] = as.factor(do.call(paste, phen[,status_cols] + 0L))
+  reduced = phen %>% dplyr::group_by(string) %>% dplyr::slice_head()
+  reduced$post_gen_liab <- NA
+  reduced$post_gen_liab_se <- NA
+  
+  nsib = length(status_col_siblings)
+  
+  all_config <- do.call(expand.grid, rep(list(0:1), 3 + nsib))
+  names(all_config) <- c("child_status", "father_status", "mother_status", )
+  all_config$string <- as.factor(do.call(paste, all_config + 0L))
+  
+  
+  for (i in 1:nrow(reduced)) {
+    full_fam = reduced[i,]
+    fam = unlist(full_fam[,ids])
+    n_sib = length(status_col_siblings)
+    
+    cov = get_cov(h2 = h2, n_sib = n_sib)
+    
+    cov_size = nrow(cov)
+    
+    lower = rep(-Inf, cov_size)
+    upper = rep(Inf, cov_size) 
+    cur_status = unlist(reduced[i, c(status_col_offspring, status_col_parents, if(!any(grepl("NONE", status_col_siblings))) status_col_siblings)])
+    for (ii in 1:length(ids) + 1) {
+      cur_indiv = thr[thr[[1]] == fam[ii - 1], ]
       
-      cov = get_cov(h2 = h2, n_sib = n_sib)
-      
-      cov_size = nrow(cov)
-      
-      lower = rep(-Inf, cov_size)
-      upper = rep(Inf, cov_size) 
-      cur_status = unlist(reduced[i, status_cols])
-      for (ii in 1:length(fam) + 1) {
-        cur_indiv = thr[thr[[1]] == fam[ii - 1], ]
-        
-        if (is.na(cur_status[ii - 1])) {
-          #here to deal with NAs for now 
-        } else if (cur_status[ii - 1] == 1) {
-          lower[ii] <- cur_indiv$thr
-        } else {
-          upper[ii] <- cur_indiv$thr
-        }
-        
+      if (is.na(cur_status[ii - 1])) {
+        #here to deal with NAs for now 
+      } else if (cur_status[ii - 1] == 1) {
+        lower[ii] <- cur_indiv$thr
+      } else {
+        upper[ii] <- cur_indiv$thr
       }
-      fixed <- (upper - lower) < 1e-4
-      
-      #covergence check
-      se = NULL 
-      vals = list() #store simulated values
-      vals.ctr = 1
-      while (is.null(se) || se > tol) {
-        gen_liabs = rtmvnorm.gibbs(1e5, burn_in = 1000,
-                                   sigma = cov,
-                                   lower = lower, 
-                                   upper = upper,
-                                   fixed = fixed)
-        vals[[vals.ctr]] = gen_liabs
-        se = batchmeans::bm(unlist(vals))$se
-        vals.ctr =  vals.ctr + 1
-      }
-      #calculate the final values
-      est = batchmeans::bm(unlist(vals))
-      reduced$post_gen_liab[i]    = est$est
-      reduced$post_gen_liab_se[i] = est$se
       
     }
-    reduced = reduced[,c("string", "post_gen_liab", "post_gen_liab_se")]
-    phen = dplyr::left_join(phen, reduced, by = "string") %>% dplyr::select(-c("string"))
-    return(phen)
+    fixed <- (upper - lower) < 1e-4
+    
+    #covergence check
+    se = NULL 
+    vals = list() #store simulated values
+    vals.ctr = 1
+    while (is.null(se) || se > tol) {
+      gen_liabs = rtmvnorm.gibbs(1e5, burn_in = 1000,
+                                 sigma = cov,
+                                 lower = lower, 
+                                 upper = upper,
+                                 fixed = fixed)
+      vals[[vals.ctr]] = gen_liabs
+      se = batchmeans::bm(unlist(vals))$se
+      vals.ctr =  vals.ctr + 1
+    }
+    #calculate the final values
+    est = batchmeans::bm(unlist(vals))
+    reduced$post_gen_liab[i]    = est$est
+    reduced$post_gen_liab_se[i] = est$se
+    
+  }
+  reduced = reduced[,c("string", "post_gen_liab", "post_gen_liab_se")]
+  phen = dplyr::left_join(phen, reduced, by = "string") %>% dplyr::select(-c("string", "combined_parent_status",if(!any(grepl("NONE", status_col_siblings))) "combined_sibling_status"))
+  return(phen)
 }
