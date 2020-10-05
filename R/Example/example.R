@@ -8,7 +8,7 @@ library(gridExtra)
 N = 10000
 h2 = .5 
 nsib = 0
-nthreads = 20  # number of threads to use for ltfh++
+nthreads = 5  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
 #K = .05
@@ -17,7 +17,7 @@ prev = c(0.08, .02) * multiplier
 
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("D:/Work/Project1/LTFH/software v2/assign_ltfh.R")
+source("C:/Code/LTFH/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 
@@ -116,6 +116,7 @@ data = left_join(data, as.data.frame(ltfh))
 
 
 with(data, c("LTFH++" = cov(child_gen, post_gen_liab), "LTFH" = cov(child_gen, ltfh), "Case-Control" = cov(child_gen, child_stat)))^2
+with(data, c("LTFH++" = cor(child_gen, post_gen_liab), "LTFH" = cor(child_gen, ltfh), "Case-Control" = cor(child_gen, child_stat)))
 
 
 summary(data$post_gen_liab)
@@ -132,7 +133,6 @@ p1 = ggplot(data, aes(x = post_gen_liab, y = child_gen, color = rowSums(data[,c(
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-#  xlim(-0.4, 2) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -144,7 +144,6 @@ p2 = ggplot(data, aes(x = ltfh, y = child_gen, color = rowSums(data[,c("child_st
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
- # xlim(-0.4, 2) +
   theme(plot.title = element_text(hjust = 0.5))
 
 grid.arrange(p1, p2)
