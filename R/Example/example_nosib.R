@@ -10,7 +10,8 @@ library(progress)
 N = 5000 
 h2 = .5 
 nsib = 1
-nthreads = 20  # number of threads to use for ltfh++
+nthreads = 5  # number of threads to use for ltfh++
+tol = 0.01
 
 #calculates the thresholds used to determine status:
 K = .05
@@ -18,12 +19,13 @@ multiplier = 1
 prev = c(0.08, .02) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("D:/Work/Project1/LTFH/software v2/assign_ltfh.R")
+source("C:/Code/LTFH/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
-
-est_cir = function(data, indivs = c("child", "father", "mother"), ids = c("FID", "pid_f", "pid_m")) {
+est_cir = function(data, 
+                   indivs = c("child", "father", "mother"), 
+                   ids = c("FID", "pid_f", "pid_m")) {
   
   res = tibble()
   for(i in seq_along(indivs)) {
@@ -91,15 +93,12 @@ if (nsib > 0) {
 }
 
 
+
+# LTFH++_fast -------------------------------------------------------------
+## more elegant implementaion of estimate_gen_liability_ltfh is pending ##
 simu_liab$NUM_SIBS = nsib
 simu_liab$SIB_STATUS = 0
 if (nsib > 0) simu_liab$SIB_STATUS = (rowSums(simu_liab[,paste("sib", 1:nsib, "_stat", sep = "")]) > 0) + 0L  
-
-
-## more elegant implementaion of estimate_gen_liability_ltfh is pending ##
-
-# LTFH++_fast -------------------------------------------------------------
-
 
 data = estimate_gen_liability_ltfh(h2 = h2,
                                    phen = simu_liab,
@@ -143,8 +142,6 @@ progress = function(n){
 }
 
 opts = list(progress = progress)
-h2 = .5
-tol = 0.01
 ph = foreach(i = 1:nrow(simu_liab),
              .options.snow = opts) %dopar% {
                full_fam = simu_liab[i,]
@@ -234,33 +231,10 @@ simu_liab = left_join(data, as.data.frame(ltfh))
 
 #Morale of this example: The estimatation methods all perform similarly, but with a threshold for each group, estimate_gen_liability_ltfh, is the fastest.
 
-with(simu_liab, c("LTFH++" = cov(child_gen, post_gen_liab),"LTFH++_fast" = cov(child_gen, post_gen_liab_fast), "LTFH" = cov(child_gen, ltfh)))^2
+with(simu_liab, c("LTFH++" = cov(child_gen, post_gen_liab),"LTFH++_fast" = cov(child_gen, post_gen_liab_fast), "LTFH" = cov(child_gen, ltfh)))
 with(simu_liab, c("LTFH++" = cor(child_gen, post_gen_liab),"LTFH++_fast" = cor(child_gen, post_gen_liab_fast), "LTFH" = cor(child_gen, ltfh)))
 
-q1 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = ltfh, color = as.factor(child_stat))) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1)
-
-q2 = ggplot(simu_liab, aes(x = post_gen_liab, y = ltfh, color = as.factor(child_stat))) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1)
-grid.arrange(q1, q2)
-
-p1 = ggplot(simu_liab, aes(x = post_gen_liab, y = child_gen, color = as.factor(child_stat))) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1) 
-
-p2 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = child_gen, color = as.factor(child_stat))) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1) 
-
-
-p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = as.factor(child_stat))) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1)
-
-grid.arrange(p1, p2, p3)
-
+#comparing LTFH to LTFH++_fast
 simu_liab = simu_liab %>% mutate(difference = ltfh - post_gen_liab_fast)
 
 comp1 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = ltfh, color = as.factor(child_stat))) +
@@ -271,4 +245,40 @@ comp2 = ggplot(simu_liab %>% arrange(ltfh) %>% select(difference) %>% unique() %
   geom_bar(stat = "identity")
 
 grid.arrange(comp1, comp2)
+
+
+
+#plotting estimating genetic liability for the different methods against the true genetic liabilities:
+p1 = ggplot(simu_liab, aes(x = post_gen_liab, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat", if(nsib > 0) paste("sib", 1:nsib, "_stat", sep = ""))]) > 0)) +
+  geom_point(alpha = .5) +
+  geom_abline(slope = 1, intercept = 0) + 
+  labs(color = "Status in Family") +
+  xlab("Estimated Genetic Liability (LTFH++) ") +
+  ylab("True Genetic Liability") + 
+  ggtitle("True vs Estimated Genetic Liability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+p2 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat", if(nsib > 0) paste("sib", 1:nsib, "_stat", sep = ""))]) > 0)) +
+  geom_point(alpha = .5) +
+  geom_abline(slope = 1, intercept = 0) + 
+  labs(color = "Status in Family") +
+  xlab("Estimated Genetic Liability (LTFH++_fast) ") +
+  ylab("True Genetic Liability") + 
+  ggtitle("True vs Estimated Genetic Liability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat", if(nsib > 0) paste("sib", 1:nsib, "_stat", sep = ""))]) > 0)) +
+  geom_point(alpha = .5) +
+  geom_abline(slope = 1, intercept = 0) + 
+  labs(color = "Status in Family") +
+  xlab("Estimated Genetic Liability (LTFH) ") +
+  ylab("True Genetic Liability") + 
+  ggtitle("True vs Estimated Genetic Liability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+grid.arrange(p1, p2, p3)
 
