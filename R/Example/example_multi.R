@@ -12,18 +12,18 @@ h2_2 = .5
 gen_cor = .5
 corr_mat = diag(c(h2_1, h2_2))
 corr_mat[1,2] <- corr_mat[2,1] <- gen_cor
-nthreads = 6  # number of threads to use for ltfh++
+nthreads = 20  # number of threads to use for ltfh++
 nsib = 0
 
 #calculates the thresholds used to determine status:
-K = .05
+#K = .05
 multiplier = 1
 prev = c(0.08, .02) * multiplier
 #(thr = qnorm(1 - prev))
 
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("C:/Code/LTFH/assign_ltfh.R")
+source("D:/Work/Project1/LTFH/software v2/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 
@@ -31,7 +31,7 @@ source("C:/Code/LTFH/assign_ltfh.R")
 cov = get_full_cov(corr_mat = corr_mat)
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
-aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
+#aoo_to_liab = function(age) qnorm( age / 500, lower.tail = FALSE)
 
 
 
@@ -64,10 +64,31 @@ for (i in 1:2) {
 }
 
 all_thr = list() 
-for (i in 1:2) { #The two tables are identical here, but in real data, we would see differences depending on age of onset, cohort effects etc.
-  all_thr[[i]] = tibble(
-    FID = c(all_phen[[i]]$FID, all_phen[[i]]$pid_f, all_phen[[i]]$pid_m),
-    thr = c(aoo_to_liab(all_phen[[i]]$child_age), aoo_to_liab(all_phen[[i]]$father_age), aoo_to_liab(all_phen[[i]]$mother_age))
+for (ii in 1:2) { #The two tables are identical here, but in real data, we would see differences depending on age of onset, cohort effects etc.
+  simu_liab = all_phen[[ii]]
+  indivs = c("child", "father", "mother")
+  all_liabs = c()
+  all_stat = c()
+  for (i in seq_along(indivs)) {
+    cur_stat = simu_liab[[paste(indivs[i], "_stat", sep ="")]] == 0
+    cur_thr = rep(NA, length(cur_stat))
+    if (!(indivs[i] %in% c("father", "mother"))) {
+      cur_thr[cur_stat]  = qnorm(prev, lower.tail = F)[simu_liab[[paste(indivs[i], "_sex", sep = "")]][cur_stat]]
+      
+    }
+    if (indivs[i] == "father"){
+      cur_thr[cur_stat] = qnorm(prev[1], lower.tail = F)
+    }
+    if (indivs[i] == "mother"){
+      cur_thr[cur_stat] = qnorm(prev[2], lower.tail = F)
+    }
+    cur_thr[!cur_stat] = simu_liab[[paste(indivs[i], "_full", sep = "")]][!cur_stat]
+    all_liabs = c(all_liabs, cur_thr)
+    all_stat  = c(all_stat, cur_stat)
+  }
+  all_thr[[ii]] = tibble(
+    ids = c(simu_liab$FID, simu_liab$pid_f, simu_liab$pid_m),
+    thr = all_liabs
   )
 }
 
@@ -93,8 +114,8 @@ res$SIB_STATUS = 0
 
 ltfh = create_pheno(data = as.data.frame(res),
                     trait_h2 = h2_1,
-                    T_val_child = qnorm(K, lower.tail = F),
-                    T_val_parent = qnorm(K, lower.tail = F),
+                    T_val_child = qnorm(mean(prev), lower.tail = F),
+                    T_val_parent = qnorm(mean(prev), lower.tail = F),
                     relevant_trait_child = "CHILD_STATUS",
                     relevant_trait_dad = "P1_STATUS",
                     relevant_trait_mom = "P2_STATUS",
@@ -118,7 +139,6 @@ p1 =ggplot(data, aes(x = post_gen_liab_1, y = child_gen, color = rowSums(all_phe
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  xlim(-0.5, 1.7) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -130,7 +150,6 @@ p2 = ggplot(data, aes(x = ltfh, y = child_gen, color = rowSums(all_phen[[2]][,c(
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  xlim(-0.5, 1.7) +
   theme(plot.title = element_text(hjust = 0.5))
 
 grid.arrange(p1, p2)

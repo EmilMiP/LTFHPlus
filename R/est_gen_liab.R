@@ -190,7 +190,6 @@ estimate_gen_liability_ltfh = function(h2,
     reduced$post_gen_liab_se[i] = est$se
     
   }
-  reduced = reduced[,c("string", "post_gen_liab", "post_gen_liab_se")]
-  phen = dplyr::left_join(phen, reduced, by = "string") %>% dplyr::select(-c("string", "combined_parent_status",if(!any(grepl("NONE", status_col_siblings))) "combined_sibling_status"))
+  phen = dplyr::left_join(phen, reduced)
   return(phen)
 }

@@ -4,11 +4,13 @@ library(stringr)
 library(ggplot2) 
 library(gridExtra)
 library(tidyverse)
+library(doSNOW)
+library(progress)
 
 N = 5000 
 h2 = .5 
-nsib = 2
-nthreads = 6  # number of threads to use for ltfh++
+nsib = 1
+nthreads = 20  # number of threads to use for ltfh++
 
 #calculates the thresholds used to determine status:
 K = .05
@@ -16,7 +18,7 @@ multiplier = 1
 prev = c(0.08, .02) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("C:/Code/LTFH/assign_ltfh.R")
+source("D:/Work/Project1/LTFH/software v2/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 #age of onset to liability. simulated age is age of onset if indiv is a case.
@@ -88,44 +90,117 @@ if (nsib > 0) {
   }
 }
 
-indivs = c("child", "father", "mother", if(nsib > 0) paste("sib", 1:nsib, sep = ""))
-ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
 
-if (nsib > 0) {
-  sib_vec = paste("sib", 1:nsib, "_stat", sep = "")
-} else {
-  sib_vec = ""
-}
-ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
-thr = simu_liab[,ids] %>% 
-  pivot_longer(cols = ids,names_to = "IDs") %>% 
-  select(IDs) %>% 
-  mutate(thr = qnorm(mean(prev), lower.tail = F))
-  
+simu_liab$NUM_SIBS = nsib
+simu_liab$SIB_STATUS = 0
+if (nsib > 0) simu_liab$SIB_STATUS = (rowSums(simu_liab[,paste("sib", 1:nsib, "_stat", sep = "")]) > 0) + 0L  
+
 
 ## more elegant implementaion of estimate_gen_liability_ltfh is pending ##
+
+# LTFH++_fast -------------------------------------------------------------
+
+
 data = estimate_gen_liability_ltfh(h2 = h2,
-                               phen = simu_liab,
-                               thr = thr,
-                               ids = ids,
-                               status_col_offspring = "child_stat",
-                               status_col_parents = c("father_stat", "mother_stat"),
-                               status_col_siblings = sib_vec)
+                                   phen = simu_liab,
+                                   child_threshold = qnorm(mean(prev), lower.tail = F),
+                                   parent_threshold = qnorm(mean(prev), lower.tail = F),
+                                   status_col_offspring = "child_stat",
+                                   status_col_father    = "father_stat",
+                                   status_col_mother    = "mother_stat",
+                                   status_col_siblings  = "SIB_STATUS",
+                                   number_of_siblings_col = "NUM_SIBS")
 
 colnames(data)[ncol(data) - 1:0 ] = paste(colnames(data)[ncol(data) - 1:0 ], "_fast", sep = "")
-# 
-# thr2 = est_cir(data = simu_liab, 
-#                indivs = indivs,
-#                ids = ids)
-# 
-# 
-# data2 = LTFHPlus::estimate_gen_liability(h2 = h2,
-#                                          phen = simu_liab,
-#                                          thr = thr2,
-#                                          ids = ids,
-#                                          status_cols = paste(indivs, "_stat", sep = ""),
-#                                          nthreads = nthreads)
-# data = left_join(data, data2)
+
+
+
+#  LT-FH++  ---------------------------------------------------------------
+
+cov = get_cov(h2 = h2, n_sib = nsib)
+
+indivs = c("child", "father", "mother", if(nsib > 0) paste("sib", 1:nsib, sep = ""))
+ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
+thr = est_cir(data = simu_liab,
+              indivs = indivs,
+              ids = ids)
+status_cols = paste(indivs, "_stat", sep = "")
+
+
+cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
+cl = makeCluster(nthreads, type = "SOCK")
+registerDoSNOW(cl)
+iterations = nrow(simu_liab)
+
+pb = progress_bar$new(
+  format = "[:bar] :percent",
+  total = iterations,
+  width = 100)
+
+progress_num = 1:iterations
+progress = function(n){
+  pb$tick(tokens = list(letter = progress_num[n]))
+}
+
+opts = list(progress = progress)
+h2 = .5
+tol = 0.01
+ph = foreach(i = 1:nrow(simu_liab),
+             .options.snow = opts) %dopar% {
+               full_fam = simu_liab[i,]
+               fam = unlist(full_fam[,ids])
+               n_sib = length(fam) - 3
+               lia_cols = names(full_fam)[grep("full",names(full_fam))]
+               cov = LTFHPlus::get_cov(h2 = h2, n_sib = n_sib)
+               
+               cov_size = nrow(cov)
+               
+               lower = rep(-Inf, cov_size)
+               upper = rep(Inf, cov_size) 
+               cur_status = unlist(simu_liab[i, status_cols])
+               for (ii in 1:(3 + n_sib)) {
+                 cur_indiv = thr[thr[[1]] == fam[ii], ]
+                 
+                 if (is.na(cur_status[ii])) {
+                   #here to deal with NAs for now 
+                 } else if (cur_status[ii] == 1) {
+                   lower[ii + 1] <- full_fam[[lia_cols[ii]]] #upper[[ii + 1]] <-  
+                 } else {
+                   upper[ii + 1] <- cur_indiv$thr
+                 }
+                 
+               }
+               fixed <- (upper - lower) < 1e-4
+               
+               #covergence check
+               se = NULL 
+               vals = list() #store simulated values
+               vals.ctr = 1
+               while (is.null(se) || se > tol) {
+                 gen_liabs = GibbsSampler::rtmvnorm.gibbs(1e4,
+                                                          burn_in = 1000,
+                                                          sigma   = cov,
+                                                          lower   = lower, 
+                                                          upper   = upper,
+                                                          fixed   = fixed)
+                 vals[[vals.ctr]] = gen_liabs
+                 se = batchmeans::bm(unlist(vals))$se
+                 vals.ctr =  vals.ctr + 1
+               }
+               #calculate the final values
+               batchmeans::bm(unlist(vals))
+             }
+stopCluster(cl)
+simu_liab[["post_gen_liab"]]    <- sapply(ph, FUN = function(x) x$est)
+simu_liab[["post_gen_liab_se"]] <- sapply(ph, FUN = function(x) x$se)
+
+
+data = left_join(data, simu_liab)
+
+
+
+#  LT-FH ------------------------------------------------------------------
+
 
 res = as_tibble(as.data.frame(matrix(NA, nrow = nrow(simu_liab), ncol = 7)))
 res[,1] = as.double(simu_liab$FID)
@@ -151,6 +226,9 @@ ltfh = create_pheno(data = as.data.frame(res),
 
 simu_liab = left_join(data, as.data.frame(ltfh))
 
+
+
+# Plots & Results ---------------------------------------------------------
 
 
 
@@ -183,12 +261,14 @@ p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = as.factor(child_stat
 
 grid.arrange(p1, p2, p3)
 
-0.000964305 / sqrt(105979)
-qnorm(0.7805/2)
+simu_liab = simu_liab %>% mutate(difference = ltfh - post_gen_liab_fast)
 
-se = sqrt(1 / (36306.88 ) * 0.8470 * 2 * (1 - 0.8470))
-se * -0.279
-P = 0.0002707
-CHISQ = 13.26
-SE = 0.02414
-1 / sqrt(2 * 0.152364 * (1 - 0.152364) * (105979 + (qnorm(6.8e-1/2))^2) )
+comp1 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = ltfh, color = as.factor(child_stat))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+
+comp2 = ggplot(simu_liab %>% arrange(ltfh) %>% select(difference) %>% unique() %>% mutate(grp = 1:n()), aes(y = difference, x = as_factor(grp))) +
+  geom_bar(stat = "identity")
+
+grid.arrange(comp1, comp2)
+
