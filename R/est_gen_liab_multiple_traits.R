@@ -32,10 +32,6 @@ estimate_gen_liability_multi_trait = function(phen.list,
   #get ids from the first phenotype tibble
   phen = phen.list[[1]]
   
-  
-#  phen$post_gen_liab <- NA
-#  phen$post_gen_liab_se <- NA
-  
   iterations = nrow(phen)
   
   cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
@@ -45,7 +41,6 @@ estimate_gen_liability_multi_trait = function(phen.list,
   ph = foreach(i = 1:nrow(phen),
                .export = c("get_full_cov", "check_positive_definite","rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
                .inorder = T) %dopar% { 
-                 #fam = c(phen$FID[i], phen$pid_f[i], phen$pid_m[i], phen$sib_ids[[i]])
                  fam = unlist(phen[i,ids])
                  n_sib = length(fam) - 3
                  full_cov = get_full_cov(corr_mat = corr_mat, n_sib = n_sib)
