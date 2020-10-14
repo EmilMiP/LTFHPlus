@@ -61,7 +61,7 @@ estimate_gen_liability = function(h2,
                     if (is.na(cur_status[ii - 1])) {
                       #here to deal with NAs for now 
                     } else if (cur_status[ii - 1] == 1) {
-                      lower[ii] <- cur_indiv$thr
+                      lower[ii] <- upper[ii] <- cur_indiv$thr
                     } else {
                       upper[ii] <- cur_indiv$thr
                     }

@@ -60,7 +60,7 @@ estimate_gen_liability_multi_trait = function(phen.list,
                      if (is.na(cur_status[ii - 1])) {
                        #here to deal with NAs  
                      } else if (cur_status[ii - 1] == 1) {
-                       lower[(4 + n_sib) * (k - 1) + ii] <- indiv_thr$thr
+                       lower[(4 + n_sib) * (k - 1) + ii] <- upper[(4 + n_sib) * (k - 1) + ii] <- indiv_thr$thr
                      } else {
                        upper[(4 + n_sib) * (k - 1) + ii] <- indiv_thr$thr
                      }

@@ -14,7 +14,7 @@ gen_cor = .5
 corr_mat = diag(c(h2_1, h2_2))
 corr_mat[1,2] <- corr_mat[2,1] <- gen_cor
 nthreads = 5  # number of threads to use for ltfh++
-nsib = 3
+nsib = 1
 tol = 0.01
 
 #calculates the thresholds used to determine status:
@@ -27,38 +27,6 @@ prev = c(0.08, .02) * multiplier
 source("C:/Code/LTFH/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
-
-est_cir = function(data, 
-                   indivs = c("child", "father", "mother"), 
-                   ids = c("FID", "pid_f", "pid_m")) {
-  
-  res = tibble()
-  for(i in seq_along(indivs)) {
-    indiv = indivs[i]
-    stat_col = paste(indiv, "_stat", sep = "")
-    age_col  = paste(indiv, "_age", sep = "")
-    
-    if (indivs[i] %in% c("father", "mother")) {
-      ph = data %>% 
-        arrange(!!as.name(age_col)) %>%
-        mutate(cir = (cumsum(!!as.name(stat_col)) + 1)/n()) %>%
-        mutate(thr = qnorm(cir, lower.tail = FALSE)) %>% 
-        select(!!as.name(ids[i]), thr)
-    } else {
-      sex_col = paste(indiv, "_sex", sep = "")
-      ph = data %>% 
-        group_by(!!as.name(sex_col)) %>%
-        arrange(!!as.name(age_col)) %>%
-        mutate(cir = (cumsum(!!as.name(stat_col)) + 1)/n()) %>%
-        mutate(thr = qnorm(cir, lower.tail = FALSE)) %>% 
-        ungroup() %>%
-        select(!!as.name(ids[i]), thr)
-    }
-    colnames(ph) = c("FID", "thr")
-    res = bind_rows(res, ph)
-  }
-  return(res)
-}
 
 #simulate liabilities
 liabs = MASS::mvrnorm(n = N, mu = rep(0, 2*(4 + nsib)), Sigma = get_full_cov(corr_mat = corr_mat, n_sib = nsib))
@@ -79,7 +47,9 @@ for (i in 1:2) {
     child_sex   = sample(1:2, size = N, replace = TRUE),
     child_stat  = (child_full  > qnorm(prev[child_sex], lower.tail = F)) + 0L,
     father_stat = (father_full > qnorm(prev[1], lower.tail = F)) + 0L,
+    father_sex  = rep(1, N),
     mother_stat = (mother_full > qnorm(prev[2], lower.tail = F)) + 0L,
+    mother_sex  = rep(2, N),
     child_age   = child_age,
     father_age  = father_age,
     mother_age  = mother_age,
@@ -104,27 +74,15 @@ for (i in 1:2) {
   all_phen[[i]] = simu_liab
 }
 
-all_thr = list() 
-for (ii in 1:2) { #The two tables are identical here, but in real data, we would see differences depending on age of onset, cohort effects etc.
-  simu_liab = all_phen[[ii]]
-  indivs = c("child", "father", "mother", if (nsib > 0) paste("sib", 1:nsib, sep = ""))
-  ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
-  
-  all_thr[[ii]] = est_cir(data = simu_liab,
-                          indivs = indivs,
-                          ids = ids)
-}
+indivs = c("child", "father", "mother", if(nsib > 0) paste("sib", 1:nsib, sep = ""))
+ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
+status_cols = paste(indivs, "_stat", sep = "")
+age_cols = paste(indivs, "_age", sep = "")
+sex_cols = paste(indivs, "_sex", sep = "")
+liab_cols = paste(indivs, "_full", sep = "")
 
-
-# data = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
-#                                           phen.list = all_phen,
-#                                           thr.list = all_thr,
-#                                           ids = ids,
-#                                           ind = c(1,4 + nsib), 
-#                                           status_cols = paste(indivs, "_stat", sep = ""),
-#                                           nthreads = nthreads)
 data = all_phen[[1]]
-ind = c(1,4 + nsib)
+ind = c(1, 5 + nsib)
 status_cols = paste(indivs, "_stat", sep = "")
 n_trait = length(all_phen)
 cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
@@ -158,18 +116,20 @@ ph = foreach(i = 1:nrow(data),
                
                for (k in 1:n_trait) {
                  cur_phen = all_phen[[k]]
-                 cur_thr  = all_thr[[k]]
                  full_fam = cur_phen[i,]
                  cur_status = unlist(cur_phen[i, status_cols])
                  cur_liab   = unlist(cur_phen[i, paste(indivs, "_full", sep = "")])
                  for (ii in 1:length(fam) + 1) {
-                   indiv_thr = cur_thr[cur_thr[[1]] == fam[ii - 1], ]
+                   #indiv_thr = cur_thr[cur_thr[[1]] == fam[ii - 1], ]
                    if (is.na(cur_status[ii - 1])) {
                      #here to deal with NAs  
                    } else if (cur_status[ii - 1] == 1) {
-                     lower[(4 + nsib) * (k - 1) + ii] <- cur_liab[[ii - 1]]
+                     lower[(4 + nsib) * (k - 1) + ii] <- upper[(4 + nsib) * (k - 1) + ii] <- LTFHPlus::age_to_thres(age = LTFHPlus::liab_to_aoo(full_fam[liab_cols[[ii - 1]]][[1]], 
+                                                                                                                                                pop_prev = prev[full_fam[sex_cols[[ii - 1]]][[1]]]), 
+                                                                                                                    pop_prev = prev[full_fam[sex_cols[[ii - 1]]][[1]]])#cur_liab[[ii - 1]]
                    } else {
-                     upper[(4 + nsib) * (k - 1) + ii] <- indiv_thr$thr
+                     upper[(4 + nsib) * (k - 1) + ii] <- LTFHPlus::age_to_thres(age = full_fam[age_cols[ii - 1]][[1]], 
+                                                                                pop_prev = prev[full_fam[sex_cols[ii - 1]][[1]]])
                    }
                    
                  }
@@ -181,7 +141,7 @@ ph = foreach(i = 1:nrow(data),
                vals = list() #store simulated values
                vals.ctr = 1
                while (is.null(se) || se > tol) {
-                 gen_liabs = rtmvnorm.gibbs(5e4, burn_in = 1000,
+                 gen_liabs = LTFHPlus::rtmvnorm.gibbs(5e4, burn_in = 1000,
                                             sigma = full_cov,
                                             lower = lower, 
                                             upper = upper,
