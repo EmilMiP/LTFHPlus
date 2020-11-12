@@ -29,16 +29,15 @@ utils::globalVariables("child_gen")
 #' # See R/Example/example_nosib.R for an example of use and input.
 #' @importFrom dplyr %>%
 #' @export
-
 estimate_gen_liability_ltfh = function(h2,
                                        phen, 
                                        child_threshold,
                                        parent_threshold,
-                                       status_col_offspring   = "child_stat",
-                                       status_col_father      = "father_stat",
-                                       status_col_mother      = "mother_stat",
-                                       status_col_siblings    = "SIB_STAT",
-                                       number_of_siblings_col = "NUM_SIB",
+                                       status_col_offspring   = "CHILD_STATUS",
+                                       status_col_father      = "P1_STATUS", 
+                                       status_col_mother      = "P2_STATUS",
+                                       status_col_siblings    = "SIB_STATUS",
+                                       number_of_siblings_col = "NUM_SIBS",
                                        tol = 0.01) {
   # Find all unique combinations of status ----------------------------------
   

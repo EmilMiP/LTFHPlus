@@ -170,7 +170,7 @@ est_cir = function(data,
                    indivs = c("child", "father", "mother"),
                    ids = c("FID", "pid_f", "pid_m")) {
   cat("This function has not been tested properly, use at your own discretion! \n")
-  res = tibble()
+  res = dplyr::tibble()
   for(i in seq_along(indivs)) {
     indiv = indivs[i]
     stat_col = paste(indiv, "_stat", sep = "")
