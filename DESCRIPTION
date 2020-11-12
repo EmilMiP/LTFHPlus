@@ -13,7 +13,8 @@ Imports:
     doParallel,
     foreach,
     parallel, 
-	dplyr
+	dplyr,
+	tmvtnorm
 Suggests:
     progress,
     tidyverse
