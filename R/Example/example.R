@@ -9,13 +9,13 @@ library(progress)
 
 N = 5000 
 h2 = .5 
-nsib = 1
+nsib = 3
 nthreads = 5  # number of threads to use for ltfh++
 tol = 0.01
 
 #calculates the thresholds used to determine status:
-multiplier = 2
-prev = c(0.08, 0.02) * multiplier
+multiplier = 1
+prev = c(0.05, 0.05) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
 source("C:/Code/LTFH/assign_ltfh.R")
@@ -231,7 +231,8 @@ p1 = ggplot(simu_liab, aes(x = post_gen_liab, y = child_gen, color = rowSums(dat
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none")
 
 
 p2 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat", if(nsib > 0) paste("sib", 1:nsib, "_stat", sep = ""))]) > 0)) +
@@ -242,7 +243,8 @@ p2 = ggplot(simu_liab, aes(x = post_gen_liab_fast, y = child_gen, color = rowSum
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none")
 
 p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = rowSums(data[,c("child_stat", "father_stat", "mother_stat", if(nsib > 0) paste("sib", 1:nsib, "_stat", sep = ""))]) > 0)) +
   geom_point(alpha = .5) +
@@ -250,10 +252,13 @@ p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = rowSums(data[,c("chi
   labs(color = "Status in Family") +
   xlab("Estimated Genetic Liability (LTFH) ") +
   ylab("True Genetic Liability") + 
-  ggtitle("True vs Estimated Genetic Liability") +
+#  ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "top")
 
 grid.arrange(p1, p2, p3)
+
+grid.arrange(p1, p3)
 
 
