@@ -6,37 +6,54 @@ library(gridExtra)
 library(doSNOW)
 library(progress)
 
-N = 5000 
+N = 10000 
 h2 = .5 
 gen_cor = .5
 ntraits = 4
 nthreads = 5
+prev = .5
+# 
+# 
+# h2_vec  = c(.6, .6, .4, .3)
+# gen_cor_vec = c(.3, .4, .3,
+#                     .3, .5,
+#                         .2)
+# cov_mat = diag(c(h2_vec[1], rep(1, ntraits)))
+# cov_mat[1,1:2] <- cov_mat[2,1] <- h2_vec[1]
+# for (i in 1:(ntraits-1) + 1) {
+#   cov_mat[i:ntraits + 1, i] <- cov_mat[i, i:ntraits + 1] <- gen_cor_vec[sum(c(0, ntraits: 1 - 1)[1:(i - 1)]) + 1:(ntraits - i + 1) ] * sqrt(h2_vec[i] * h2_vec[(i):ntraits])
+# }
+# cov_mat[1,3:(ntraits + 1)] <- cov_mat[3:(ntraits + 1), 1] <- cov_mat[2, 3:(ntraits + 1)]
+# 
+# if(any(eigen(cov_mat)$values< 0)){
+#   cat("replacing cov_mat witha positive semidefinite one. \n")
+#   cov_mat = as.matrix(Matrix::nearPD(cov_mat)$mat)
+# }
 
 
 #calculates the thresholds used to determine status:
-multiplier = 2
-prev = c(0.08, 0.02) * multiplier
+multiplier = 1
+prev = c(0.05, 0.05) * multiplier
 
-#including gen liab for all disorders:
-cor_mat = matrix(gen_cor * h2, ncol = 2*ntraits, nrow = 2*ntraits)
-for (i in 1:ntraits) {
-  cor_mat[(i-1)*2 + 1:2,(i-1)*2 + 1:2] = matrix(c(h2,h2,h2,1), ncol = 2, nrow =2)
-}
+# #including gen liab for all disorders:
+# cor_mat = matrix(gen_cor * h2, ncol = 2*ntraits, nrow = 2*ntraits)
+# for (i in 1:ntraits) {
+#   cor_mat[(i-1)*2 + 1:2,(i-1)*2 + 1:2] = matrix(c(h2,h2,h2,1), ncol = 2, nrow =2)
+# }
 
 
-cor_mat = matrix(gen_cor * h2, ncol = 1 + ntraits, nrow = 1 + ntraits)
-diag(cor_mat) = 1
-cor_mat[1:2,1:2] = matrix(c(h2,h2,h2,1), ncol = 2, nrow =2)
+cov_mat = matrix(gen_cor * h2, ncol = 1 + ntraits, nrow = 1 + ntraits)
+diag(cov_mat) = 1
+cov_mat[1:2,1:2] = matrix(c(h2,h2,h2,1), ncol = 2, nrow =2)
 
 
 #simulate liabilities
-liabs = MASS::mvrnorm(n = N, mu = rep(0, 2*ntraits), Sigma = cor_mat)
-
+liabs = MASS::mvrnorm(n = N, mu = rep(0, 1 + ntraits), Sigma = cov_mat)
+round(cov(liabs),2)
 simu_liab = list()
-
+simu_liab[[paste0("child_gen_", 1)]]  = liabs[,1]
 for (i in 1:ntraits) {
-  simu_liab[[paste0("child_gen_", i)]]  = liabs[,2*(i - 1) + 1]
-  simu_liab[[paste0("child_full_", i)]] = liabs[,2*(i - 1) + 2]
+  simu_liab[[paste0("child_full_", i)]] = liabs[,1 + i ]
   simu_liab[[paste0("child_sex_", i)]]  = sample(1:2, size = N, replace = TRUE)
   simu_liab[[paste0("child_stat_", i)]] = (simu_liab[[paste0("child_full_", i)]]  > qnorm(prev[simu_liab[[paste0("child_sex_", i)]]], lower.tail = F)) + 0L
   simu_liab[[paste0("child_age_", i)]]  = runif(N, 10, 100)
@@ -74,18 +91,21 @@ ph = foreach(i = 1:nrow(simu_liab),
                lower = rep(-Inf, 1 + ntraits)
                upper = rep(Inf,  1 + ntraits)
                
-               upper[1 + 1:ntraits] = LTFHPlus::age_to_thres(age = unlist(ages[i,]), pop_prev = prev[unlist(sex[i,])])
+               #upper[1 + 1:ntraits] = LTFHPlus::age_to_thres(age = unlist(ages[i,]), pop_prev = prev[unlist(sex[i,])])
                for (ii in 1:ncol(stat)) {
                  if(stat[i,ii][[1]] == 1) {
-                   lower[1 + ii] = LTFHPlus::age_to_thres(age = unlist(ages[i,ii]), pop_prev = prev[unlist(sex[i,ii])])
-                 }
+                   lower[1 + ii]  <- qnorm(mean(prev), lower.tail = F) # LTFHPlus::age_to_thres(age = unlist(ages[i,ii]), pop_prev = prev[unlist(sex[i,ii])]) #qnorm(mean(prev), lower.tail = F)
+                   
+                  } else {
+                    upper[1 + ii] <- qnorm(mean(prev), lower.tail = F) # LTFHPlus::age_to_thres(age = unlist(ages[i,]), pop_prev = prev[unlist(sex[i,])]) # qnorm(mean(prev), lower.tail = F)
+                  }
                }
                
                fixed = upper - lower < 1e-3
                
                
-               mean(LTFHPlus::rtmvnorm.gibbs(n_sim = 10e3,
-                                             sigma = cor_mat,
+               median(LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
+                                             sigma = cov_mat,
                                              lower = lower,
                                              upper = upper,
                                              fixed = fixed,
@@ -107,24 +127,16 @@ with(simu_liab, c(cor(child_stat_1, child_gen_1), cor(post_gen_no_fam, child_gen
 
 simu_liab = mutate(simu_liab, nb_stats = select(simu_liab, str_subset(colnames(simu_liab), "stat")) %>% rowSums())
 
-ggplot(simu_liab, aes(x = post_gen_no_fam, y = child_gen_1, color = as.factor(nb_stats))) +
+ggplot(simu_liab, aes(x = post_gen_no_fam, y = child_gen_1, color = as.factor(child_stat_1))) +
   geom_point(alpha = .5) +
   geom_abline(slope = 1, intercept = 0) + 
   labs(color = "Status") +
-  xlab("Estimated Genetic Liability (LTFH++) ") +
+  xlab("Estimated Genetic Liability (LTMT) ") +
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5)) #+ 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(color = "black", method = "lm")#+ 
   #coord_equal()
 
-ggplot(simu_liab, aes(x = child_stat_1, y = child_gen_1, color = as.factor(nb_stats))) +
-  geom_point(alpha = .5) +
-  geom_abline(slope = 1, intercept = 0) + 
-  labs(color = "Status") +
-  xlab("Estimated Genetic Liability (LTFH++) ") +
-  ylab("True Genetic Liability") + 
-  ggtitle("True vs Estimated Genetic Liability") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5)) #+ 
-  #coord_equal()
+
