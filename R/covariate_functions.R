@@ -147,6 +147,40 @@ generate_corr_matrix = function(names, heri, corr, heritability_col = "h2 (Liabi
 
 
 
+#'
+#' Constructs the covariance matrix for LT-FH without Family History, and correlated traits
+#'
+#' @param h2_vec a vector of heritability for traits to be considered.
+#' @param gen_cor_vec a vector of genetic correlations between the traits considered. The order is important, and they must fit into a correlation matrix by inserting them rowwise.
+#'
+#' @return Returns the covariance matrix needed for LT-FH without family history, and correlated traits.
+#'
+#' @export
+
+generate_cov_matrix_noFH = function(h2_vec, gen_cor_vec) {
+  ntraits = length(h2_vec)
+  
+  #generates initial matrix
+  cov_mat = diag(rep(1, ntraits))
+  #fills in genetic correlations
+  cov_mat[upper.tri(cov_mat)] <- cov_mat[lower.tri(cov_mat)] <- gen_cor_vec
+  #use outer product to generate matrix of heritability products
+  heri_mat = tcrossprod(sqrt(h2_vec))
+  #chaning diagonal to 1, so we can do elementwise multiplication
+  diag(heri_mat) = 1
+  
+  #covariance matrix done for full heritabilities
+  cov_mat = cov_mat * heri_mat
+  
+  #adding the genetic liability for the primary trait
+  cov_mat = cbind(0,rbind(0,cov_mat))
+  cov_mat[1,-(1:2)] <- cov_mat[-(1:2), 1] <- cov_mat[2,-(1:2)]
+  cov_mat[1,1:2] <- cov_mat[2,1] <- h2_vec[1]
+  
+  return(cov_mat)
+}
+
+
 
 
 
