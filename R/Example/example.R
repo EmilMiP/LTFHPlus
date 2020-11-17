@@ -5,7 +5,7 @@ library(ggplot2)
 library(gridExtra)
 library(tidyverse)
 library(doSNOW)
-library(progress)
+library(progressr)
 
 N = 5000 
 h2 = .5 
@@ -18,10 +18,11 @@ multiplier = 1
 prev = c(0.05, 0.05) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("C:/Code/LTFH/assign_ltfh.R")
+#source("C:/Code/LTFH/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
-
+#plan(multisession)
+handlers("progress")
 
 
 #simulate liabilities
@@ -70,7 +71,7 @@ simu_liab$NUM_SIBS = nsib
 simu_liab$SIB_STATUS = 0
 if (nsib > 0) simu_liab$SIB_STATUS = (rowSums(simu_liab[,paste("sib", 1:nsib, "_stat", sep = "")]) > 0) + 0L  
 
-data = estimate_gen_liability_ltfh(h2 = h2,
+with_progress({data = estimate_gen_liability_ltfh(h2 = h2,
                                    phen = simu_liab,
                                    child_threshold = qnorm(mean(prev), lower.tail = F),
                                    parent_threshold = qnorm(mean(prev), lower.tail = F),
@@ -78,7 +79,7 @@ data = estimate_gen_liability_ltfh(h2 = h2,
                                    status_col_father    = "father_stat",
                                    status_col_mother    = "mother_stat",
                                    status_col_siblings  = "SIB_STATUS",
-                                   number_of_siblings_col = "NUM_SIBS")
+                                   number_of_siblings_col = "NUM_SIBS")})
 
 colnames(data)[ncol(data) - 1:0 ] = paste(colnames(data)[ncol(data) - 1:0 ], "_fast", sep = "")
 
@@ -95,6 +96,18 @@ age_cols = paste(indivs, "_age", sep = "")
 sex_cols = paste(indivs, "_sex", sep = "")
 liab_cols = paste(indivs, "_full", sep = "")
 
+thr = tibble::tibble(ids = character(0), lower = numeric(0), upper = numeric(0))
+for (jj in seq_along(status_cols)) {
+  lower = rep(-Inf, nrow(simu_liab))
+  upper = rep(Inf, nrow(simu_liab))
+  cases = simu_liab[[status_cols[jj]]] == 1 
+  lower[cases] <- upper[cases] <- age_to_thres(age = liab_to_aoo(simu_liab[[liab_cols[jj]]][cases], pop_prev = prev[simu_liab[[sex_cols[jj]]]][cases]), 
+                                                                           pop_prev = prev[simu_liab[[sex_cols[jj]]]][cases])
+  upper[!cases] <- age_to_thres(age = simu_liab[[age_cols[jj]]][!cases], pop_prev = prev[simu_liab[[sex_cols[jj]]]][!cases])
+  thr = bind_rows(thr, as_tibble(list("ids" = simu_liab[[ids[jj]]],"lower" = lower, "upper" = upper)))
+}  
+
+estimate_gen_liability(h2 = h2, phen = simu_liab,thr = thr, status_cols = status_cols, ids = ids,nthreads = nthreads)
 
 cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
 cl = makeCluster(nthreads, type = "SOCK")

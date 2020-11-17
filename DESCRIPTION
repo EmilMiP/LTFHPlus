@@ -14,7 +14,8 @@ Imports:
     foreach,
     parallel, 
 	dplyr,
-	tmvtnorm
+	tmvtnorm,
+	progressr
 Suggests:
     progress,
     tidyverse

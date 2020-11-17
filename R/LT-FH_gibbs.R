@@ -29,6 +29,8 @@ utils::globalVariables("child_gen")
 #' # See R/Example/example_nosib.R for an example of use and input.
 #' @importFrom dplyr %>%
 #' @export
+
+
 estimate_gen_liability_ltfh = function(h2,
                                        phen, 
                                        child_threshold,
@@ -40,7 +42,8 @@ estimate_gen_liability_ltfh = function(h2,
                                        number_of_siblings_col = "NUM_SIBS",
                                        tol = 0.01) {
   # Find all unique combinations of status ----------------------------------
-  
+
+
   reduced = phen %>% 
     dplyr::select(!!as.symbol(status_col_offspring),
                   !!as.symbol(status_col_father),
@@ -54,7 +57,12 @@ estimate_gen_liability_ltfh = function(h2,
                     !!as.symbol(number_of_siblings_col)) %>% 
     dplyr::slice_head() %>%
     dplyr::ungroup() #extract each unique configuration present in the data.
-
+  
+  progress_bar_n = 1:nrow(reduced)
+  pbn = 1
+  p <- progressr::progressor(along = progress_bar_n)
+  
+  
   reduced$post_gen_liab <- NA
   reduced$post_gen_liab_se <- NA
   
@@ -108,6 +116,8 @@ estimate_gen_liability_ltfh = function(h2,
       reduced_max_1_sibling$post_gen_liab[i]    = est$est
       reduced_max_1_sibling$post_gen_liab_se[i] = est$se
       
+      p(sprintf("%g", pbn))
+      pbn = pbn + 1
     }
   }
 
@@ -218,11 +228,15 @@ estimate_gen_liability_ltfh = function(h2,
       #naive sd estimate:
       reduced_atleast_2_siblings$post_gen_liab_se[[i]] =  dplyr::as_tibble(cbind(combs[-1,], res)) %>%
         dplyr::summarise(grp_se  = mean(post_gen_liab_se), .groups = "drop") %>%  dplyr::pull(grp_se)
+      
+      p(sprintf("%g", pbn))
+      pbn = pbn + 1
     }
     #Final estimate is genetic liability times probability.
     reduced_atleast_2_siblings = reduced_atleast_2_siblings %>% 
       dplyr::mutate("post_gen_liab" = sapply((Map("*", est_per_sib, probs)), sum)) %>% 
       dplyr::select(-probs, -est_per_sib)
+
   }
   
   #combine results

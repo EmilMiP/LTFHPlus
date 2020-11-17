@@ -29,7 +29,7 @@ cov_mat = generate_cov_matrix_noFH(h2_vec = h2_vec,
 
 #calculates the thresholds used to determine status:
 multiplier = 1
-prev = c(0.05, 0.05) * multiplier
+prev = c(0.08, 0.02) * multiplier
 
 
 #simulate liabilities & make tibble

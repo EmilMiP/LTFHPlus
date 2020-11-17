@@ -32,8 +32,13 @@ estimate_gen_liability = function(h2,
   phen$post_gen_liab <- NA
   phen$post_gen_liab_se <- NA
   
+ 
   
   iterations = nrow(phen)
+  
+  progress_bar_n = 1:iterations
+  pbn = 1
+  p <- progressr::progressor(along = progress_bar_n)
   
   cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
   cl = parallel::makeCluster(nthreads, type = "SOCK")
@@ -87,6 +92,8 @@ estimate_gen_liability = function(h2,
                  }
                 #calculate the final values
                 batchmeans::bm(unlist(vals))
+                p(sprintf("%g", pbn))
+                pbn = pbn + 1
                }
   parallel::stopCluster(cl)
   phen$post_gen_liab      = sapply(ph, FUN = function(x) x$est)
