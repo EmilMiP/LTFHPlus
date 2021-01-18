@@ -47,7 +47,7 @@ estimate_gen_liability = function(h2,
     
     cov_size = nrow(cov)
     
-    cur_indiv = thr[thr[[1]] == full_fam, ]
+    cur_indiv = thr[match(full_fam, thr[[1]]), ]
     lower = c(-Inf, cur_indiv$lower)
     upper = c(Inf , cur_indiv$upper)
     fixed <- (upper - lower) < 1e-4
