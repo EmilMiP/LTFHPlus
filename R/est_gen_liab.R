@@ -34,9 +34,6 @@ estimate_gen_liability = function(h2,
   pbn = 1
   p <- progressr::progressor(along = progress_bar_n)
   
-  
-  doFuture::registerDoFuture()
-  future::plan(tweak(multisession, workers = nthreads))
 
   ph = future.apply::future_lapply(X = 1:nrow(phen), FUN = function(i){
     
