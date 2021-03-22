@@ -7,10 +7,10 @@ Author: Your Name
 Maintainer: Emil Michael Pedersen <emp@ph.au.dk>
 Description: One paragraph description of what the package does as one or more full sentences.
 License: GPL (>= 2)
-Imports: 
+Depends: 
     Rcpp,
     batchmeans,
-    doFuture,
+    future,
 	future.apply,
 	dplyr,
 	tmvtnorm,

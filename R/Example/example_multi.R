@@ -1,241 +1,166 @@
 library(LTFHPlus)
-library(dplyr)
-library(stringr)
-library(ggplot2) 
+library(ggplot2)
 library(gridExtra)
-library(doSNOW)
-library(progress)
 
 
+#number of individuals
 N = 5000
+#constructing correlation matrix for LT-FH++
 h2_1 = .5
 h2_2 = .5
 gen_cor = .5
 corr_mat = diag(c(h2_1, h2_2))
-corr_mat[1,2] <- corr_mat[2,1] <- gen_cor
-nthreads = 5  # number of threads to use for ltfh++
-nsib = 1
-tol = 0.01
+corr_mat[1,2] <- corr_mat[2,1] <- gen_cor * sqrt(h2_1 * h2_2)
 
-#calculates the thresholds used to determine status:
+nthreads = 5  # number of threads to use for ltfh++
+nsib = 0 #number of siblings
+
+#start sessions to parallelize over later
+plan(multisession, workers = nthreads)
+
+#This example will rely on the LT-FH implementation in LTFHPlus. 
+#For Hujoel et al's implementation, see example.R
+
+
+
+#calculates the sex-specific prevalences used to determine status:
 multiplier = 1
 prev = c(0.08, .02) * multiplier
-#(thr = qnorm(1 - prev))
-
-
-#### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("C:/Code/LTFH/assign_ltfh.R")
-## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
 
 #simulate liabilities
 liabs = MASS::mvrnorm(n = N, mu = rep(0, 2*(4 + nsib)), Sigma = get_full_cov(corr_mat = corr_mat, n_sib = nsib))
 
+#Age of children, parents, and siblings
 child_age = runif(N, 10, 60)
 father_age  = child_age + runif(N, 20, 35)
 mother_age  = child_age + runif(N, 20, 35)
+children_sex = sample(1:2, size = N, replace = TRUE)
+if(nsib > 0) {
+  sibling_sex = replicate(nsib, sample(1:2, size = N, replace = TRUE))
+  sibling_age = replicate(nsib, runif(N, -15, 15) + child_age)
+}
 
+#constructing a list of phenotypes
 all_phen = list()
-for (i in 1:2) {
-  simu_liab = tibble(
-    FID         = as.character(1:N),
-    IID         = 1:N,
-    child_gen   = liabs[,(i - 1) * 4 + 1],
-    child_full  = liabs[,(i - 1) * 4 + 2],
-    father_full = liabs[,(i - 1) * 4 + 3],
-    mother_full = liabs[,(i - 1) * 4 + 4],
-    child_sex   = sample(1:2, size = N, replace = TRUE),
-    child_stat  = (child_full  > qnorm(prev[child_sex], lower.tail = F)) + 0L,
-    father_stat = (father_full > qnorm(prev[1], lower.tail = F)) + 0L,
-    father_sex  = rep(1, N),
-    mother_stat = (mother_full > qnorm(prev[2], lower.tail = F)) + 0L,
-    mother_sex  = rep(2, N),
-    child_age   = child_age,
-    father_age  = father_age,
-    mother_age  = mother_age,
-    pid_f       = paste(FID, "_f", sep = ""),
-    pid_m       = paste(FID, "_m", sep = "")
-  )
+for (j in 1:nrow(corr_mat)) {
+
+  tmp = lapply(1:N, function(i) {
+    cur_liabs  = liabs[i, (4 + nsib) * (j-1) + 1:(4 + nsib)][-1]
+    id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) )
+    sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,])
+    age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,])
+    status_vec = sapply(seq_along(sex_vec), function(ii) {
+      (cur_liabs[ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
+    })
+    aoo_vec = rep(NA, length(id_vec))
+
+    cases = status_vec == 1
+    aoo_vec[cases] = LTFHPlus::liab_to_aoo(liab = cur_liabs[cases],
+                                           pop_prev = prev[sex_vec[cases]])
+    c(list(id_vec),
+      list(sex_vec),
+      list(status_vec),
+      list(age_vec),
+      list(aoo_vec))
+  })
+
   
-  if (nsib > 0) {
-    for (ii in 1:nsib) {
-      sib_stat = paste("sib", ii, "_stat", sep = "")
-      sib_sex  = paste("sib", ii, "_sex", sep = "")
-      sib_age  = paste("sib", ii, "_age", sep = "")
-      sib_full = paste("sib", ii, "_full", sep = "")
-      sib_id   = paste("pid_s", ii, sep = "")
-      simu_liab[[sib_full]] = liabs[, 4 + ii]
-      simu_liab[[sib_sex]]  = sample(1:2, size = N, replace = TRUE)
-      simu_liab[[sib_age]]  = sample(-5:5, size = N, replace = TRUE) + simu_liab$child_age
-      simu_liab[[sib_stat]] = (simu_liab[[sib_full]] > qnorm(prev[simu_liab[[sib_sex]]], lower.tail = F)) + 0L
-      simu_liab[[sib_id]]   = paste(simu_liab$FID, "_s", ii, sep = "")
-    }
-  }
-  all_phen[[i]] = simu_liab
+  all_phen[[j]] = do.call("rbind", tmp) %>% 
+    as_tibble() %>%
+    rename("ids" = "V1", "sex" = "V2", "status" = "V3", "age" = "V4", "aoo" = "V5")
 }
 
-indivs = c("child", "father", "mother", if(nsib > 0) paste("sib", 1:nsib, sep = ""))
-ids = c("FID", "pid_f", "pid_m", if(nsib > 0) paste("pid_s", 1:nsib, sep = ""))
-status_cols = paste(indivs, "_stat", sep = "")
-age_cols = paste(indivs, "_age", sep = "")
-sex_cols = paste(indivs, "_sex", sep = "")
-liab_cols = paste(indivs, "_full", sep = "")
-
-data = all_phen[[1]]
-ind = c(1, 5 + nsib)
-status_cols = paste(indivs, "_stat", sep = "")
-n_trait = length(all_phen)
-cat("starting parallelization backend with", nthreads, "threads for generation of children:\n")
-cl = makeCluster(nthreads, type = "SOCK")
-registerDoSNOW(cl)
-iterations = nrow(simu_liab)
-
-pb = progress_bar$new(
-  format = "[:bar] :percent",
-  total = iterations,
-  width = 100)
-
-progress_num = 1:iterations
-progress = function(n){
-  pb$tick(tokens = list(letter = progress_num[n]))
+#calculating threshold for every individual
+all_thr = list()
+for (i in seq_along(all_phen)) {
+  phen = all_phen[[i]]
+  #assigning thresholds for each family
+  tmp = lapply(1:nrow(phen), function(n) {
+    res = list()
+    ids   = phen$ids[[n]]
+    cases = phen$status[[n]] == 1
+    lower = rep(-Inf, length(ids))
+    upper = rep( Inf, length(ids))
+    
+    lower[cases] <- upper[cases] <- LTFHPlus::age_to_thres(age = phen$aoo[[n]][cases], pop_prev = prev[phen$sex[[n]][cases]])
+    
+    upper[!cases] <- LTFHPlus::age_to_thres(age = phen$age[[n]][!cases], pop_prev = prev[phen$sex[[n]][!cases]])
+    res$ids = ids
+    res$lower = lower
+    res$upper = upper
+#    return(tibble(ids = ids, lower = lower, upper = upper))
+    res
+  })
+  #combining all values into one tibble
+  all_thr[[i]] = lapply(tmp, as_tibble) %>% bind_rows()
 }
-
-opts = list(progress = progress)
-
-ph = foreach(i = 1:nrow(data),
-             .options.snow = opts,
-             .export = c("get_full_cov", "check_positive_definite","rtmvnorm.gibbs", "rtmvnorm_gibbs_cpp"),
-             .inorder = T) %dopar% { 
-               fam = unlist(data[i,ids])
-               full_cov = get_full_cov(corr_mat = corr_mat, n_sib = nsib)
-               full_cov = check_positive_definite(full_cov = full_cov, corr_mat = corr_mat,
-                                                  correction_val = 0.99, n_sib = nsib)
-               cov_size = nrow(full_cov)
-               lower = rep(-Inf, cov_size)
-               upper = rep(Inf, cov_size) 
-               
-               for (k in 1:n_trait) {
-                 cur_phen = all_phen[[k]]
-                 full_fam = cur_phen[i,]
-                 cur_status = unlist(cur_phen[i, status_cols])
-                 cur_liab   = unlist(cur_phen[i, paste(indivs, "_full", sep = "")])
-                 for (ii in 1:length(fam) + 1) {
-                   #indiv_thr = cur_thr[cur_thr[[1]] == fam[ii - 1], ]
-                   if (is.na(cur_status[ii - 1])) {
-                     #here to deal with NAs  
-                   } else if (cur_status[ii - 1] == 1) {
-                     lower[(4 + nsib) * (k - 1) + ii] <- upper[(4 + nsib) * (k - 1) + ii] <- LTFHPlus::age_to_thres(age = LTFHPlus::liab_to_aoo(full_fam[liab_cols[[ii - 1]]][[1]], 
-                                                                                                                                                pop_prev = prev[full_fam[sex_cols[[ii - 1]]][[1]]]), 
-                                                                                                                    pop_prev = prev[full_fam[sex_cols[[ii - 1]]][[1]]])#cur_liab[[ii - 1]]
-                   } else {
-                     upper[(4 + nsib) * (k - 1) + ii] <- LTFHPlus::age_to_thres(age = full_fam[age_cols[ii - 1]][[1]], 
-                                                                                pop_prev = prev[full_fam[sex_cols[ii - 1]][[1]]])
-                   }
-                   
-                 }
-               }
-               fixed <- (upper - lower) < 1e-4
-               
-               #covergence check
-               se = NULL 
-               vals = list() #store simulated values
-               vals.ctr = 1
-               while (is.null(se) || se > tol) {
-                 gen_liabs = LTFHPlus::rtmvnorm.gibbs(5e4, burn_in = 1000,
-                                            sigma = full_cov,
-                                            lower = lower, 
-                                            upper = upper,
-                                            ind = ind,
-                                            fixed = fixed)
-                 vals[[vals.ctr]] = gen_liabs
-                 se = batchmeans::bm(unlist(vals))$se
-                 vals.ctr =  vals.ctr + 1
-               }
-               #calculate the final values
-               vals = do.call("rbind", vals)
-               sapply(1:length(ind), FUN = function(n) {
-                 batchmeans::bm(vals[,n])
-               })
-             }
-stopCluster(cl)
-if (length(ind) > 1) {
-  tmp <- t(sapply(ph, FUN = function(x) x[1,]))
-  for (ii in 1:n_trait) {
-    data[[paste("post_gen_liab_", ii, sep = "")]] = unlist(tmp[,ii])
-  }
-  tmp <- t(sapply(ph, FUN = function(x) x[2,]))
-  for (ii in 1:n_trait) {
-    data[[paste("post_gen_liab_", ii,"_se", sep = "")]] = unlist(tmp[,ii])
-  }
-  
-} else {
-  data$post_gen_liab      = unlist(sapply(ph, FUN = function(x) x[1,]))
-  data$post_gen_liab_se   = unlist(sapply(ph, FUN = function(x) x[2,]))
-}
+#### from this point onwards, only ids in all_phen per phenotype will be used to match the thresholds
 
 
+#performing the LT-FH++ analysis
+multi = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
+                                           phen.list = all_phen,
+                                           thr.list = all_thr)
+plan(sequential) # removing the sessions created by multisession.
+
+#constructing input for LT-FH
+res = tibble(
+  IID          = sapply(all_phen[[1]]$ids,    function(x) x[1]),
+  CHILD_STATUS = sapply(all_phen[[1]]$status, function(x) x[1]),
+  P1_STATUS    = sapply(all_phen[[1]]$status, function(x) x[2]),
+  P2_STATUS    = sapply(all_phen[[1]]$status, function(x) x[3]),
+  NUM_SIBS     = nsib,
+  SIB_STATUS   = sapply(all_phen[[1]]$status, function(x) (sum(x[-(1:3)]) > 0) + 0L) 
+)
+
+#performing LT-FH article with gibbs sampling implementation
+ltfh = estimate_gen_liability_ltfh(h2 = h2_1,
+                                   phen = res,
+                                   child_threshold = qnorm(mean(prev), lower.tail = F),
+                                   parent_threshold = qnorm(mean(prev), lower.tail = F),
+                                   status_col_offspring = "CHILD_STATUS",
+                                   status_col_father    = "P1_STATUS",
+                                   status_col_mother    = "P2_STATUS",
+                                   status_col_siblings  = "SIB_STATUS",
+                                   number_of_siblings_col = "NUM_SIBS")
+colnames(ltfh)[7:8] = c("ltfh", "ltfh_se")
 
 
+data = left_join(multi, ltfh %>% select(IID, ltfh, ltfh_se)) %>%
+  left_join(res[,1:2])
+data$child_gen = liabs[,1]
 
-
-
-
-
-res = as_tibble(as.data.frame(matrix(NA, nrow = nrow(data), ncol = 7)))
-res[,1] = as.double(data$FID)
-res[,2] = as.double(data$IID)
-colnames(res) = c("FID", "IID", "CHILD_STATUS", "P1_STATUS", "P2_STATUS", "NUM_SIBS", "SIB_STATUS")
-res$CHILD_STATUS = data$child_stat
-res$P1_STATUS = data$father_stat
-res$P2_STATUS = data$mother_stat
-res$NUM_SIBS = nsib
-res$SIB_STATUS = 0
-if (nsib > 0) res$SIB_STATUS = (rowSums(simu_liab[,paste("sib", 1:nsib, "_stat", sep = "")]) > 0) + 0L
-
-ltfh = create_pheno(data = as.data.frame(res),
-                    trait_h2 = h2_1,
-                    T_val_child = qnorm(mean(prev), lower.tail = F),
-                    T_val_parent = qnorm(mean(prev), lower.tail = F),
-                    relevant_trait_child = "CHILD_STATUS",
-                    relevant_trait_dad = "P1_STATUS",
-                    relevant_trait_mom = "P2_STATUS",
-                    number_siblings_col = "NUM_SIBS",
-                    relevant_trait_sib = "SIB_STATUS",
-                    maximum_siblings_to_compute = nsib)
-
-data = left_join(data, as.data.frame(ltfh))
-
-
-with(data, c( "primary"      = cov(child_gen, post_gen_liab_1), 
-              "secondary"    = cov(child_gen, post_gen_liab_2), 
+with(data, c( "primary"      = cov(child_gen, post_gen_liab), 
+             # "secondary"    = cov(child_gen, post_gen_liab_2), 
               "LT-FH"        = cov(child_gen, ltfh), 
-              "LT-FH_nosib"  = cor(child_gen, ltfh_nosib), 
-              "Case-Control" = cov(child_gen, child_stat)))
-with(data, c( "primary"      = cor(child_gen, post_gen_liab_1), 
-              "secondary"    = cor(child_gen, post_gen_liab_2), 
+#              "LT-FH_nosib"  = cor(child_gen, ltfh_nosib), 
+              "Case-Control" = cov(child_gen, CHILD_STATUS)))
+with(data, c( "primary"      = cor(child_gen, post_gen_liab), 
+            #  "secondary"    = cor(child_gen, post_gen_liab_2), 
               "LT-FH"        = cor(child_gen, ltfh), 
-              "LT-FH_nosib"  = cor(child_gen, ltfh_nosib), 
-              "Case-Control" = cor(child_gen, child_stat)))
+#             "LT-FH_nosib"  = cor(child_gen, ltfh_nosib), 
+              "Case-Control" = cor(child_gen, CHILD_STATUS)))
 
 
 
 
-p1 = ggplot(data, aes(x = post_gen_liab_1, y = child_gen, color = rowSums(all_phen[[2]][,c("child_stat", "father_stat", "mother_stat")]) > 0)) +
+p1 = ggplot(data, aes(x = post_gen_liab, y = child_gen, color = sapply(all_phen[[2]]$status, sum) > 0)) +
   geom_point(alpha = .5) +
   geom_abline(slope = 1, intercept = 0) + 
   labs(color = "Any case of \n2nd Phenotype \nin Family") +
-  xlab("Estimated Genetic Liability (LTFH++) ") +
+  xlab("Estimated Genetic Liability (LT-FH++) ") +
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
 
-p2 = ggplot(data, aes(x = ltfh, y = child_gen, color = rowSums(all_phen[[2]][,c("child_stat", "father_stat", "mother_stat")]) > 0)) +
+p2 = ggplot(data, aes(x = ltfh, y = child_gen, color = sapply(all_phen[[2]]$status, sum) > 0)) +
   geom_point(alpha = .5) +
   geom_abline(slope = 1, intercept = 0) + 
   labs(color = "Any case of \n2nd Phenotype \nin Family") +
-  xlab("Estimated Genetic Liability (LTFH) ") +
+  xlab("Estimated Genetic Liability (LT-FH) ") +
   ylab("True Genetic Liability") + 
   ggtitle("True vs Estimated Genetic Liability") +
   theme_minimal() +

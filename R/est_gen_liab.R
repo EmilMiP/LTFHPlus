@@ -9,14 +9,12 @@ utils::globalVariables("string")
 #' @param thr tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.
 #' @param ind Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.
 #' @param id_col Column name for IDs of family members.
-#' @param nthreads number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available. 
 #' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
 #' @examples #See the example.R for an example of use and input.
 #' 
-#' @importFrom foreach foreach %dopar%
 #' 
 #' @export
 
@@ -25,14 +23,12 @@ estimate_gen_liability = function(h2,
                                   thr, 
                                   ind = c(1),
                                   id_col = "ids",
-                                  nthreads = 5,
                                   tol = 0.01) {
   phen$post_gen_liab <- NA
   phen$post_gen_liab_se <- NA
   
-  progress_bar_n = 1:nrow(phen)
-  pbn = 1
-  p <- progressr::progressor(along = progress_bar_n)
+
+  # p <- progressr::progressor(along = 1:nrow(phen))
   
 
   ph = future.apply::future_lapply(X = 1:nrow(phen), FUN = function(i){
@@ -41,8 +37,6 @@ estimate_gen_liability = function(h2,
     n_sib = length(full_fam) - 3
     
     cov = get_cov(h2 = h2, n_sib = n_sib)
-    
-    cov_size = nrow(cov)
     
     cur_indiv = thr[match(full_fam, thr[[1]]), ]
     lower = c(-Inf, cur_indiv$lower)
@@ -66,8 +60,8 @@ estimate_gen_liability = function(h2,
       vals.ctr =  vals.ctr + 1
     }
     #calculate the final values
-    p(sprintf("%g", pbn))
-    pbn = pbn + 1
+    # p(sprintf("%g", i))
+
     batchmeans::bm(unlist(vals))
   }, future.seed = TRUE)
    

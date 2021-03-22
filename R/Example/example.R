@@ -1,64 +1,64 @@
 library(LTFHPlus)
-library(dplyr)
-library(stringr)
 library(ggplot2) 
 library(gridExtra)
-library(progressr)
-library(future)
-library(doFuture)
 
 
-N = 5000 
-h2 = .5 
-nsib = 3
+
+N = 10000 #number of individuals
+h2 = .5 #heritability
+nsib = 0 #number of siblings
 nthreads = 5  # number of threads to use for ltfh++
-tol = 0.01
 
-#calculates the thresholds used to determine status:
+
+#calculates the sex-specific prevalences used to determine status:
 multiplier = 1
 prev = c(0.08, 0.02) * multiplier
 
 #### THE NEXT SECTION REQUIRES YOU TO HAVE THE SOURCE CODE FOR LT-FH LOADED OR SOURCING IT ####
-source("C:/Code/LTFH/assign_ltfh.R")
+source("D:/Work/LTFH/assign_ltfh.R")
 ## download from here: https://alkesgroup.broadinstitute.org/UKBB/LTFH/
 
-#plan(multisession)
-handlers("progress")
+#start sessions to parallelize over later
+plan(multisession)
+
 
 
 #simulate liabilities
 liabs = MASS::mvrnorm(n = N, mu = rep(0, 4 + nsib), Sigma = LTFHPlus:::get_cov(h2, n_sib = nsib))
 
-#initialize phenotype tibble with to fill out
-phen = tibble(
-  ids = character(N),
-  sex = numeric(N),
-  status = numeric(N),
-  age = numeric(N),
-  aoo = numeric(N)
-)
-#filling out tibble with list entries, each row is a family. assuming order: os, father, mother, siblings
-for(i in 1:N) {
-  id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) )
-  sex_vec    = c(sample(1:2, size = 1, replace = TRUE), 1:2,
-                 if(nsib > 0) sample(1:2, size = nsib, replace = TRUE))
-  status_vec = sapply(seq_along(sex_vec), function(ii) {
-    (liabs[,-1][i,ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
-  })
-  cur_child_age = runif(1, 10, 60)
-  age_vec       = cur_child_age + c(0 , runif(2, 20, 35), if (nsib > 0) runif(nsib, -15, 15))
-  
-  aoo_vec = rep(NA, length(id_vec))
-  cases = status_vec == 1
-  aoo_vec[cases] = liab_to_aoo(liab = liabs[,-1][i, cases],
-                                         pop_prev = prev[sex_vec[cases]])
-  
-  phen$ids[i]    = list(id_vec)
-  phen$sex[i]    = list(sex_vec)
-  phen$status[i] = list(status_vec)
-  phen$age[i]    = list(age_vec)
-  phen$aoo[i]    = list(aoo_vec)
+#Age of children, parents, and siblings
+child_age = runif(N, 10, 60)
+father_age  = child_age + runif(N, 20, 35)
+mother_age  = child_age + runif(N, 20, 35)
+children_sex = sample(1:2, size = N, replace = TRUE)
+if(nsib > 0) {
+  sibling_sex = replicate(nsib, sample(1:2, size = N, replace = TRUE))
+  sibling_age = replicate(nsib, runif(N, -15, 15) + child_age)
 }
+
+#Constructing tibble with list entries, each row is a family. assuming order: os, father, mother, siblings (if any)
+phen = lapply(1:N, function(i) {
+  cur_liabs  = liabs[i, 1:(4 + nsib)][-1]
+  id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) )
+  sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,])
+  age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,])
+  status_vec = sapply(seq_along(sex_vec), function(ii) {
+    (cur_liabs[ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
+  })
+  aoo_vec = rep(NA, length(id_vec))
+  
+  cases = status_vec == 1
+  aoo_vec[cases] = LTFHPlus::liab_to_aoo(liab = cur_liabs[cases],
+                                         pop_prev = prev[sex_vec[cases]])
+  c(list(id_vec),
+    list(sex_vec),
+    list(status_vec),
+    list(age_vec),
+    list(aoo_vec))
+}) %>% do.call("rbind", . ) %>% #outputs list, combining with rbind 
+  as_tibble() %>% # converting to tibble
+  rename("ids" = "V1", "sex" = "V2", "status" = "V3", "age" = "V4", "aoo" = "V5") # renaming columns
+
 
 #constructing input for LT-FH
 res = tibble(
@@ -71,9 +71,9 @@ res = tibble(
 )
 
 
-# LTFH++_fast -------------------------------------------------------------
+# LTFH with gibbs sampler --------------------------------------------------
 
-with_progress({data = estimate_gen_liability_ltfh(h2 = h2,
+data = LTFHPlus::estimate_gen_liability_ltfh(h2 = h2,
                                    phen = res,
                                    child_threshold = qnorm(mean(prev), lower.tail = F),
                                    parent_threshold = qnorm(mean(prev), lower.tail = F),
@@ -82,7 +82,7 @@ with_progress({data = estimate_gen_liability_ltfh(h2 = h2,
                                    status_col_mother    = "P2_STATUS",
                                    status_col_siblings  = "SIB_STATUS",
                                    number_of_siblings_col = "NUM_SIBS")
-})
+
 
 colnames(data)[ncol(data) - 1:0 ] = paste(colnames(data)[ncol(data) - 1:0 ], "_fast", sep = "")
 
@@ -91,31 +91,34 @@ colnames(data)[ncol(data) - 1:0 ] = paste(colnames(data)[ncol(data) - 1:0 ], "_f
 #  LT-FH++  ---------------------------------------------------------------
 
 #assigning thresholds for each family
-tmp = lapply(1:nrow(phen), function(n) {
+thr = lapply(1:nrow(phen), function(n) {
+  res = list()
   ids   = phen$ids[[n]]
   cases = phen$status[[n]] == 1
   lower = rep(-Inf, length(ids))
   upper = rep( Inf, length(ids))
   
-  lower[cases] <- upper[cases] <- age_to_thres(age = phen$aoo[[n]][cases], pop_prev = prev[phen$sex[[n]][cases]])
+  lower[cases] <- upper[cases] <- LTFHPlus::age_to_thres(age = phen$aoo[[n]][cases], pop_prev = prev[phen$sex[[n]][cases]])
   
-  upper[!cases] <- age_to_thres(age = phen$age[[n]][!cases], pop_prev = prev[phen$sex[[n]][!cases]])
-  return(tibble(ids = ids, lower = lower, upper = upper))
-})
-#combining all values into one tibble
-thr = do.call("rbind", tmp)
+  upper[!cases] <- LTFHPlus::age_to_thres(age = phen$age[[n]][!cases], pop_prev = prev[phen$sex[[n]][!cases]])
+  res$ids = ids
+  res$lower = lower
+  res$upper = upper
+  res
+}) %>% 
+  lapply(., as_tibble) %>% 
+  bind_rows()
 
-
-#performs LT-FH++ analysis with progress bar
-with_progress({simu_liab = estimate_gen_liability(h2 = h2, 
+#performs LT-FH++ analysis 
+simu_liab = estimate_gen_liability(h2 = h2, 
                        phen = phen, 
                        thr = thr,  
-                       id_col = "ids",
-                       nthreads = nthreads)
-})
+                       id_col = "ids")
 
-#combining data
+
+#adding ids from the offspring
 simu_liab$ids = as.character(1:N)
+#combining data based on offspring's id
 data = left_join(data, simu_liab %>% select(post_gen_liab, post_gen_liab_se, ids))
 
 
@@ -132,11 +135,11 @@ ltfh = create_pheno(data = as.data.frame(res),
                     relevant_trait_mom = "P2_STATUS",
                     number_siblings_col = "NUM_SIBS",
                     relevant_trait_sib = "SIB_STATUS",
-                    maximum_siblings_to_compute = nsib)
+                    maximum_siblings_to_compute = nsib) %>% as_tibble()
+ltfh[-1] = apply(ltfh[-1], MARGIN = 2, FUN = as.numeric) %>% as_tibble()
+
 #combining data
-ltfh = apply(ltfh, MARGIN = 2, FUN = as.numeric)
-data$IID = 1:N
-simu_liab = left_join(data, as.data.frame(ltfh))
+simu_liab = left_join(data, as.data.frame(ltfh), by = c("ids" = "IID"))
 simu_liab$child_gen = liabs[,1]
 
 

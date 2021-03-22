@@ -4,16 +4,7 @@
 \alias{estimate_gen_liability}
 \title{Estimate genetic liability based off of family history and temporal information.}
 \usage{
-estimate_gen_liability(
-  h2,
-  phen,
-  thr,
-  ids = c("FID", "pid_f", "pid_m"),
-  ind = c(1),
-  status_cols = c("child_stat", "father_stat", "mother_stat"),
-  nthreads = 10,
-  tol = 0.01
-)
+estimate_gen_liability(h2, phen, thr, ind = c(1), id_col = "ids", tol = 0.01)
 }
 \arguments{
 \item{h2}{Liability scale heritability of the trait being analysed.}
@@ -22,13 +13,9 @@ estimate_gen_liability(
 
 \item{thr}{tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.}
 
-\item{ids}{Column names of IDs for family members.}
-
 \item{ind}{Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
 
-\item{status_cols}{Vector with the names of the columns that has the status of each family. default is c("child_stat", "father_stat", "mother_stat").}
-
-\item{nthreads}{number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available.}
+\item{id_col}{Column name for IDs of family members.}
 
 \item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
@@ -40,5 +27,6 @@ Estimate genetic liability based off of family history and temporal information.
 }
 \examples{
 #See the example.R for an example of use and input.
+
 
 }
