@@ -5,30 +5,24 @@
 \title{Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.}
 \usage{
 estimate_gen_liability_multi_trait(
+  corr_mat,
   phen.list,
   thr.list,
-  corr_mat,
-  status_cols = c("child_stat", "father_stat", "mother_stat"),
-  ids = c("FID", "pid_f", "pid_m"),
-  ind = c(1, 5),
-  nthreads = 10,
+  ind = c(1),
+  id_col = "ids",
   tol = 0.01
 )
 }
 \arguments{
+\item{corr_mat}{Correlation matrix for each of the traits being analysed.}
+
 \item{phen.list}{list of tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.}
 
 \item{thr.list}{list of tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.}
 
-\item{corr_mat}{Correlation matrix for each of the traits being analysed.}
-
-\item{status_cols}{Vector with the names of the columns that has the status of each family. default is c("child_stat", "father_stat", "mother_stat").}
-
-\item{ids}{Column names of IDs for family members.}
-
 \item{ind}{Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
 
-\item{nthreads}{number of threads to use in estimating the genetic liabilities. Do not exceed the number of threads your CPU has available.}
+\item{id_col}{Column names of IDs for family members.}
 
 \item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
