@@ -11,14 +11,14 @@ Authors@R: c(
 Description: Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs 
     sampler for sampling from the truncated mutivariate normal distribution.
 License: GPL (>= 2)
-Depends: 
-    Rcpp,
+Imports: 
     batchmeans,
-    future,
-	future.apply,
-	dplyr,
-	tmvtnorm,
-	progressr
+	  dplyr,
+  	future.apply,
+  	progressr,
+    Rcpp
+Suggests:
+    tmvtnorm
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)

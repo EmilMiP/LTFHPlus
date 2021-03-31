@@ -5,3 +5,4 @@
 ^\./Example/example_multi\.R$
 ^\.travis\.yml$
 ^appveyor\.yml$
+^tmp-tests$
