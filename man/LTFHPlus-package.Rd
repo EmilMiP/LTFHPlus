@@ -4,8 +4,24 @@
 \name{LTFHPlus-package}
 \alias{LTFHPlus}
 \alias{LTFHPlus-package}
-\title{LTFHPlus: What the Package Does in One 'Title Case' Line}
+\title{LTFHPlus: Implementation of 'LT-FF++'}
 \description{
-One paragraph description of what the package does as one or more full sentences.
+Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs 
+    sampler for sampling from the truncated mutivariate normal distribution.
+}
+\author{
+\strong{Maintainer}: Emil Michael Pedersen \email{emp@ph.au.dk}
+
+Authors:
+\itemize{
+  \item Florian Privé \email{florian.prive.21@gmail.com} [thesis advisor]
+}
+
+Other contributors:
+\itemize{
+  \item Bjarni Jóhann Vilhjálmsson \email{bjv@econ.au.dk} [thesis advisor]
+  \item Esben Agerbo \email{ea@econ.au.dk} [thesis advisor]
+}
+
 }
 \keyword{internal}

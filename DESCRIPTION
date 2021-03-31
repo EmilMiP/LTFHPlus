@@ -1,11 +1,15 @@
 Package: LTFHPlus
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Implementation of 'LT-FF++'
 Version: 1.0
 Date: 2020-08-21
-Author: Your Name
-Maintainer: Emil Michael Pedersen <emp@ph.au.dk>
-Description: One paragraph description of what the package does as one or more full sentences.
+Authors@R: c(
+  person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
+  person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
+  person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
+  person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"))
+Description: Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs 
+    sampler for sampling from the truncated mutivariate normal distribution.
 License: GPL (>= 2)
 Depends: 
     Rcpp,

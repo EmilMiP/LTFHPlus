@@ -1,23 +1,38 @@
+################################################################################
 
-
-#'
 #' Gibbs Sampler for the truncated multivariate normal distribution
 #'
-#' @param n_sim number of draws after burn in.
-#' @param sigma covariance matrix for the normal distribution
-#' @param lower lower truncation for the normal distribution. It can be -Inf
-#' @param upper upper truncation for the normal distribution. It can be Inf
-#' @param fixed Are any entries fixed ? Logical vector with an entry for each dimension
-#' @param ind Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.
-#' @param burn_in Number of iterations that count as burn in for the gibbs sampler.
+#' @param n_sim Number of draws from the Gibbs sampler (after burn-in).
+#' @param sigma Covariance matrix for the multivariate normal distribution.
+#' @param lower Lower truncation for the normal distribution. It can be `-Inf`.
+#' @param upper Upper truncation for the normal distribution. It can be `Inf`.
+#' @param fixed Should variables be fixed? Logical vector with an entry for each dimension.
+#' @param ind Indices of variables to return from the Gibbs sampler. 
+#'   Default is `1` and corresponds to the first variable (usually the genetic 
+#'   liability of the first phenotype). Use `c(1, 5)` to return both the first and 
+#'   fifth variables.
+#' @param burn_in Number of iterations that count as burn in for the Gibbs sampler.
 #'
-#' @return Returns the estimated genetic liabilities.
+#' @return The sampling values from the Gibbs sampler for the variables `ind`.
+#' 
+#' @references
+#' Kotecha, J. H., & Djuric, P. M. (1999, March). Gibbs sampling approach for 
+#' generation of truncated multivariate gaussian random variables. In 1999 IEEE 
+#' International Conference on Acoustics, Speech, and Signal Processing. 
+#' Proceedings. ICASSP99 (Cat. No. 99CH36258) (Vol. 3, pp. 1757-1760). IEEE.
+#' \doi{10.1109/ICASSP.1999.756335}
+#' 
+#' Wilhelm, S., & Manjunath, B. G. (2010). tmvtnorm: A package for the truncated 
+#' multivariate normal distribution. The R Journal. \doi{10.32614/RJ-2010-005}
 #'
 #' @export
 #' 
-
-rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1,  burn_in = 1000) {
-
+rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in = 1000) {
+  
+  # Vector entries to return
+  to_return <- rep(-1, d)
+  to_return[ind] <- seq_along(ind) - 1L
+  
   # Start value from support region,
   # may be lower or upper bound if they are finite,
   # if both are infinite, we take 0.
@@ -33,15 +48,12 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1,  burn_in 
     P[, j] <- P_j
     sd[j] <- drop(sqrt(sigma[j, j] - crossprod(P_j, sigma[, j])))
   }
-  # vector entries to return. Baseline is genetic liability for first phenotype. e.g. ind = c(1,5) for two phenotypes with no siblings.
-  to_return <- rep(-1, d)
-  to_return[ind] <- seq_along(ind) - 1L
   
-  
-#  print(P)
   # Actual Gibbs sampler
   rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, to_return, x0, n_sim, burn_in)
 }
+
+################################################################################
 
 if (FALSE) {
 
@@ -77,3 +89,4 @@ if (FALSE) {
 
 }
 
+################################################################################
