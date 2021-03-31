@@ -6,7 +6,8 @@
 #' @param sigma Covariance matrix for the multivariate normal distribution.
 #' @param lower Lower truncation for the normal distribution. It can be `-Inf`.
 #' @param upper Upper truncation for the normal distribution. It can be `Inf`.
-#' @param fixed Should variables be fixed? Logical vector with an entry for each dimension.
+#' @param fixed Should variables be fixed? Logical vector with an entry for each 
+#'   dimension. Default is `(upper - lower) < 1e-4`.
 #' @param ind Indices of variables to return from the Gibbs sampler. 
 #'   Default is `1` and corresponds to the first variable (usually the genetic 
 #'   liability of the first phenotype). Use `c(1, 5)` to return both the first and 
@@ -27,11 +28,12 @@
 #'
 #' @export
 #' 
-rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in = 1000) {
+rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, 
+                           fixed = (upper - lower) < 1e-4, 
+                           ind = 1, 
+                           burn_in = 1000) {
   
-  # Vector entries to return
-  to_return <- rep(-1, d)
-  to_return[ind] <- seq_along(ind) - 1L
+  stopifnot(all(upper >= lower))
   
   # Start value from support region,
   # may be lower or upper bound if they are finite,
@@ -48,6 +50,10 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in =
     P[, j] <- P_j
     sd[j] <- drop(sqrt(sigma[j, j] - crossprod(P_j, sigma[, j])))
   }
+  
+  # Vector entries to return
+  to_return <- rep(-1, d)
+  to_return[ind] <- seq_along(ind) - 1L
   
   # Actual Gibbs sampler
   rtmvnorm_gibbs_cpp(P, sd, lower, upper, fixed, to_return, x0, n_sim, burn_in)

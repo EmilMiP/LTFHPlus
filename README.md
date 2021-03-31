@@ -2,6 +2,5 @@
 Implementation of LTFH++
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/EmilMiP/LTFHPlus.svg?branch=master)](https://travis-ci.com/EmilMiP/LTFHPlus)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/EmilMiP/LTFHPlus?branch=master&svg=true)](https://ci.appveyor.com/project/EmilMiP/LTFHPlus)
+[![R build status](https://github.com/privefl/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/privefl/LTFHPlus/actions)
 <!-- badges: end -->

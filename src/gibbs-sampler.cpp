@@ -61,7 +61,7 @@ NumericMatrix rtmvnorm_gibbs_cpp(const NumericMatrix& P,
         x[j] = ::Rf_qnorm5(U_ab, mu_j, sd[j], 1, 0);
         
         if (k >= 0 && to_return[j] >= 0)
-          res(k, to_return[j]) = dot_col(P, j, x);
+          res(k, to_return[j]) = x[j]; // dot_col(P, j, x);
       }
     }
   }

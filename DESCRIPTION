@@ -18,7 +18,8 @@ Imports:
   	progressr,
     Rcpp
 Suggests:
-    tmvtnorm
+    tmvtnorm,
+    testthat
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
