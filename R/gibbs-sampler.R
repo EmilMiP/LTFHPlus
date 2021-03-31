@@ -35,10 +35,8 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper,
   
   stopifnot(all(upper >= lower))
   
-  # Start value from support region,
-  # may be lower or upper bound if they are finite,
-  # if both are infinite, we take 0.
-  x0 <- ifelse(is.finite(lower), lower, ifelse(is.finite(upper), upper, 0))
+  # Start with medians of univariate distributions
+  x0 <- stats::qnorm((stats::pnorm(lower) + stats::pnorm(upper)) / 2) * sqrt(diag(sigma))
 
   # Pre-computations
   d <- nrow(sigma)

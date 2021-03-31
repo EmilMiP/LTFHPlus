@@ -13,7 +13,7 @@ Description: Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs
 License: GPL (>= 2)
 Imports: 
     batchmeans,
-	  dplyr,
+    dplyr,
   	future.apply,
   	progressr,
     Rcpp
