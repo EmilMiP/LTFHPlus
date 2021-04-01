@@ -36,7 +36,9 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper,
   stopifnot(all(upper >= lower))
   
   # Start with medians of univariate distributions
-  x0 <- stats::qnorm((stats::pnorm(lower) + stats::pnorm(upper)) / 2) * sqrt(diag(sigma))
+  sd0 <- sqrt(diag(sigma))
+  sum_p0 <- stats::pnorm(lower, sd = sd0) + stats::pnorm(upper, sd = sd0)
+  x0 <- stats::qnorm(sum_p0 / 2, sd = sd0) 
 
   # Pre-computations
   d <- nrow(sigma)
