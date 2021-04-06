@@ -4,26 +4,53 @@
 \alias{rtmvnorm.gibbs}
 \title{Gibbs Sampler for the truncated multivariate normal distribution}
 \usage{
-rtmvnorm.gibbs(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in = 1000)
+rtmvnorm.gibbs(
+  n_sim,
+  sigma,
+  lower,
+  upper,
+  fixed = (lower == upper),
+  ind = 1,
+  burn_in = 1000
+)
 }
 \arguments{
-\item{n_sim}{number of draws after burn in.}
+\item{n_sim}{Number of draws from the Gibbs sampler (after burn-in).}
 
-\item{sigma}{covariance matrix for the normal distribution}
+\item{sigma}{Covariance matrix for the multivariate normal distribution.}
 
-\item{lower}{lower truncation for the normal distribution. It can be -Inf}
+\item{lower}{Lower truncation for the normal distribution. It can be \code{-Inf}.}
 
-\item{upper}{upper truncation for the normal distribution. It can be Inf}
+\item{upper}{Upper truncation for the normal distribution. It can be \code{Inf}.}
 
-\item{fixed}{Are any entries fixed ? Logical vector with an entry for each dimension}
+\item{fixed}{Should variables be fixed? Logical vector with an entry for each
+dimension. Default is \code{TRUE} when \code{upper} is equal to \code{lower}.}
 
-\item{ind}{Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
+\item{ind}{Indices of variables to return from the Gibbs sampler.
+Default is \code{1} and corresponds to the first variable (usually the genetic
+liability of the first phenotype). Use \code{c(1, 5)} to return both the first and
+fifth variables.}
 
-\item{burn_in}{Number of iterations that count as burn in for the gibbs sampler.}
+\item{burn_in}{Number of iterations that count as burn in for the Gibbs sampler.}
 }
 \value{
-Returns the estimated genetic liabilities.
+The sampling values from the Gibbs sampler for the variables \code{ind}.
 }
 \description{
 Gibbs Sampler for the truncated multivariate normal distribution
+}
+\examples{
+samp <- rtmvnorm.gibbs(10e3, sigma = matrix(c(1, 0.2, 0.2, 0.5), 2),
+                       lower = c(-Inf, 0), upper = c(0, Inf), ind = 1:2)
+
+}
+\references{
+Kotecha, J. H., & Djuric, P. M. (1999, March). Gibbs sampling approach for
+generation of truncated multivariate gaussian random variables. In 1999 IEEE
+International Conference on Acoustics, Speech, and Signal Processing.
+Proceedings. ICASSP99 (Cat. No. 99CH36258) (Vol. 3, pp. 1757-1760). IEEE.
+\doi{10.1109/ICASSP.1999.756335}
+
+Wilhelm, S., & Manjunath, B. G. (2010). tmvtnorm: A package for the truncated
+multivariate normal distribution. The R Journal. \doi{10.32614/RJ-2010-005}
 }

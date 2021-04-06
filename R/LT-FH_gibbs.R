@@ -1,15 +1,7 @@
-utils::globalVariables("n_tot")
-utils::globalVariables("prob")
-utils::globalVariables("probs")
-utils::globalVariables(".")
-utils::globalVariables("post_gen_liab")
-utils::globalVariables("post_gen_liab_se")
-utils::globalVariables("grp_est")
-utils::globalVariables("grp_se")
-utils::globalVariables("est_per_sib")
-utils::globalVariables("cases") 
-utils::globalVariables("child_gen") 
-#'
+utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab", 
+                         "post_gen_liab_se", "grp_est", "grp_se", "est_per_sib",
+                         "cases", "child_gen"))
+
 #' Estimate genetic liability similar to LT-FH
 #'
 #' @param h2 Liability scale heritability of the trait being analysed.
@@ -41,6 +33,10 @@ estimate_gen_liability_ltfh = function(h2,
                                        status_col_siblings    = "SIB_STATUS",
                                        number_of_siblings_col = "NUM_SIBS",
                                        tol = 0.01) {
+  
+  if (!requireNamespace("tmvtnorm", quietly = TRUE))
+    stop("Please install package 'tmvtnorm'.")
+  
   # Find all unique combinations of status ----------------------------------
 
 
