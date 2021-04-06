@@ -55,7 +55,7 @@ test_that("Gibbs sampler with fixed values works", {
                              lower = lower, upper = upper, algorithm = "gibbs")
   
   test <- rtmvnorm.gibbs(100e3, sigma = cov, ind = 1:2, 
-                         lower = lower, upper = upper)
+                         lower = lower, upper = upper, fixed = c(FALSE, TRUE))
   
   expect_true(all(test[, 1] <= 0))
   val <- test[1, 2]

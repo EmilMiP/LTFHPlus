@@ -4,7 +4,15 @@
 \alias{rtmvnorm.gibbs}
 \title{Gibbs Sampler for the truncated multivariate normal distribution}
 \usage{
-rtmvnorm.gibbs(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in = 1000)
+rtmvnorm.gibbs(
+  n_sim,
+  sigma,
+  lower,
+  upper,
+  fixed = (lower == upper),
+  ind = 1,
+  burn_in = 1000
+)
 }
 \arguments{
 \item{n_sim}{Number of draws from the Gibbs sampler (after burn-in).}
@@ -16,7 +24,7 @@ rtmvnorm.gibbs(n_sim, sigma, lower, upper, fixed, ind = 1, burn_in = 1000)
 \item{upper}{Upper truncation for the normal distribution. It can be \code{Inf}.}
 
 \item{fixed}{Should variables be fixed? Logical vector with an entry for each
-dimension.}
+dimension. Default is \code{TRUE} when \code{upper} is equal to \code{lower}.}
 
 \item{ind}{Indices of variables to return from the Gibbs sampler.
 Default is \code{1} and corresponds to the first variable (usually the genetic
