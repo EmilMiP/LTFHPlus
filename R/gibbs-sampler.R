@@ -7,7 +7,7 @@
 #' @param lower Lower truncation for the normal distribution. It can be `-Inf`.
 #' @param upper Upper truncation for the normal distribution. It can be `Inf`.
 #' @param fixed Should variables be fixed? Logical vector with an entry for each 
-#'   dimension. Default is `(upper - lower) < 1e-4`.
+#'   dimension.
 #' @param ind Indices of variables to return from the Gibbs sampler. 
 #'   Default is `1` and corresponds to the first variable (usually the genetic 
 #'   liability of the first phenotype). Use `c(1, 5)` to return both the first and 
@@ -28,10 +28,12 @@
 #'
 #' @export
 #' 
-rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, 
-                           fixed = (upper - lower) < 1e-4, 
-                           ind = 1, 
-                           burn_in = 1000) {
+#' @examples
+#' samp <- rtmvnorm.gibbs(10e3, sigma = matrix(c(1, 0.2, 0.2, 0.5), 2),
+#'                        lower = c(-Inf, 0), upper = c(0, Inf), ind = 1:2)
+#' 
+rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, fixed, 
+                           ind = 1, burn_in = 1000) {
   
   stopifnot(all(upper >= lower))
   
