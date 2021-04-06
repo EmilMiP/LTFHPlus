@@ -1,8 +1,8 @@
 Package: LTFHPlus
 Type: Package
 Title: Implementation of 'LT-FF++'
-Version: 1.0
-Date: 2020-08-21
+Version: 1.1
+Date: 2021-04-06
 Authors@R: c(
   person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
   person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),

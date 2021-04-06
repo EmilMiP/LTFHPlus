@@ -1,6 +1,7 @@
 # LTFHPlus
-Implementation of LTFH++
+
+Implementation of LT-FH++ (preprint coming soon)
 
 <!-- badges: start -->
-[![R build status](https://github.com/privefl/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/privefl/LTFHPlus/actions)
+[![R build status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions)
 <!-- badges: end -->
