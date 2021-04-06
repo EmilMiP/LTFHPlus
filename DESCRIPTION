@@ -1,6 +1,6 @@
 Package: LTFHPlus
 Type: Package
-Title: Implementation of 'LT-FF++'
+Title: Implementation of 'LT-FH++'
 Version: 1.1
 Date: 2021-04-06
 Authors@R: c(
@@ -8,8 +8,8 @@ Authors@R: c(
   person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
   person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
   person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"))
-Description: Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs 
-    sampler for sampling from the truncated mutivariate normal distribution.
+Description: Implementation of 'LT-FH++', an extension of 'LT-FH' using a Gibbs 
+    sampler for sampling from the truncated multivariate normal distribution.
 License: GPL (>= 2)
 Imports: 
     batchmeans,

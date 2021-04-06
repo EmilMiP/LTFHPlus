@@ -4,10 +4,10 @@
 \name{LTFHPlus-package}
 \alias{LTFHPlus}
 \alias{LTFHPlus-package}
-\title{LTFHPlus: Implementation of 'LT-FF++'}
+\title{LTFHPlus: Implementation of 'LT-FH++'}
 \description{
-Implementation of 'LT-FF++', an extension of 'LT-FH' using a Gibbs 
-    sampler for sampling from the truncated mutivariate normal distribution.
+Implementation of 'LT-FH++', an extension of 'LT-FH' using a Gibbs 
+    sampler for sampling from the truncated multivariate normal distribution.
 }
 \author{
 \strong{Maintainer}: Emil Michael Pedersen \email{emp@ph.au.dk}
