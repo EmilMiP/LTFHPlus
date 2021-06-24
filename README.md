@@ -1,7 +1,7 @@
 # LTFHPlus
-Implementation of LTFH++
+
+Implementation of LT-FH++ (preprint coming soon)
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/EmilMiP/LTFHPlus.svg?branch=master)](https://travis-ci.com/EmilMiP/LTFHPlus)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/EmilMiP/LTFHPlus?branch=master&svg=true)](https://ci.appveyor.com/project/EmilMiP/LTFHPlus)
+[![R build status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions)
 <!-- badges: end -->
