@@ -68,15 +68,15 @@ estimate_gen_liability_ltfh = function(h2,
   
 
   # All cases with no sibling status ----------------------------------------
-  reduced_max_1_sibling = reduced %>% dplyr::filter(!!as.symbol(status_col_siblings) == 0)
+  reduced_max_1_sibling = reduced %>% dplyr::filter(!!as.symbol(status_col_siblings) == 0 | !!as.symbol(number_of_siblings_col) == 0 | is.na(!!as.symbol(number_of_siblings_col) | !!as.symbol(status_col_siblings)))
  
   if(nrow(reduced_max_1_sibling) > 0) { #only do this if we actually have configurations in the data.
     for (i in 1:nrow(reduced_max_1_sibling)) {
       #extract number of siblings and construct the thresholds and covariance matrix
-      cur_nsib = unlist(reduced_max_1_sibling[i, 5])
-      full_fam = c(unlist(reduced_max_1_sibling[i,1:3]), rep(0, cur_nsib))
+      cur_nsib = reduced_max_1_sibling[[number_of_siblings_col]][i]
+      full_fam = c(unlist(reduced_max_1_sibling[i,1:3]), if(!is.na(cur_nsib)) rep(0, cur_nsib))
       
-      cov = get_cov(h2 = h2, n_sib = cur_nsib)
+      cov = get_cov(h2 = h2, n_sib = ifelse(is.na(cur_nsib), 0, cur_nsib))
       
       cov_size = nrow(cov)
       
@@ -90,7 +90,7 @@ estimate_gen_liability_ltfh = function(h2,
       upper[2][full_fam[1] == 0] = child_threshold
       lower[2][full_fam[1] == 1] = child_threshold
       
-      if (cur_nsib > 0) {
+      if (!is.na(cur_nsib) && cur_nsib > 0) {
         upper[4 + 1:cur_nsib] = child_threshold
       }
       
@@ -143,10 +143,12 @@ estimate_gen_liability_ltfh = function(h2,
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
       
-      tmp <- tmvtnorm::rtmvnorm(n = 100e3, mean = rep(0, 4 + cur_nsib), sigma = get_cov(h2, n_sib = cur_nsib),
-                                lower = lower,
-                                upper = upper, 
-                                algorithm = "gibbs") 
+      tmp <- rtmvnorm.gibbs(n = 100e3,
+                            sigma = get_cov(h2, n_sib = cur_nsib),
+                            lower = lower,
+                            upper = upper,
+                            fixed = rep(FALSE, nrow(sigma)),
+                            ind = 1:nrow(sigma)) 
       colnames(tmp) = c("child_gen", paste0(c("child", "father", "mother", paste0("sib", 1:cur_nsib)), "_full"))
       tmp = dplyr::as_tibble(tmp)
       
