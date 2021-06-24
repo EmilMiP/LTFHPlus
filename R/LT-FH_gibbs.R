@@ -138,13 +138,13 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
-      
-      tmp <- rtmvnorm.gibbs(n = 100e3,
-                            sigma = get_cov(h2, n_sib = cur_nsib),
+      cov <- get_cov(h2, n_sib = cur_nsib)
+      tmp <- rtmvnorm.gibbs(100e3,
+                            sigma = cov,
                             lower = lower,
                             upper = upper,
-                            fixed = rep(FALSE, nrow(sigma)),
-                            ind = 1:nrow(sigma)) 
+                            fixed = rep(FALSE, nrow(cov)),
+                            ind = 1:nrow(cov)) 
       colnames(tmp) = c("child_gen", paste0(c("child", "father", "mother", paste0("sib", 1:cur_nsib)), "_full"))
       tmp = dplyr::as_tibble(tmp)
       
