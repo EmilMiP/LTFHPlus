@@ -46,6 +46,11 @@ estimate_gen_liability_multi_trait = function(corr.mat,
     }
     thres_info_comb = do.call("rbind", thres_info)
     
+    if(any(is.na(thres_info_comb))) {
+      thres_info_comb[which(is.na(thres_info_comb$lower)),1] = -Inf
+      thres_info_comb[which(is.na(thres_info_comb$upper)),2] = Inf
+    }
+    
     n_sib = length(full_fam) - 3
     cov = get_full_cov(corr_mat = corr.mat, n_sib = n_sib)
     

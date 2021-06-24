@@ -36,7 +36,7 @@ rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper,
                            fixed = (lower == upper), 
                            ind = 1, burn_in = 1000) {
   
-  stopifnot(all(upper >= lower))
+  #stopifnot(all(upper >= lower))
   
   # Start with medians of univariate distributions
   sd0 <- sqrt(diag(sigma))
