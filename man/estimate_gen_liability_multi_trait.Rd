@@ -5,7 +5,7 @@
 \title{Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.}
 \usage{
 estimate_gen_liability_multi_trait(
-  corr_mat,
+  corr.mat,
   phen.list,
   thr.list,
   ind = c(1),
@@ -14,9 +14,9 @@ estimate_gen_liability_multi_trait(
 )
 }
 \arguments{
-\item{corr_mat}{Correlation matrix for each of the traits being analysed.}
+\item{corr.mat}{Correlation matrix for each of the traits being analysed.}
 
-\item{phen.list}{list of tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.}
+\item{phen.list}{List of ids for family members. The order is assumed to be OS, P1, P2, and any siblings.}
 
 \item{thr.list}{list of tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.}
 
