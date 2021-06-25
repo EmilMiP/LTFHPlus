@@ -2,7 +2,7 @@
 % Please edit documentation in R/example_cir_functions.R
 \name{trunc_normal_cdf}
 \alias{trunc_normal_cdf}
-\title{Cumulative density function of a truncated normal distribution}
+\title{Cumulative density function of a truncated normal distribution (Used for Examples)}
 \usage{
 trunc_normal_cdf(liab, a = stats::qnorm(0.05, lower.tail = F), b = Inf)
 }
@@ -17,7 +17,7 @@ trunc_normal_cdf(liab, a = stats::qnorm(0.05, lower.tail = F), b = Inf)
 Returns the estimated genetic liabilities.
 }
 \description{
-Cumulative density function of a truncated normal distribution
+Cumulative density function of a truncated normal distribution (Used for Examples)
 }
 \examples{
 # See R/Example/example_nosib.R for an example of use and input.

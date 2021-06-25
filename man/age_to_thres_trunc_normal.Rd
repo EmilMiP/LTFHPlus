@@ -2,7 +2,7 @@
 % Please edit documentation in R/example_cir_functions.R
 \name{age_to_thres_trunc_normal}
 \alias{age_to_thres_trunc_normal}
-\title{calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution}
+\title{calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution (Used for Examples)}
 \usage{
 age_to_thres_trunc_normal(
   age,
@@ -27,7 +27,7 @@ age_to_thres_trunc_normal(
 Returns the estimated genetic liabilities.
 }
 \description{
-calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution
+calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution (Used for Examples)
 }
 \examples{
 # See R/Example/example_nosib.R for an example of use and input.

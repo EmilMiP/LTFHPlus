@@ -2,7 +2,7 @@
 % Please edit documentation in R/example_cir_functions.R
 \name{liab_to_aoo_case_trunc_normal}
 \alias{liab_to_aoo_case_trunc_normal}
-\title{calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution}
+\title{calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution (Used for Examples)}
 \usage{
 liab_to_aoo_case_trunc_normal(
   liab,
@@ -27,7 +27,7 @@ liab_to_aoo_case_trunc_normal(
 Returns the estimated genetic liabilities.
 }
 \description{
-calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution
+calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution (Used for Examples)
 }
 \examples{
 # See R/Example/example_nosib.R for an example of use and input.
