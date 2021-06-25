@@ -89,7 +89,7 @@ liab_to_aoo = function(liab, pop_prev = .1, age_mid = 60, slope = 1/8) {
 # Truncated Normal Distribution -------------------------------------------
 
 #'
-#' Cumulative density function of a truncated normal distribution
+#' Cumulative density function of a truncated normal distribution (Used for Examples)
 #'
 #' @param liab true underlying liability for an individual
 #' @param a the lower cutoff point of the truncated normal distribution
@@ -108,7 +108,7 @@ trunc_normal_cdf = function(liab, a = stats::qnorm(0.05, lower.tail = F), b = In
 
 
 #'
-#' calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution
+#' calculate the age of onset for cases based off of the true underlying liability using the truncated normal distribution (Used for Examples)
 #'
 #' @param liab true underlying liability for an individual
 #' @param min_aoo earliest age of onset to consider
@@ -128,7 +128,7 @@ liab_to_aoo_case_trunc_normal = function(liab, min_aoo = 10, max_aoo = 100 - min
 }
 
 #'
-#' calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution
+#' calculate the thresholds of an individual based off of an individual's age using the truncated normal distribution (Used for Examples)
 #'
 #' @param age true underlying liability for an individual
 #' @param min_age minimum age to consider
