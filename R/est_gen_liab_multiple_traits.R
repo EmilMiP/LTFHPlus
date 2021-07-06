@@ -27,9 +27,9 @@ estimate_gen_liability_multi_trait = function(corr.mat,
   
   ntrait = nrow(corr.mat)
   #get ids from the first phenotype tibble
-  res = dplyr::tibble(IID = sapply(phen.list, function(x) x[1]))
-  res$post_gen_liab <- NA
-  res$post_gen_liab_se <- NA
+  res = dplyr::tibble(IID = sapply(phen.list[[1]][[id_col]], function(x) x[1]),
+                      post_gen_liab = NA,
+                      post_gen_liab_se = NA)
   
   
   # p <- progressr::progressor(along = 1:nrow(phen))
