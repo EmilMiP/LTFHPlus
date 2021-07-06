@@ -13,7 +13,34 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+In the following, we will go over how the package ***LTFHPlus*** can be used to estimate a refined phenotype for the LT-FH++. More specifically, we will provide reproducible examples with explanations of the method and its code, such that users will be able to play around with the functions themselves. The code will be based on packages from the *tidyverse*, if the read is not 
+
+## How to install LTFHPlus
+
+LTFHPlus can be installed with the *devtools* package directly from github. 
 
 ```{r setup}
-library(LTFHPlus)
+if(!require(LTFHPlus)) {
+  devtools::install_github("EmilMiP/LTFHPlus")
+}
 ```
+
+
+## What would you like to read about?
+
+
+Here is an overview of what you can learn more about:
+
+
+LT-FH++ method description & its applications
+
+* format of input data
+  + what does the prevalence information look like?
+  + How do we input the thresholds and family history information?
+* what do i do, if I do not have complete information on some individuals?
+  + estimate genetic liability without family history, but with prevalence information
+  + estimate genetic liability with family history, but without prevalence
+  + estimate genetic liability with family history and prevalence information
+  + correlated traits (still pending)
+
+
