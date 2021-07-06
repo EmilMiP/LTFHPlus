@@ -20,8 +20,9 @@ In the following, we will go over how the package ***LTFHPlus*** can be used to 
 LTFHPlus can be installed with the *devtools* package directly from github. 
 
 ```{r setup}
+library(devtools)
 if(!require(LTFHPlus)) {
-  devtools::install_github("EmilMiP/LTFHPlus")
+  install_github("EmilMiP/LTFHPlus")
 }
 ```
 

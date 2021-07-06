@@ -21,7 +21,9 @@ Suggests:
     tmvtnorm,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    MASS,
+    tidyr
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)

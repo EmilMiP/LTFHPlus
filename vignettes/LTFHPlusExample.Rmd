@@ -49,7 +49,7 @@ LT-FH++ requires 3 types of input, name **h2**, **phen**, and **thr**, which is 
 With the global parameters set, we will simulate the liabilities for each family member based on the multivariate normal described in the [LT-FH++] paper. Next, we assign ages to each individual. The child's age act as a baseline age, and the age of parents and siblings are determined based off of the child's age.
 ```{r}
 #simulate liabilities
-liabs = mvrnorm(n = N, mu = rep(0, 4 + nsib), Sigma = get_cov(h2, n_sib = nsib))
+liabs = MASS::mvrnorm(n = N, mu = rep(0, 4 + nsib), Sigma = get_cov(h2, n_sib = nsib))
 
 #Age of children, parents, and siblings
 child_age = runif(N, 10, 60)
@@ -128,17 +128,17 @@ thr = lapply(1:nrow(phen), function(n) {
 
 With all input parameters generated and the heritability set in the global settings, we have everything we need to run *LT-FH++*. The package **Future.apply** can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize `r nthreads` threads. 
 
-```{r }
-phen = dplyr::select(phen, ids)
+<!-- ```{r } -->
+<!-- phen = dplyr::select(phen, ids) -->
 
-#Setting up parallelization backend
-plan(tweak(multisession, workers = nthreads))
-#performs LT-FH++ analysis
-simu_liab = estimate_gen_liability(h2 = h2,
-                       phen = phen,
-                       thr = thr,
-                       id_col = "ids")
-simu_liab = simu_liab %>% mutate(ids = sapply(ids, function(x) x[1])) %>% print()
-```
-From here the object simu_liab can be saved and used in your GWAS method of choice. 
+<!-- #Setting up parallelization backend -->
+<!-- plan(tweak(multisession, workers = nthreads)) -->
+<!-- #performs LT-FH++ analysis -->
+<!-- simu_liab = estimate_gen_liability(h2 = h2, -->
+<!--                        phen = phen, -->
+<!--                        thr = thr, -->
+<!--                        id_col = "ids") -->
+<!-- simu_liab = simu_liab %>% mutate(ids = sapply(ids, function(x) x[1])) %>% print() -->
+<!-- ``` -->
+<!-- From here the object simu_liab can be saved and used in your GWAS method of choice.  -->
 

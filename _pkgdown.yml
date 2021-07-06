@@ -1,0 +1,35 @@
+reference:
+  - title: "Estimating Genetic Liability"
+    desc: >
+      Functions used to estimate the genetic liability in a range of different setups with and without family history and prevalence information.
+    contents:
+    - estimate_gen_liability
+    - estimate_gen_liability_ltfh
+    - estimate_gen_liability_multi_trait
+    - estimate_gen_liability_noFH
+    - estimate_gen_liability_noFH_corr_traits
+  - title: "Example functions"
+    desc: >
+      Collection of functions used as examples of how to include additional information
+    contents:
+    - age_to_cir
+    - cir_to_age
+    - age_to_thres
+    - age_to_thres_trunc_normal
+    - est_cir
+    - liab_to_aoo
+    - liab_to_aoo_case_trunc_normal
+    - trunc_normal_cdf
+  - title: "Auxiliary functions"
+    desc: >
+      Helper functions used when estimating the genetic Liabilities.
+    contents:
+    - rtmvnorm.gibbs
+    - check_positive_definite
+    - generate_corr_matrix
+    - generate_cov_matrix_noFH
+    - get_between_trait_cov
+    - get_cov
+    - get_full_cov
+template:
+  package: preferably
