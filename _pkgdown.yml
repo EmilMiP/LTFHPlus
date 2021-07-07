@@ -32,4 +32,5 @@ reference:
     - get_cov
     - get_full_cov
 template:
-  package: preferably
+  params:
+    bootswatch: darkly
