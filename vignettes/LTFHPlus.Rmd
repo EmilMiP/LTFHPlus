@@ -13,20 +13,28 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-In the following, we will go over how the package ***LTFHPlus*** can be used to estimate a refined phenotype for the LT-FH++. More specifically, we will provide reproducible examples with explanations of the method and its code, such that users will be able to play around with the functions themselves. The code will be based on packages from the *tidyverse*, if the read is not 
 
-## How to install LTFHPlus
+In the examples, we will go over how the package ***LTFHPlus*** can be used to estimate a refined phenotype for the LT-FH++. More specifically, we will provide reproducible examples with explanations of the method and its code, such that users will be able to play around with the functions themselves. The code will be based on packages from the ***tidyverse***, if the read is not familiar with packages such as ***dplyr***, then a line-by-line understanding might not be possible, however the overall point should hopefully still be clear. 
 
-LTFHPlus can be installed with the *devtools* package directly from github. 
+## A word on the examples
 
-```{r setup}
-library(devtools)
-if(!require(LTFHPlus)) {
-  install_github("EmilMiP/LTFHPlus")
-}
-```
+The examples included here are meant to represent a simple application of the method, such that users are able to get a good idea of how to use the functions in the package and what to expect as output. The genetic liabilities are meant to be used as a phenotype for genome-wide association studies(GWAS). We recommend using software such as [PLINK](https://www.cog-genomics.org/plink/), [BOLT](https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html), or R-based methods such as [bigsnpr](https://privefl.github.io/bigsnpr/) to perform the GWAS. 
 
 
+The examples will follow this overarching structure:
+
+* Packages used
+* Global Settings
+  + prevalence, number of individuals, heritability, etc...
+* Setting up input
+  + Assigning necessary information, e.g. family history.
+  + subsections for each input needed with prints
+* function call to estimate genetic liabilities
+
+
+<!-- ```{r} -->
+<!-- plot(seq(10,100), LTFHPlus::age_to_cir(age = seq(10,100))) -->
+<!-- ``` -->
 ## What would you like to read about?
 
 

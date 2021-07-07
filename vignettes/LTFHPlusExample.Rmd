@@ -62,23 +62,25 @@ if(nsib > 0) {
 }
 ```
 #### Generating phen
-Next, we want to assign sex, status, age-of-onset(aoo) to each individual, including the family memebers.  
+Next, we want to assign sex, status, age-of-onset(aoo) to each individual, including the family members.  
 
 ```{r message=FALSE}
 #Constructing tibble with list entries, each row is a family. assuming order: os, father, mother, siblings (if any)
 phen = lapply(1:N, function(i) {
-  cur_liabs  = liabs[i, 1:(4 + nsib)][-1]
-  id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) )
-  sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,])
-  age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,])
-  status_vec = sapply(seq_along(sex_vec), function(ii) {
+  cur_liabs  = liabs[i, 1:(4 + nsib)][-1] #get full liabilities of all family members
+  id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) ) # assign ids
+  sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,]) #assign sex
+  age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,]) # assign age
+  status_vec = sapply(seq_along(sex_vec), function(ii) { #who are cases?
     (cur_liabs[ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
   })
-  aoo_vec = rep(NA, length(id_vec))
+  #assign age-of-onset for cases
+  aoo_vec = rep(NA, length(id_vec)) 
   
   cases = status_vec == 1
   aoo_vec[cases] = LTFHPlus::liab_to_aoo(liab = cur_liabs[cases],
                                          pop_prev = prev[sex_vec[cases]])
+  #return information
   c(list(id_vec),
     list(sex_vec),
     list(status_vec),
@@ -128,17 +130,17 @@ thr = lapply(1:nrow(phen), function(n) {
 
 With all input parameters generated and the heritability set in the global settings, we have everything we need to run *LT-FH++*. The package **Future.apply** can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize `r nthreads` threads. 
 
-<!-- ```{r } -->
-<!-- phen = dplyr::select(phen, ids) -->
+```{r }
+phen = dplyr::select(phen, ids)
 
-<!-- #Setting up parallelization backend -->
-<!-- plan(tweak(multisession, workers = nthreads)) -->
-<!-- #performs LT-FH++ analysis -->
-<!-- simu_liab = estimate_gen_liability(h2 = h2, -->
-<!--                        phen = phen, -->
-<!--                        thr = thr, -->
-<!--                        id_col = "ids") -->
-<!-- simu_liab = simu_liab %>% mutate(ids = sapply(ids, function(x) x[1])) %>% print() -->
-<!-- ``` -->
-<!-- From here the object simu_liab can be saved and used in your GWAS method of choice.  -->
+#Setting up parallelization backend
+plan(tweak(multisession, workers = nthreads))
+#performs LT-FH++ analysis
+simu_liab = estimate_gen_liability(h2 = h2,
+                       phen = phen,
+                       thr = thr,
+                       id_col = "ids")
+simu_liab = simu_liab %>% mutate(ids = sapply(ids, function(x) x[1])) %>% print()
+```
+From here the object simu_liab can be saved and used in your GWAS method of choice.
 
