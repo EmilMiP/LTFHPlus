@@ -5,11 +5,11 @@ library(ggplot2)
 
 
 
-N = 100000 
+N = 10000 
 h2 = .5 
 
 multiplier = 1
-prev = c(0.08, 0.02) * multiplier
+prev = c(0.02, 0.08) * multiplier
 
 cov_mat = matrix(h2, ncol = 2, nrow = 2)
 cov_mat[2,2] = 1
@@ -66,7 +66,7 @@ ggplot(ltfhpp_nofh, aes(x = post_gen_no_fam, y = child_gen, color = status)) +
 
 
 ltfhpp_nofh_ds = group_by(ltfhpp_nofh, status) %>%
-  sample_n(5000) %>%
+  sample_n(length(cases)) %>%
   ungroup()
 ltfhpp_nofh_ds %>% count(status)  
 
