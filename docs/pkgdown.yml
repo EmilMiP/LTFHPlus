@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   LTFHPlus: LTFHPlus.html
   LTFHPlusExample: LTFHPlusExample.html
+  LTFHPlusExampleMultiTrait: LTFHPlusExampleMultiTrait.html
   LTFHPlusExampleNoFH: LTFHPlusExampleNoFH.html
-last_built: 2021-07-09T08:20Z
+last_built: 2021-07-09T09:46Z
 urls:
   reference: EmilMiP.github.io/LTFHPlus/reference
   article: EmilMiP.github.io/LTFHPlus/articles

@@ -60,6 +60,9 @@
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
+      <a href="../articles/LTFHPlusExampleMultiTrait.html">LTFHPlus Multiple Traits Example</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExampleNoFH.html">LT-FH++ Example No Family History</a>
     </li>
   </ul>
@@ -183,11 +186,11 @@
 <pre><code>## # A tibble: 5 x 5
 ##   ids     sex status   age   aoo
 ##   &lt;chr&gt; &lt;int&gt;  &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 1         2      0  30.0    NA
-## 2 1_f       1      0  51.7    NA
-## 3 1_m       2      0  63.9    NA
-## 4 1_s1      1      0  44.4    NA
-## 5 1_s2      1      0  38.2    NA</code></pre>
+## 1 1         2      0  55.5    NA
+## 2 1_f       1      0  79.0    NA
+## 3 1_m       2      0  84.0    NA
+## 4 1_s1      2      0  43.6    NA
+## 5 1_s2      2      0  57.4    NA</code></pre>
 <p>Since we expect the family sizes to vary between families and we wanted to accomodate this, we found it simplest to work with lists or tibbles with list entries. This means the <strong>phen</strong> input, which is the first input, is simply the <em>ids</em> column from <em>phen</em>.</p>
 </div>
 <div id="generating-thr" class="section level4">
@@ -217,16 +220,16 @@
 <pre><code>## # A tibble: 50,000 x 3
 ##    ids     lower upper
 ##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
-##  1 1     -Inf     3.31
-##  2 1_f   -Inf     2.03
-##  3 1_m   -Inf     2.24
-##  4 1_s1  -Inf     2.33
-##  5 1_s2  -Inf     2.58
-##  6 2     -Inf     3.71
-##  7 2_f   -Inf     2.05
-##  8 2_m   -Inf     2.59
-##  9 2_s1  -Inf     2.94
-## 10 2_s2     1.59  1.59
+##  1 1     -Inf     2.45
+##  2 1_f   -Inf     1.45
+##  3 1_m   -Inf     2.07
+##  4 1_s1  -Inf     2.84
+##  5 1_s2  -Inf     2.39
+##  6 2     -Inf     2.87
+##  7 2_f      1.69  1.69
+##  8 2_m   -Inf     2.41
+##  9 2_s1  -Inf     3.39
+## 10 2_s2  -Inf     3.06
 ## # ... with 49,990 more rows</code></pre>
 </div>
 </div>
@@ -248,16 +251,16 @@
 <pre><code>## # A tibble: 10,000 x 3
 ##    ids   post_gen_liab post_gen_liab_se
 ##    &lt;chr&gt;         &lt;dbl&gt;            &lt;dbl&gt;
-##  1 1          -0.0317           0.00464
-##  2 2           0.366            0.00361
-##  3 3          -0.00922          0.00428
-##  4 4          -0.0829           0.00409
-##  5 5          -0.0636           0.00423
-##  6 6          -0.0502           0.00406
-##  7 7          -0.00266          0.00453
-##  8 8          -0.00606          0.00441
-##  9 9           0.741            0.00179
-## 10 10         -0.00887          0.00465
+##  1 1          -0.0626           0.00404
+##  2 2           0.407            0.00368
+##  3 3          -0.0193           0.00426
+##  4 4          -0.0791           0.00409
+##  5 5          -0.0630           0.00417
+##  6 6           0.461            0.00380
+##  7 7          -0.00533          0.00483
+##  8 8           1.18             0.00170
+##  9 9          -0.0919           0.00405
+## 10 10         -0.0183           0.00420
 ## # ... with 9,990 more rows</code></pre>
 <p>From here the object simu_liab can be saved and used in your GWAS method of choice.</p>
 </div>
