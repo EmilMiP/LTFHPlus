@@ -96,8 +96,9 @@ phen = dplyr::select(phen, ids, status, lower, upper, child_gen) %>%
 ### Running LT-FH++ no family history
 
 With all input parameters generated and the heritability set in the global settings, we have everything we need to run *LT-FH++*. The package **Future.apply** can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize `r nthreads` threads. 
+
 ```{r}
-#start parallelization 
+#start parallelization
 plan(tweak(multisession, workers = nthreads))
 
 ltfhpp_nofh = estimate_gen_liability_noFH(phen = phen, h2 = h2)

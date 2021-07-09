@@ -161,16 +161,16 @@
 <pre><code>## # A tibble: 10,000 x 5
 ##      ids status lower upper child_gen
 ##    &lt;int&gt;  &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
-##  1     1      0  -Inf  3.41   -0.293 
-##  2     2      0  -Inf  2.46    0.803 
-##  3     3      0  -Inf  3.36   -0.282 
-##  4     4      0  -Inf  2.88    0.143 
-##  5     5      0  -Inf  3.64    0.826 
-##  6     6      0  -Inf  3.01    0.987 
-##  7     7      0  -Inf  3.26   -1.25  
-##  8     8      0  -Inf  2.37   -0.0807
-##  9     9      0  -Inf  3.36   -1.31  
-## 10    10      0  -Inf  2.63    0.177 
+##  1     1      0  -Inf  3.73    -0.378
+##  2     2      0  -Inf  3.20     0.121
+##  3     3      0  -Inf  2.63     0.391
+##  4     4      0  -Inf  3.10     0.753
+##  5     5      0  -Inf  2.06    -0.637
+##  6     6      0  -Inf  3.78    -0.182
+##  7     7      0  -Inf  3.34    -0.757
+##  8     8      0  -Inf  2.98     0.933
+##  9     9      0  -Inf  2.52     0.802
+## 10    10      0  -Inf  3.71    -0.325
 ## # ... with 9,990 more rows</code></pre>
 <p><strong><em>phen</em></strong> contains the prevalence information, e.g. age &amp; sex, needed to find the upper and lower limit. Strictly speaking, only the ids, lower and upper limit is necessary from this point on.</p>
 </div>
@@ -179,12 +179,26 @@
 <h3 class="hasAnchor">
 <a href="#running-lt-fh-no-family-history" class="anchor"></a>Running LT-FH++ no family history</h3>
 <p>With all input parameters generated and the heritability set in the global settings, we have everything we need to run <em>LT-FH++</em>. The package <strong>Future.apply</strong> can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize 5 threads.</p>
-<!-- ```{r} -->
-<!-- #start parallelization  -->
-<!-- plan(tweak(multisession, workers = nthreads)) -->
-<!-- ltfhpp_nofh = estimate_gen_liability_noFH(phen = phen, h2 = h2) -->
-<!-- ltfhpp_nofh -->
-<!-- ``` -->
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#start parallelization</span>
+<span class="fu">plan</span><span class="op">(</span><span class="fu">tweak</span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">nthreads</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">ltfhpp_nofh</span> <span class="op">=</span> <span class="fu"><a href="../reference/estimate_gen_liability_noFH.html">estimate_gen_liability_noFH</a></span><span class="op">(</span>phen <span class="op">=</span> <span class="va">phen</span>, h2 <span class="op">=</span> <span class="va">h2</span><span class="op">)</span>
+<span class="va">ltfhpp_nofh</span></code></pre></div>
+<pre><code>## # A tibble: 10,000 x 7
+##      ids status lower upper child_gen post_gen_no_fam post_gen_no_fam_se
+##    &lt;int&gt;  &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;              &lt;dbl&gt;
+##  1     1      0  -Inf  3.73    -0.378         0.00857            0.00580
+##  2     2      0  -Inf  3.20     0.121        -0.00703            0.00528
+##  3     3      0  -Inf  2.63     0.391        -0.00256            0.00550
+##  4     4      0  -Inf  3.10     0.753         0.00537            0.00513
+##  5     5      0  -Inf  2.06    -0.637        -0.0275             0.00574
+##  6     6      0  -Inf  3.78    -0.182        -0.00329            0.00529
+##  7     7      0  -Inf  3.34    -0.757        -0.0119             0.00525
+##  8     8      0  -Inf  2.98     0.933         0.00186            0.00529
+##  9     9      0  -Inf  2.52     0.802        -0.0124             0.00523
+## 10    10      0  -Inf  3.71    -0.325         0.00390            0.00568
+## # ... with 9,990 more rows</code></pre>
 </div>
   </div>
 
