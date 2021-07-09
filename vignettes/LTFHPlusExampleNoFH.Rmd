@@ -52,9 +52,9 @@ cov_mat[2,2] = 1
 
 #simulate liabilities & make tibble
 liabs = MASS::mvrnorm(n = N, mu = rep(0, 2), Sigma = cov_mat) %>%
-  as_tibble() %>%
-  rename("child_gen"  = "V1",
-         "child_full" = "V2")
+  as_tibble(.name_repair = 'unique') %>%
+  rename("child_gen"  = "...1",
+         "child_full" = "...2")
 ```
 
 #### Generating phen
