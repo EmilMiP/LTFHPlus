@@ -44,7 +44,7 @@ It is worth noting that these values can be set more or less anything the reader
 
 Simulating liabilities with no family history is slightly easier, since the multivariate normal only has two entries, one for the genetic and one for the full liability.
 
-```{r}
+```{r message=FALSE}
 #covariance matrix with no FH
 cov_mat = matrix(h2, ncol = 2, nrow = 2)
 cov_mat[2,2] = 1

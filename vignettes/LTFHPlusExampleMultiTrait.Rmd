@@ -1,10 +1,10 @@
 ---
-title: "LTFHPlus Multiple Traits Example"
+title: "LT-FH++ Multiple Traits Example"
 author: "Emil M. Pedersen"
 date: "9/7/2021"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{LTFHPlus Multiple Traits Example}
+  %\VignetteIndexEntry{LT-FH++ Multiple Traits Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
