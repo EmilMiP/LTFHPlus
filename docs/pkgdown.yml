@@ -1,0 +1,12 @@
+pandoc: 2.7.3
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  LTFHPlus: LTFHPlus.html
+  LTFHPlusExample: LTFHPlusExample.html
+  LTFHPlusExampleNoFH: LTFHPlusExampleNoFH.html
+last_built: 2021-07-09T07:55Z
+urls:
+  reference: EmilMiP.github.io/LTFHPlus/reference
+  article: EmilMiP.github.io/LTFHPlus/articles
+
