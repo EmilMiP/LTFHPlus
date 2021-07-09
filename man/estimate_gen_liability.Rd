@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab.R
 \name{estimate_gen_liability}
 \alias{estimate_gen_liability}
-\title{Estimate genetic liability based off of family history and temporal information.}
+\title{Estimate genetic liability based off of family history and prevalence information.}
 \usage{
 estimate_gen_liability(h2, phen, thr, ind = c(1), id_col = "ids", tol = 0.01)
 }
@@ -23,10 +23,10 @@ estimate_gen_liability(h2, phen, thr, ind = c(1), id_col = "ids", tol = 0.01)
 Returns the estimated genetic liabilities.
 }
 \description{
-Estimate genetic liability based off of family history and temporal information.
+Estimate genetic liability based off of family history and prevalence information.
 }
 \examples{
-#See the example.R for an example of use and input.
+#See vignettes for example of use and input.
 
 
 }

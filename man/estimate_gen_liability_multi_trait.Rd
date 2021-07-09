@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab_multiple_traits.R
 \name{estimate_gen_liability_multi_trait}
 \alias{estimate_gen_liability_multi_trait}
-\title{Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.}
+\title{Estimates genetic liability based off of multiple phenotypes, family history, and prevalence information for each trait.}
 \usage{
 estimate_gen_liability_multi_trait(
   corr.mat,
@@ -30,9 +30,9 @@ estimate_gen_liability_multi_trait(
 Returns the estimated genetic liabilities.
 }
 \description{
-Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.
+Estimates genetic liability based off of multiple phenotypes, family history, and prevalence information for each trait.
 }
 \examples{
-# See R/Example/example_multi.R for an example of use and input.
+# See See vignettes for example of use and input.
 
 }

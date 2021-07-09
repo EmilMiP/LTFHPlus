@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab_noFH_corr_trait.R
 \name{estimate_gen_liability_noFH_corr_traits}
 \alias{estimate_gen_liability_noFH_corr_traits}
-\title{Estimate genetic liability similar to LT-FH}
+\title{Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not}
 \usage{
 estimate_gen_liability_noFH_corr_traits(
   phen,
@@ -27,7 +27,7 @@ estimate_gen_liability_noFH_corr_traits(
 Returns the estimated genetic liabilities.
 }
 \description{
-Estimate genetic liability similar to LT-FH
+Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not
 }
 \examples{
 # See R/Example/example_nosib.R for an example of use and input.

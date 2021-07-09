@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_gen_liab_noFH.R
 \name{estimate_gen_liability_noFH}
 \alias{estimate_gen_liability_noFH}
-\title{Estimate genetic liability similar to LT-FH}
+\title{Estimate genetic liability when prevalence information, but no family history is available}
 \usage{
 estimate_gen_liability_noFH(phen, h2, tol = 0.01)
 }
@@ -17,8 +17,8 @@ estimate_gen_liability_noFH(phen, h2, tol = 0.01)
 Returns the estimated genetic liabilities based on prevalence information.
 }
 \description{
-Estimate genetic liability similar to LT-FH
+Estimate genetic liability when prevalence information, but no family history is available
 }
 \examples{
-# See R/Example/example_nosib.R for an example of use and input.
+# See vignettes for example of use and input.
 }
