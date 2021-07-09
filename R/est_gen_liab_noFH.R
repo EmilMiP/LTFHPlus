@@ -1,7 +1,7 @@
 
 
 #'
-#' Estimate genetic liability similar to LT-FH
+#' Estimate genetic liability when prevalence information, but no family history is available
 #'
 #' @param h2 Liability scale heritability of the trait being analysed.
 #' @param phen tibble or data.frame with status of the individual with columns ids, lower, and upper (thresholds).
@@ -10,7 +10,7 @@
 #' @return Returns the estimated genetic liabilities based on prevalence information.
 #'
 #' @examples 
-#' # See R/Example/example_nosib.R for an example of use and input.
+#' # See vignettes for example of use and input.
 #' @importFrom dplyr %>%
 #' @export
 #' 

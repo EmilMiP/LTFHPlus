@@ -1,7 +1,7 @@
 utils::globalVariables("i")
 
 #'
-#' Estimates genetic liability based off of multiple phenotypes, family history, and temportal information.
+#' Estimates genetic liability based off of multiple phenotypes, family history, and prevalence information for each trait.
 #'
 #' @param corr.mat Correlation matrix for each of the traits being analysed. 
 #' @param phen.list List of ids for family members. The order is assumed to be OS, P1, P2, and any siblings.
@@ -13,7 +13,7 @@ utils::globalVariables("i")
 #' @return Returns the estimated genetic liabilities.
 #'
 #' @examples 
-#' # See R/Example/example_multi.R for an example of use and input.
+#' # See See vignettes for example of use and input.
 #'
 #' @export
 #' 

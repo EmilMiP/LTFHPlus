@@ -1,7 +1,7 @@
 
 
 #'
-#' Estimate genetic liability similar to LT-FH
+#' Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not
 #'
 #' @param h2_vec Liability scale heritability of the trait being analysed.
 #' @param gen_cor_vec vector of genetic correlations, in order of appearence in phenotype file

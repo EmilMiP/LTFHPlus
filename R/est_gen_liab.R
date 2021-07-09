@@ -2,7 +2,7 @@ utils::globalVariables("i")
 utils::globalVariables("string")
 
 #'
-#' Estimate genetic liability based off of family history and temporal information.
+#' Estimate genetic liability based off of family history and prevalence information.
 #'
 #' @param h2 Liability scale heritability of the trait being analysed.
 #' @param phen tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.
@@ -13,7 +13,7 @@ utils::globalVariables("string")
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
-#' @examples #See the example.R for an example of use and input.
+#' @examples #See vignettes for example of use and input.
 #' 
 #' 
 #' @export

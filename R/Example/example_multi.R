@@ -5,7 +5,7 @@ library(future.apply)
 library(dplyr)
 
 #number of individuals
-N = 5000
+N = 10000
 #constructing correlation matrix for LT-FH++
 h2_1 = .5
 h2_2 = .5
