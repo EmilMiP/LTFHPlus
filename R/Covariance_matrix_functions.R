@@ -22,11 +22,11 @@
 #' - phs[1-9]* (Half-siblings - paternal side)
 #' - mau[1-9]* (Aunts/Uncles - maternal side)
 #' - pau[1-9]* (Aunts/Uncles - paternal side).
-#' @param sq.herit An integer representing the squared heritability on liability scale.
+#' @param sq.herit A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1.
 #' 
-#' @return If both s1 and s2 are strings chosen from the mentioned list of strings and sq.herit is an integer
-#' satisfying 0 <= sq.herit <= 1, then the output will be an integer that is equal to the percentage of shared 
+#' @return If both s1 and s2 are strings chosen from the mentioned list of strings and sq.herit is a number
+#' satisfying 0 <= sq.herit <= 1, then the output will be a number that equals the percentage of shared 
 #' DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
 #' 
 #' @note If you are only interested in the percentage of shared DNA, set \code{sq.herit = 1}.
@@ -196,11 +196,11 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit An integer representing the squared heritability on liability scale
+#' @param sq.herit A number representing the squared heritability on liability scale
 #' for a single phenotype. Must be non-negative and at most 1.
 #' Defaults to 0.5.
 #' 
-#' @return If either fam_vec or n_fam is used as the argument, if it is of the required format and sq.herit is an integer
+#' @return If either fam_vec or n_fam is used as the argument, if it is of the required format and sq.herit is a number
 #' satisfying 0 <= sq.herit <= 1, then the output will be a named covariance matrix. The number of rows and columns
 #' correspond to the length of fam_vec or n_fam (+ 2 if add_ind=T). 
 #' If both fam_vec = c()/NULL and n_fam = c()/NULL, the 
@@ -209,7 +209,8 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' the full liability for the individual. If both fam_vec and 
 #' n_fam are given, the user is asked to decide on which 
 #' of the two vectors to use.
-#' 
+#' Note that the returned object has different attributes, such as 
+#' fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
 #' 
 #' @examples
 #' construct_covmat()
@@ -239,6 +240,13 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     covmat <- matrix(c(sq.herit,sq.herit,sq.herit,1), nrow = 2)
     # Naming the columns and rows
     colnames(covmat) <- rownames(covmat) <- c("g","o")
+    
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- NULL
+    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- NULL
     
     return(covmat)
     
@@ -333,6 +341,13 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     for(mem in fam) {
       covmat[which(rownames(covmat) == mem),] <- sapply(fam, get_relatedness, s1 = mem, sq.herit = sq.herit)
     }
+    
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- NULL
+    attributes(covmat)$n_fam <- n_fam
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- NULL
       
     return(covmat)
     
@@ -373,6 +388,13 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
       covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herit)
     }
     
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- fam_vec
+    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- NULL
+    
     return(covmat)
   }
 }
@@ -412,7 +434,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit An integer matrix holding the squared heritability on liability 
+#' @param sq.herit A numeric matrix holding the squared heritability on liability 
 #' scale for a desired number of phenotypes as well as the correlation between these
 #' phenotypes. The heritabilities must be given on the diagonal,
 #' while the off-diagonal entries must hold the correlation between phenotypes.
@@ -425,7 +447,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' Defaults to NULL.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the 
-#' required format and sq.herit is an integer matrix satisfying that all 
+#' required format and sq.herit is a numeric matrix satisfying that all 
 #' diagonal entries are between 0 and 1 and that all off-diagonal
 #' entries are between -1 and 1, then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
@@ -436,6 +458,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' liability and the full liability for the underlying individual for all
 #' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
 #' decide on which of the two vectors to use.
+#' Note that the returned object has different attributes, such as 
+#' fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
 #' 
 #' @examples
 #' construct_covmat()
@@ -491,6 +515,13 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     }
     # Changing the row and column names
     colnames(covmat) <- rownames(covmat) <- paste0(c("g_", "o_"), rep(phen_names, each = 2))
+    
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- NULL
+    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- phen_names
     
     return(covmat)
     
@@ -585,6 +616,14 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         }
       }
     }
+    
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- NULL
+    attributes(covmat)$n_fam <- n_fam
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- phen_names
+    
     return(covmat)
     
   }else if(is.null(n_fam)){
@@ -629,6 +668,14 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         }
       }
     }
+    
+    # Adding attributes to covmat
+    attributes(covmat)$fam_vec <- fam_vec
+    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$add_ind <- add_ind
+    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$phenotype_names <- phen_names
+    
     return(covmat)
   }
 }
@@ -642,7 +689,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' \code{\link{construct_covmat_single}} and \code{\link{construct_covmat_multi}}. 
 #'
 #' This function can be used to construct a covariance matrix for
-#' a given number of family members. If sq.herit is an integer,
+#' a given number of family members. If sq.herit is a number,
 #' each entry in this covariance matrix equals the percentage 
 #' of shared DNA between the corresponding individuals times 
 #' the squared heritability \eqn{h^2}. However, if sq.herit is a matrix,
@@ -673,9 +720,9 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit Either an integer representing the squared heritability 
+#' @param sq.herit Either a number representing the squared heritability 
 #' on liability scale for one single phenotype or a matrix holding the squared 
-#' heritability on liability scale the different phenotypes as well as
+#' heritability on liability scale for the different phenotypes as well as
 #' the correlation between these phenotypes. When sq.herit is a matrix, 
 #' the heritabilities must be given on the diagonal,
 #' while the off-diagonal entries must hold the correlation between phenotypes.
@@ -688,8 +735,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' Defaults to NULL.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of 
-#' the required format and sq.herit is either an integer satisfying 
-#' 0 <= sq.herit <= 1 or an integer matrix satisfying that all 
+#' the required format and sq.herit is either a number satisfying 
+#' 0 <= sq.herit <= 1 or a numeric matrix satisfying that all 
 #' diagonal entries are between 0 and 1 and that all off-diagonal
 #' entries are between -1 and 1, then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
@@ -700,6 +747,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' liability and the full liability for the underlying individual for all
 #' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
 #' decide on which of the two vectors to use.
+#' Note that the returned object has different attributes, such as 
+#' fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
 #' 
 #' @examples
 #' construct_covmat()
@@ -724,58 +773,139 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 
 
 
-
-
 #' Positive definite matrices
 #'
-#' \code{check_positive_definite} verifies that a given covariance matrix
-#' is indeed positive definite by chacking that all eigenvalues are positive.
+#' \code{correct_positive_definite} verifies that a given covariance matrix
+#' is indeed positive definite by checking that all eigenvalues are positive.
+#' If the given covariance matrix is not positive definite, 
+#' \code{correct_positive_definite} tries to modify the underlying correlation matrix
+#' sq.herit in order to obtain a positive definite covariance matrix
 #'
 #' This function can be used to verify that a given covariance matrix 
 #' is positive definite. It calculates all eigenvalues in order to
 #' investigate whether they are all positive. This property is necessary 
 #' if the covariance matrix should be used as a Gaussian covariance matrix.
 #' It is especially useful to check whether any covariance matrix obtained
-#' by \code{\link{construct_covmat_single}} or \code{\link{construct_covmat_multi}}
-#' is positive definite.
+#' by \code{\link{construct_covmat_multi}} is positive definite.
+#' If the given covariance matrix is not positive definite, \code{correct_positive_definite}
+#' tries to modify the underlying correlation matrix (called \code{sq.herit} in
+#' \code{\link{construct_covmat}} or \code{\link{construct_covmat_multi}}) by 
+#' multiplying all off-diagonal entries in the correlation matrix by a given number.
 #'
-#' @param covmat A symmetric integer matrix. 
-#' @param sq.herit An integer matrix holding the squared heritability on liability 
-#' scale for the number of phenotypes as well as the correlation between these
-#' phenotypes. The heritabilities must be given on the diagonal,
-#' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All squared heritabilities must be non-negative and at most 1.
-#' All correlations must be between -1 and 1.
-#' Defaults to NULL
+#' @param covmat A symmetric and numeric matrix. If the covariance matrix 
+#' should be corrected, it must have a number of attributes, such as
+#' attr(covmat,"fam_vec"), attr(covmat,"n_fam"), attr(covmat,"add_ind"),
+#' attr(covmat,"sq.herit") and attr(covmat,"phenotype_names"). Any covariance
+#' matrix obtained by \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} 
+#' or \code{\link{construct_covmat_multi}} will have these attributes by default. 
 #' 
-#' @return 
+#' @param correction_val A positive number representing the amount by which
+#' sq.herit will be changed, if not all eigenvalues are positive. That is, correction_val
+#' is the number that will be multiplied to all off_diagnonal entries in sq.herit.
+#' Defaults to 0.99.
+#' 
+#' @param correction_limit A positive integer representing the upper limit for the correction
+#' procedure. Defaults to 100.
+#' 
+#' @return If covmat is a symmetric and numeric matrix and all eigenvalues are
+#' positive, \code{correct_positive_definite} simply returns covmat. If some 
+#' eigenvalues are not positive and correction_val is a positive number, 
+#' \code{correct_positive_definite} tries to convert covmat into a positive definite
+#' matrix. If covmat has attributes "add_ind" and "sq.herit", with sq.herit being
+#' a matrix with at least two rows and columns, \code{correct_positive_definite} 
+#' computes a new covariance matrix using a slighty modified sq.herit. If the 
+#' correction is performed successfully, i.e. if the new covmat is positive definite,
+#' the new covariance matrix is returned. Otherwise, \code{correct_positive_definite}
+#' returns the original covariance matrix.
 #' 
 #' @examples
-
+#' 
+#' covmat <- construct_covmat(sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2))
+#' correct_positive_definite(covmat)
+#' covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
+#' correct_positive_definite(covmat)
 #' 
 #' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single},
 #' \code{\link{construct_covmat_multi}}
+#' 
 #' @export
 
-check_positive_definite = function(covmat, sq.herit = NULL, correction_val = .99) {
-  stop_ctr = 1
-  ctr = 1
-  cat("Covariance matrix is not positive definite (not all eigen values are positive) - Slightly reducing correlation to mitigate. \n")
-  while (any(eigen(full_cov)$values < 0 ) & stop_ctr <= 100) {
-    correction_mat = matrix(correction_val, ncol = ncol(corr_mat), nrow = nrow(corr_mat))
-    diag(correction_mat) <- 1
-    corr_mat = corr_mat * correction_mat
-    full_cov = get_full_cov(corr_mat, n_sib = n_sib)
-    ctr = ctr + 1
-    stop_ctr = stop_ctr + 1
+correct_positive_definite = function(covmat, correction_val = .99, correction_limit = 100) {
+  
+  # Checking that covmat is symmetric
+  if(!isSymmetric.matrix(covmat)) stop("covmat must be symmetric!")
+  # and numeric
+  if(!is.numeric(covmat)) stop("covmat must be numeric!")
+  
+  # Checking whether all eigenvalues are positive
+  if(any(eigen(covmat)$values < 0)){
+    
+    cat("The specified covariance matrix is not positive definite. \n")
+  }else{
+    
+    return(covmat)
   }
-  if (stop_ctr >= 100) {
-    cat("something is wrong with the covariance matrix. Please revisit it. \n")
-    print(full_cov)
-    return(NULL) 
+  
+  # If some eigenvalues are negative, correction_val must be specified,
+  # it must be numeric and positive in order to correct the covariance matrix.
+  if(class(correction_val) != "numeric") stop("correction_val must be numeric!")
+  if(correction_val <= 0) stop("correction_val must be positive!")
+  
+  # In addition, covmat must have several attributes holding the 
+  # family members (fam_vec or n_fam), a logical add_ind as well as
+  # a numeric value or numeric matrix sq.herit, in order to change
+  # the correlation matrix.
+  if(is.null(attr(covmat,"add_ind")) || is.null(attr(covmat,"sq.herit"))){
+    
+    warning("The required attributes are missing... The covariance matrix could not be corrected!")
+    return(covmat)
   }
-  if (ctr > 1) {
-    cat("shrunk off diagonal entries by:", correction_val^ctr, ".\n")
+  
+  # If the covariance matrix is for a single phenotype, it is not
+  # possible to correct the covariance matrix.
+  if(length(attr(covmat,"sq.herit"))==1){
+    warning("The covariance matrix cannot be corrected...")
+    return(covmat)
   }
-  return(full_cov)
+  
+  # Furthermore, correction_limit must be a positive integer
+  if(class(correction_limit) != "numeric") stop("correction_limit must be numeric!")
+  if(correction_limit <= 0) stop("Correction limit must be positive!")
+  
+  cat("Trying to correct the covariance matrix...\n")
+  
+  # The covariance matrix will be modified at most correction_limit times.
+  n <- 0
+  # Storing the old covariance matrix
+  old_covmat <- covmat
+  # The diagonal of sq.herit will remain unchanged
+  sq.herit <- attr(covmat,"sq.herit")
+  diag_val <- diag(sq.herit)
+  
+  # We also extract the vectors holding the family members
+  fam_vec <- setdiff(attr(covmat,"fam_vec"), c("g","o"))
+  n_fam <- attr(covmat,"n_fam")[str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
+  
+  while(any(eigen(covmat)$values < 0) && n <= correction_limit) {
+    
+    # Changing the sq.herit matrix slightly. All off_diagonal entries
+    # will be multiplied by correction_val, all diagonal entries will remain unchanged.
+    sq.herit <- sq.herit*correction_val
+    diag(sq.herit) <- diag_val
+    # Computing a new covariance matrix
+    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, add_ind = attr(covmat,"add_ind"), sq.herit = sq.herit, phen_names = attr(covmat,"phenotype_names"))
+    # Updating 
+    n <- n+1
+  }
+  
+  # If the matrix has been modified correction_limit times, 
+  # the correction step is aborted
+  if(n > correction_limit){
+    cat("The covariance matrix could not be corrected. Consider revisiting it.\n")
+    return(old_covmat)
+  }
+  
+  cat(paste0("The correction was performed successfully! All off-diagonal entries are corrected by", round(correction_val^n,digits = 3),".\n"))
+
+  return(covmat)
 }
