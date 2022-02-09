@@ -510,7 +510,13 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     for(p1 in 1:num_phen){
       for(p2 in 1:num_phen){
         
-        covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(sq.herit[p1,p2], sq.herit[p1,p2], sq.herit[p1,p2], 1), nrow = 2)
+        if(p1==p2){
+          
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(sq.herit[p1,p2], sq.herit[p1,p2], sq.herit[p1,p2], 1), nrow = 2)
+        }else{
+          
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(sq.herit[p1,p1]*sq.herit[p2,p2])*sq.herit[p1,p2], nrow = 2, ncol = 2)
+        }
       }
     }
     # Changing the row and column names
@@ -612,7 +618,14 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
       for(p2 in 1:num_phen){
         for(mem in fam){
           
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, sq.herit = sq.herit[p1,p2])
+          if(p1==p2){
+            
+            covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, sq.herit = sq.herit[p1,p2])
+          }else{
+           
+            covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, sq.herit = sqrt(sq.herit[p1,p1]*sq.herit[p2,p2])*sq.herit[p1,p2]) 
+          }
+         
         }
       }
     }
@@ -664,7 +677,13 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         
         for(mem in fam_vec) {
           
-          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herit[p1,p2])
+          if(p1==p2){
+            
+            covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herit[p1,p2])
+          }else{
+            
+            covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sqrt(sq.herit[p1,p1]*sq.herit[p2,p2])*sq.herit[p1,p2])
+          }
         }
       }
     }
