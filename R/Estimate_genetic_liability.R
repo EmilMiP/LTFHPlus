@@ -1,11 +1,11 @@
-#' Estimating the genetic liability 
+#' Estimating the genetic or full liability 
 #'
 #' \code{estimate_liability} estimate the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history.
 #'
 #' This function can be used to estimate either the genetic component of the 
-#' full liability, the full liability or both 
+#' full liability, the full liability or both. 
 #'
 #' @param family A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least two columns that hold the family identifier and the corresponding
@@ -155,7 +155,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
     
     cat(paste0("The number of workers is ", nbrOfWorkers()))
     
-    gibbs_res <- future.apply::future_lapply(X= 1:nrow(family), FUN = function(i){
+    gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
       # Extract family members
       fam <- unlist(fam_list[i])
       # Remove individual o and/or g from the set (if present)
@@ -191,28 +191,43 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
       std_err <- rep(Inf, length(out))
       names(std_err) <- c("genetic", "full")[out]
-      est_vals <- list()
       n_gibbs <- 1
       
-      # Gibbs sampler
+      # Running Gibbs sampler
       while(any(std_err > tol)){
         
-        vals[[vals.ctr]] <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                           fixed = fixed, ind = out, burn_in = 1000)
-        std_err <- apply(vals, 2, batchmeans::bm)
-        batchmeans::bm(unlist(vals))$se
-        n_gibbs <- n_gibbs +1
+        if(n_gibbs == 1){
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, ind = out, burn_in = 1000) %>% 
+            `colnames<-`(c("genetic", "full")[out]) %>% 
+            as_tibble()
+          
+        }else{
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, ind = out, burn_in = 1000) %>%
+            `colnames<-`(c("genetic", "full")[out]) %>%
+            as_tibble() %>% 
+            bind_rows(est_liabs)
+        }
         
+        # Computing the standard error
+        std_err <- batchmeans::bmmat(est_liabs)[,2]
+        # Adding one to the counter
+        n_gibbs <- n_gibbs +1
       }
-      
-      batchmeans::bm(unlist(vals))
+      # If all standard errors are below the tolerance, 
+      # the estimated liabilities as well as the corresponding 
+      # standard error can be returned
+      return(setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
       
     }, future.seed = TRUE)
     
     
   }else{
     
-    gibbs_res <- lapply(X = 1:nrow(family), FUN = function(i){
+    gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
       
       # Extract family members
       fam <- fam_list[[i]]
@@ -247,27 +262,45 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       
       # Setting the variables needed for Gibbs sampler
       fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
-      se <- rep(Inf, length(out))
-      names(se) <- c("genetic", "full")[out]
-      vals <- list()
-      vals.ctr <- 1
+      std_err <- rep(Inf, length(out))
+      names(std_err) <- c("genetic", "full")[out]
+      n_gibbs <- 1
       
-      # Gibbs sampler
-      while(any(se > tol)){
+      # Running Gibbs sampler
+      while(any(std_err > tol)){
         
-        vals[[vals.ctr]] <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                           fixed = fixed, ind = out, burn_in = 1000)
-        se <- batchmeans::bm(unlist(vals))$se
-        vals.ctr <- vals.ctr +1
+        if(n_gibbs == 1){
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, ind = out, burn_in = 1000) %>% 
+            `colnames<-`(c("genetic", "full")[out]) %>% 
+            as_tibble()
+          
+        }else{
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, ind = out, burn_in = 1000) %>%
+            `colnames<-`(c("genetic", "full")[out]) %>%
+            as_tibble() %>% 
+            bind_rows(est_liabs)
+        }
         
+        # Computing the standard error
+        std_err <- batchmeans::bmmat(est_liabs)[,2]
+        # Adding one to the counter
+        n_gibbs <- n_gibbs +1
       }
-      batchmeans::bm(unlist(vals))
+      # If all standard errors are below the tolerance, 
+      # the estimated liabilities as well as the corresponding 
+      # standard error can be returned
+      return(setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
     })
   }
   
-  
-  family$posterior_gen_liab = sapply(gibbs_res, FUN = function(x) x$est)
-  family$posterior_gen_liab_se = sapply(gibbs_res, FUN = function(x) x$se)
-  
+  # Finally, we can add all estimated liabilities as well
+  # as their estimated standard errors to the tibble holding
+  # the family information
+  family <- bind_cols(family, as_tibble(t(gibbs_res)))
+
   return(family)
 }
