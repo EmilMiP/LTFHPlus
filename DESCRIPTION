@@ -1,12 +1,12 @@
 Type: Package
-Package: LTFHpp
+Package: LTFHplus
 Title: Extending the package 'LTFHplus'
 Version: 0.1
 Date: 2022-02-16
 Authors@R: c(
     person("Jette", "Steinbach", , "jst@econ.au.dk", role = c("aut", "cre")),
     person("Emil Michael", "Pedersen", , "emp@ph.au.dk", role = "aut"),
-    person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut"),
+    person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut")
   )
 Description: Extending the available package 'LTFHplus' in order to allow
     for more flexible family strctures. 'LT-FH++' is an extension of
@@ -33,5 +33,6 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
+URL: https://github.com/JetteS/LTFHPlus
 BugReports: https://github.com/EmilMiP/LTFHPlus/issues
