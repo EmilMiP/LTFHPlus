@@ -32,7 +32,7 @@
 #' standard error of the mean is below 0.2. Defaults to 0.01.
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
-#' (see \code{\link{future.apply::future_apply()}}).
+#' (see \code{\link{future.apply::future_apply()}}). Defaults to FALSE.
 #' @param always_add A character vector or NULL. If always_ad = c("g","o"), both the genetic component 
 #' of the full liability as well as the full liability will be added to the list of family members. 
 #' If always_add equals "g" or "o", the genetic component of the full liability or the full liability
@@ -54,12 +54,13 @@
 #' 
 #' @examples
 #' 
-#' estimate_liability()
+#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' 
-#' @seealso \code{\link{future.apply::future_apply()}}
+#' @seealso \code{\link{future.apply::future_apply}}
 #' 
 #' @export
-estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = TRUE, always_add = c("g","o")){
+estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o")){
   
   # Turning parallel into class logical
   parallel <- as.logical(parallel)
@@ -153,22 +154,21 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   
   if(parallel){
     
-    cat(paste0("The number of workers is ", nbrOfWorkers()))
+    cat(paste0("The number of workers is ", future::nbrOfWorkers()))
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
       # Extract family members
       fam <- unlist(fam_list[i])
       # Remove individual o and/or g from the set (if present)
-      full_fam <- setdiff(gsub(paste0("^[0-9]*_"), "", fam), c("g","o"))
-      # And add the individuals that should be added
-      full_fam <- c(always_add, full_fam)
+      full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = FALSE, sq.herit = sq.herit)
+      # If always_add holds "g" or "o", add_ind must be TRUE
+      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      fam_threshs = threshs[match(fam[!(str_detect(fam, "^[0-9]*_g") | str_detect(fam, "^[0-9]*_o"))], pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g") | str_detect(fam, "^.*_o"))], pull(threshs,!!as.symbol(pid))), ]
       # Adding the individuals present in always_add
-      thr <- threshs[match(fam[str_detect(fam, paste0("^[0-9]*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
+      thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
       if(nrow(thr) == 2){
         
@@ -177,11 +177,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         fam_threshs <- bind_rows(tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^[0-9]*_g")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
         
         fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^[0-9]*_o")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
         
         fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
@@ -232,16 +232,15 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       # Extract family members
       fam <- fam_list[[i]]
       # Remove individual o and/or g from the set (if present)
-      full_fam <- setdiff(gsub(paste0("^[0-9]*_"), "", fam), c("g","o"))
-      # And add the individuals that should be added
-      full_fam <- c(always_add, full_fam)
+      full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = FALSE, sq.herit = sq.herit)
+      # If always_add holds "g" or "o", add_ind must be TRUE
+      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      fam_threshs = threshs[match(fam[!(str_detect(fam, "^[0-9]*_g") | str_detect(fam, "^[0-9]*_o"))], pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g") | str_detect(fam, "^.*_o"))], pull(threshs,!!as.symbol(pid))), ]
       # Adding the individuals present in always_add
-      thr <- threshs[match(fam[str_detect(fam, paste0("^[0-9]*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
+      thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
       if(nrow(thr) == 2){
         
@@ -250,11 +249,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         fam_threshs <- bind_rows(tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^[0-9]*_g")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
         
         fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^[0-9]*_o")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
         
         fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
