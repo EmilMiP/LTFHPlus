@@ -10,7 +10,10 @@
 #' @param family A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least two columns that hold the family identifier and the corresponding
 #' personal identifiers, respectively. That is, for each family in fam_id there should
-#' be a list holding all individuals belonging to that family in pid.
+#' be a list holding all individuals belonging to that family in pid. Note that the 
+#' personal identifiers for all individuals must have a special format, as it must end
+#' with _?, where ? \eqn{\in \{g,o,m,f,mgm,mgf,pgm,pgf,s[0-9]\*, mhs[0-9]\*,phs[0-9]\*,
+#' mau[0-9]\*, pau[0-9]\* \}}. See \code{\link{construct_covmat}} for more information.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
 #' and the remaining two holding the lower and upper thresholds, respectively.
