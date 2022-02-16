@@ -30,4 +30,3 @@ You can install LTFHpp by:
 ```{r eval=FALSE}
 devtools::install_github("JetteS/LTFHPlus")
 ```
-

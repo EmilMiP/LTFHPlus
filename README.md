@@ -1,34 +1,25 @@
-Emil M. Pedersen
-5/7/2021
+Jette Steinbach
+16/02/2022
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# LTFHPlus
+# LTFHPpp
 
-Implementation of LT-FH++. Preprint for LT-FH++ can be found on
-[bioxriv](https://www.biorxiv.org/content/10.1101/2021.04.20.440585v1)
-
-LT-FH++ can be used to estimate the genetic liability of an individual
-by accounting for family history and population prevalences. It utilises
-an efficient Gibbs sampler, which is implemented with the Rcpp package
-and its highly scaleable.
+LTFHpp extends the package
+[LTFHplus](https://emilmip.github.io/LTFHPlus/) by Emil M. Pedersen to
+allow for more flexible family structures. As LTFHplus, LTFHpp can be
+used to estimate an individual’s genetic component of the full
+liability, the full liability or both by accounting for the family
+history and population prevalences. LTFHpp inherits its efficiency from
+LTFHplus, as it uses the same methods, i.e. Gibbs sampler implemented
+with [Rcpp](http://www.rcpp.org/). A detailed description of the
+liability threshold model conditioned on family history, age of onset
+and sex can be found [here](https://doi.org/10.1016/j.ajhg.2022.01.009).
 
 # Installation
 
-You can install LTFHPlus by:
+You can install LTFHpp by:
 
 ``` r
-devtools::install_github("EmilMiP/LTFHPlus")
+devtools::install_github("JetteS/LTFHPlus")
 ```
-
-<!-- badges: start -->
-
-[![R build
-status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions)
-<!-- badges: end -->
-
-# Documentation
-
-Documentation for the different functions, and examples of how to use
-them, can be found on [this
-pkgdown](https://emilmip.github.io/LTFHPlus/) website
