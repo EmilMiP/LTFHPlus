@@ -45,7 +45,7 @@ phenotypes. The heritabilities must be given on the diagonal,
 while the off-diagonal entries must hold the correlation between phenotypes.
 All squared heritabilities must be non-negative and at most 1.
 All correlations must be between -1 and 1.
-Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2)}
+Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
@@ -90,6 +90,6 @@ construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), phen_names = c
 
 }
 \seealso{
-\code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
-\code{\link{construct_covmat}}
+\code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
+\code{\link{construct_covmat}}.
 }
