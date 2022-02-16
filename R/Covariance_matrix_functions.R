@@ -17,11 +17,11 @@
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[1-9]* (Full siblings)
-#' - mhs[1-9]* (Half-siblings - maternal side)
-#' - phs[1-9]* (Half-siblings - paternal side)
-#' - mau[1-9]* (Aunts/Uncles - maternal side)
-#' - pau[1-9]* (Aunts/Uncles - paternal side).
+#' - s[0-9]* (Full siblings)
+#' - mhs[0-9]* (Half-siblings - maternal side)
+#' - phs[0-9]* (Half-siblings - paternal side)
+#' - mau[0-9]* (Aunts/Uncles - maternal side)
+#' - pau[0-9]* (Aunts/Uncles - paternal side).
 #' @param sq.herit A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1.
 #' 
@@ -51,33 +51,33 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
   if(class(s2) != "character") stop("s2 must be a string!")
   # Checking that s1 and s2 are valid strings
   if(!(str_detect(s1, "^[gomf]$") | str_detect(s1, "^[mp]g[mf]$") | 
-       str_detect(s1, "^s[1-9]*") | str_detect(s1, "^[mp]hs[1-9]*")| 
-       str_detect(s1, "^[mp]au[1-9]*"))) stop("s1 is not a valid string! Use a string from the following list: \n
+       str_detect(s1, "^s[0-9]*") | str_detect(s1, "^[mp]hs[0-9]*")| 
+       str_detect(s1, "^[mp]au[0-9]*"))) stop("s1 is not a valid string! Use a string from the following list: \n
         - m (Mother)\n
         - f (Father)\n
         - mgm (Maternal grandmother)\n
         - mgf (Maternal grandfather)\n
         - pgm (Paternal grandmother)\n
         - pgf (Paternal grandfather)\n
-        - s[1-9]* (Full siblings)\n
-        - mhs[1-9]* (Half-siblings - maternal side)\n
-        - phs[1-9]* (Half-siblings - paternal side)\n
-        - mau[1-9]* (Aunts/Uncles - maternal side)\n
-        - pau[1-9]* (Aunts/Uncles - paternal side).")
+        - s[0-9]* (Full siblings)\n
+        - mhs[0-9]* (Half-siblings - maternal side)\n
+        - phs[0-9]* (Half-siblings - paternal side)\n
+        - mau[0-9]* (Aunts/Uncles - maternal side)\n
+        - pau[0-9]* (Aunts/Uncles - paternal side).")
   if(!(str_detect(s2, "^[gomf]$") | str_detect(s2, "^[mp]g[mf]$") | 
-       str_detect(s2, "^s[1-9]*") | str_detect(s2, "^[mp]hs[1-9]*")| 
-       str_detect(s2, "^[mp]au[1-9]*"))) stop("s2 is not a valid string! Use a string from the following list: \n
+       str_detect(s2, "^s[0-9]*") | str_detect(s2, "^[mp]hs[0-9]*")| 
+       str_detect(s2, "^[mp]au[0-9]*"))) stop("s2 is not a valid string! Use a string from the following list: \n
         - m (Mother)\n
         - f (Father)\n
         - mgm (Maternal grandmother)\n
         - mgf (Maternal grandfather)\n
         - pgm (Paternal grandmother)\n
         - pgf (Paternal grandfather)\n
-        - s[1-9]* (Full siblings)\n
-        - mhs[1-9]* (Half-siblings - maternal side)\n
-        - phs[1-9]* (Half-siblings - paternal side)\n
-        - mau[1-9]* (Aunts/Uncles - maternal side)\n
-        - pau[1-9]* (Aunts/Uncles - paternal side).")
+        - s[0-9]* (Full siblings)\n
+        - mhs[0-9]* (Half-siblings - maternal side)\n
+        - phs[0-9]* (Half-siblings - paternal side)\n
+        - mau[0-9]* (Aunts/Uncles - maternal side)\n
+        - pau[0-9]* (Aunts/Uncles - paternal side).")
   # Checking that the heritability is valid
   if(sq.herit<0)stop("The squared heritability must be non-negative!")
   if(sq.herit>1)stop("The squared heritability must be smaller or equal to 1!")
@@ -87,76 +87,76 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
     
     if(s1==s2)return(1)
     if(str_detect(s2, "^g$")) return(1*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[1-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[1-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
     
   }else if(str_detect(s1, "^g$")){
     
     if(str_detect(s2, "^[go]$")) return(1*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[1-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[1-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
     
   }else if(str_detect(s1, "^m$")){
     
     if(str_detect(s2, "^m$")) return(1)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[1-9]*")|str_detect(s2, "^mhs[1-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[1-9]") ) return(0.5*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[1-9]*") | str_detect(s2, "^pau[1-9]*")) return(0)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^f$")){
     
     if(str_detect(s2, "^f$")) return(1)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[1-9]*")|str_detect(s2, "^phs[1-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[1-9]") ) return(0.5*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[1-9]*") | str_detect(s2, "^mau[1-9]*")) return(0)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
-  }else if(str_detect(s1, "^s[1-9]*")){
+  }else if(str_detect(s1, "^s[0-9]*")){
     
     if(s1==s2) return(1)
-    if(str_detect(s2, "^[go]$") | str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[1-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[1-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^[go]$") | str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
     
   }else if(str_detect(s1, "^mg[mf]$")){
     
     if(s1==s2)return(1)
     if(str_detect(s2, "^mg[mf]$")) return(0)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[1-9]*")|str_detect(s2, "^mhs[1-9]*")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mau[1-9]*") ) return(0.5*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[1-9]*") | str_detect(s2, "^pau[1-9]*")) return(0)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^pg[mf]$")){
     
     if(s1==s2)return(1)
     if(str_detect(s2, "^pg[mf]$")) return(0)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[1-9]*")|str_detect(s2, "^phs[1-9]*")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pau[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[1-9]*") | str_detect(s2, "^mau[1-9]*")) return(0)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
-  }else if(str_detect(s1, "^mhs[1-9]*")){
-    
-    if(s1==s2)return(1)
-    if(str_detect(s2, "^[go]$") | str_detect(s2, "^s[1-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[1-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mhs[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[1-9]*") | str_detect(s2, "^pau[1-9]*")) return(0)
-    
-  }else if(str_detect(s1, "^phs[1-9]*")){
+  }else if(str_detect(s1, "^mhs[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[1-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[1-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^phs[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[1-9]*") | str_detect(s2, "^mau[1-9]*")) return(0)
+    if(str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]")) return(0.25*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mhs[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
-  }else if(str_detect(s1, "^mau[1-9]*")){
-    
-    if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[1-9]*")| str_detect(s2, "^mhs[1-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[1-9]*") | str_detect(s2, "^pau[1-9]*")) return(0)
-    
-  }else if(str_detect(s1, "^pau[1-9]*")){
+  }else if(str_detect(s1, "^phs[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[1-9]*")| str_detect(s2, "^phs[1-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[1-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[1-9]*") | str_detect(s2, "^mau[1-9]*")) return(0)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]")) return(0.25*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
+    
+  }else if(str_detect(s1, "^mau[0-9]*")){
+    
+    if(s1==s2)return(1)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^mhs[0-9]")) return(0.25*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
+    
+  }else if(str_detect(s1, "^pau[0-9]*")){
+    
+    if(s1==s2)return(1)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^phs[0-9]")) return(0.25*sq.herit)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
   }else{
     return(NA)
@@ -184,11 +184,11 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[1-9]* (Full siblings)
-#' - mhs[1-9]* (Half-siblings - maternal side)
-#' - phs[1-9]* (Half-siblings - paternal side)
-#' - mau[1-9]* (Aunts/Uncles - maternal side)
-#' - pau[1-9]* (Aunts/Uncles - paternal side).
+#' - s[0-9]* (Full siblings)
+#' - mhs[0-9]* (Half-siblings - maternal side)
+#' - phs[0-9]* (Half-siblings - paternal side)
+#' - mau[0-9]* (Aunts/Uncles - maternal side)
+#' - pau[0-9]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -284,19 +284,19 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     fam <- names(n_fam)
     # Checking that all family members are valid strings
     if(any(!(str_detect(fam, "^[mf]$") | str_detect(fam, "^[mp]g[mf]$") | 
-             str_detect(fam, "^s[1-9]*$") | str_detect(fam, "^[mp]hs[1-9]*$")| 
-             str_detect(fam, "^[mp]au[1-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
+             str_detect(fam, "^s[0-9]*$") | str_detect(fam, "^[mp]hs[0-9]*$")| 
+             str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
     - mgf (Maternal grandfather)\n
     - pgm (Paternal grandmother)\n
     - pgf (Paternal grandfather)\n
-    - s[1-9]* (Full siblings)\n
-    - mhs[1-9]* (Half-siblings - maternal side)\n
-    - phs[1-9]* (Half-siblings - paternal side)\n
-    - mau[1-9]* (Aunts/Uncles - maternal side)\n
-    - pau[1-9]* (Aunts/Uncles - paternal side).")
+    - s[0-9]* (Full siblings)\n
+    - mhs[0-9]* (Half-siblings - maternal side)\n
+    - phs[0-9]* (Half-siblings - paternal side)\n
+    - mau[0-9]* (Aunts/Uncles - maternal side)\n
+    - pau[0-9]* (Aunts/Uncles - paternal side).")
     
     # Checking that all entries in n_fam are non-negative
     if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
@@ -357,19 +357,19 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     # Checking that all family members are represented by valid strings
     if(any(!(str_detect(fam_vec, "^[mf]$") | str_detect(fam_vec, "^[mp]g[mf]$") | 
-             str_detect(fam_vec, "^s[1-9]*$") | str_detect(fam_vec, "^[mp]hs[1-9]*$")| 
-             str_detect(fam_vec, "^[mp]au[1-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
+             str_detect(fam_vec, "^s[0-9]*$") | str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
+             str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
     - mgf (Maternal grandfather)\n
     - pgm (Paternal grandmother)\n
     - pgf (Paternal grandfather)\n
-    - s[1-9]* (Full siblings)\n
-    - mhs[1-9]* (Half-siblings - maternal side)\n
-    - phs[1-9]* (Half-siblings - paternal side)\n
-    - mau[1-9]* (Aunts/Uncles - maternal side)\n
-    - pau[1-9]* (Aunts/Uncles - paternal side).")
+    - s[0-9]* (Full siblings)\n
+    - mhs[0-9]* (Half-siblings - maternal side)\n
+    - phs[0-9]* (Half-siblings - paternal side)\n
+    - mau[0-9]* (Aunts/Uncles - maternal side)\n
+    - pau[0-9]* (Aunts/Uncles - paternal side).")
     
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
@@ -422,11 +422,11 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[1-9]* (Full siblings)
-#' - mhs[1-9]* (Half-siblings - maternal side)
-#' - phs[1-9]* (Half-siblings - paternal side)
-#' - mau[1-9]* (Aunts/Uncles - maternal side)
-#' - pau[1-9]* (Aunts/Uncles - paternal side).
+#' - s[0-9]* (Full siblings)
+#' - mhs[0-9]* (Half-siblings - maternal side)
+#' - phs[0-9]* (Half-siblings - paternal side)
+#' - mau[0-9]* (Aunts/Uncles - maternal side)
+#' - pau[0-9]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -564,19 +564,19 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     fam <- names(n_fam)
     # Checking that all family members are valid strings
     if(any(!(str_detect(fam, "^[mf]$") | str_detect(fam, "^[mp]g[mf]$") | 
-             str_detect(fam, "^s[1-9]*$") | str_detect(fam, "^[mp]hs[1-9]*$")| 
-             str_detect(fam, "^[mp]au[1-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
+             str_detect(fam, "^s[0-9]*$") | str_detect(fam, "^[mp]hs[0-9]*$")| 
+             str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
     - mgf (Maternal grandfather)\n
     - pgm (Paternal grandmother)\n
     - pgf (Paternal grandfather)\n
-    - s[1-9]* (Full siblings)\n
-    - mhs[1-9]* (Half-siblings - maternal side)\n
-    - phs[1-9]* (Half-siblings - paternal side)\n
-    - mau[1-9]* (Aunts/Uncles - maternal side)\n
-    - pau[1-9]* (Aunts/Uncles - paternal side).")
+    - s[0-9]* (Full siblings)\n
+    - mhs[0-9]* (Half-siblings - maternal side)\n
+    - phs[0-9]* (Half-siblings - paternal side)\n
+    - mau[0-9]* (Aunts/Uncles - maternal side)\n
+    - pau[0-9]* (Aunts/Uncles - paternal side).")
     
     # Checking that all entries in n_fam are non-negative
     if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
@@ -645,19 +645,19 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     
     # Checking that all family members are represented by valid strings
     if(any(!(str_detect(fam_vec, "^[mf]$") | str_detect(fam_vec, "^[mp]g[mf]$") | 
-             str_detect(fam_vec, "^s[1-9]*$") | str_detect(fam_vec, "^[mp]hs[1-9]*$")| 
-             str_detect(fam_vec, "^[mp]au[1-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
+             str_detect(fam_vec, "^s[0-9]*$") | str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
+             str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
     - mgf (Maternal grandfather)\n
     - pgm (Paternal grandmother)\n
     - pgf (Paternal grandfather)\n
-    - s[1-9]* (Full siblings)\n
-    - mhs[1-9]* (Half-siblings - maternal side)\n
-    - phs[1-9]* (Half-siblings - paternal side)\n
-    - mau[1-9]* (Aunts/Uncles - maternal side)\n
-    - pau[1-9]* (Aunts/Uncles - paternal side).")
+    - s[0-9]* (Full siblings)\n
+    - mhs[0-9]* (Half-siblings - maternal side)\n
+    - phs[0-9]* (Half-siblings - paternal side)\n
+    - mau[0-9]* (Aunts/Uncles - maternal side)\n
+    - pau[0-9]* (Aunts/Uncles - paternal side).")
     
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
@@ -727,11 +727,11 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[1-9]* (Full siblings)
-#' - mhs[1-9]* (Half-siblings - maternal side)
-#' - phs[1-9]* (Half-siblings - paternal side)
-#' - mau[1-9]* (Aunts/Uncles - maternal side)
-#' - pau[1-9]* (Aunts/Uncles - paternal side).
+#' - s[0-9]* (Full siblings)
+#' - mhs[0-9]* (Half-siblings - maternal side)
+#' - phs[0-9]* (Half-siblings - paternal side)
+#' - mau[0-9]* (Aunts/Uncles - maternal side)
+#' - pau[0-9]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
