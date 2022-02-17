@@ -5,11 +5,6 @@
 ^\./Example/example_multi\.R$
 ^\.travis\.yml$
 ^appveyor\.yml$
-^tmp-tests$
 ^\.github$
-^_pkgdown\.yml$
-^docs$
 ^pkgdown$
 ^README\.Rmd$
-^vignettes$
-^tests$
