@@ -17,11 +17,11 @@
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[0-9]* (Full siblings)
-#' - mhs[0-9]* (Half-siblings - maternal side)
-#' - phs[0-9]* (Half-siblings - paternal side)
-#' - mau[0-9]* (Aunts/Uncles - maternal side)
-#' - pau[0-9]* (Aunts/Uncles - paternal side).
+#' - s(0-9)* (Full siblings)
+#' - mhs(0-9)* (Half-siblings - maternal side)
+#' - phs(0-9)* (Half-siblings - paternal side)
+#' - mau(0-9)* (Aunts/Uncles - maternal side)
+#' - pau(0-9)* (Aunts/Uncles - paternal side).
 #' @param sq.herit A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1.
 #' 
@@ -42,6 +42,8 @@
 #' get_relatedness("a","b")
 #' get_relatedness(m,mhs)
 #' }
+#' 
+#' @importFrom stringr str_detect
 #' 
 #' @export
 get_relatedness <- function(s1,s2, sq.herit=0.5){
@@ -184,11 +186,11 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[0-9]* (Full siblings)
-#' - mhs[0-9]* (Half-siblings - maternal side)
-#' - phs[0-9]* (Half-siblings - paternal side)
-#' - mau[0-9]* (Aunts/Uncles - maternal side)
-#' - pau[0-9]* (Aunts/Uncles - paternal side).
+#' - s(0-9)* (Full siblings)
+#' - mhs(0-9)* (Half-siblings - maternal side)
+#' - phs(0-9)* (Half-siblings - paternal side)
+#' - mau(0-9)* (Aunts/Uncles - maternal side)
+#' - pau(0-9)* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -283,9 +285,9 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # members
     fam <- names(n_fam)
     # Checking that all family members are valid strings
-    if(any(!(str_detect(fam, "^[mf]$") | str_detect(fam, "^[mp]g[mf]$") | 
-             str_detect(fam, "^s[0-9]*$") | str_detect(fam, "^[mp]hs[0-9]*$")| 
-             str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
+    if(any(!(stringr::str_detect(fam, "^[mf]$") | stringr::str_detect(fam, "^[mp]g[mf]$") | 
+             stringr::str_detect(fam, "^s[0-9]*$") | stringr::str_detect(fam, "^[mp]hs[0-9]*$")| 
+             stringr::str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
@@ -311,7 +313,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     }
     
     # Extracting all family members that can only occur exactly once
-    single_indx <- which(str_detect(names(n_fam), "^[gomf]$") | str_detect(names(n_fam), "^[mp]g[mf]$"))
+    single_indx <- which(stringr::str_detect(names(n_fam), "^[gomf]$") | stringr::str_detect(names(n_fam), "^[mp]g[mf]$"))
     # Extracting all family members that can occur multiple times
     multiple_indx <- setdiff(1:length(n_fam), single_indx)
     
@@ -356,9 +358,9 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    if(any(!(str_detect(fam_vec, "^[mf]$") | str_detect(fam_vec, "^[mp]g[mf]$") | 
-             str_detect(fam_vec, "^s[0-9]*$") | str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
-             str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
+    if(any(!(stringr::str_detect(fam_vec, "^[mf]$") | stringr::str_detect(fam_vec, "^[mp]g[mf]$") | 
+             stringr::str_detect(fam_vec, "^s[0-9]*$") | stringr::str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
+             stringr::str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
@@ -422,25 +424,28 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[0-9]* (Full siblings)
-#' - mhs[0-9]* (Half-siblings - maternal side)
-#' - phs[0-9]* (Half-siblings - paternal side)
-#' - mau[0-9]* (Aunts/Uncles - maternal side)
-#' - pau[0-9]* (Aunts/Uncles - paternal side).
+#' - s(0-9)* (Full siblings)
+#' - mhs(0-9)* (Half-siblings - maternal side)
+#' - phs(0-9)* (Half-siblings - paternal side)
+#' - mau(0-9)* (Aunts/Uncles - maternal side)
+#' - pau(0-9)* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
+#' 
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
+#' 
 #' @param sq.herit A numeric matrix holding the squared heritability on liability 
 #' scale for a desired number of phenotypes as well as the correlation between these
 #' phenotypes. The heritabilities must be given on the diagonal,
 #' while the off-diagonal entries must hold the correlation between phenotypes.
 #' All squared heritabilities must be non-negative and at most 1.
 #' All correlations must be between -1 and 1.
-#' Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2)
+#' Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).
+#' 
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to pheno1, pheno2, etc.
@@ -467,8 +472,9 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), add_ind = FALSE)
 #' construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), phen_names = c("p1","p2"))
 #' 
-#' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
-#' \code{\link{construct_covmat}}
+#' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
+#' \code{\link{construct_covmat}}.
+#' 
 #' @export
 construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2), phen_names = NULL){
   
@@ -563,9 +569,9 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     # Extracting the names which are equal to the desired family members
     fam <- names(n_fam)
     # Checking that all family members are valid strings
-    if(any(!(str_detect(fam, "^[mf]$") | str_detect(fam, "^[mp]g[mf]$") | 
-             str_detect(fam, "^s[0-9]*$") | str_detect(fam, "^[mp]hs[0-9]*$")| 
-             str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
+    if(any(!(stringr::str_detect(fam, "^[mf]$") | stringr::str_detect(fam, "^[mp]g[mf]$") | 
+             stringr::str_detect(fam, "^s[0-9]*$") | stringr::str_detect(fam, "^[mp]hs[0-9]*$")| 
+             stringr::str_detect(fam, "^[mp]au[0-9]*$")))) stop("Some family members in n_fam are not represented by a valid string! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
@@ -588,7 +594,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
       n_fam <- c(setNames(c(1,1), c("g", "o")), n_fam)
     }
     # Extracting all family members that can occur exactly once
-    single_indx <- which(str_detect(names(n_fam), "^[gomf]$") | str_detect(names(n_fam), "^[mp]g[mf]$"))
+    single_indx <- which(stringr::str_detect(names(n_fam), "^[gomf]$") | stringr::str_detect(names(n_fam), "^[mp]g[mf]$"))
     # Extracting all family members that can occur multiple times
     multiple_indx <- setdiff(1:length(n_fam), single_indx)
     # Getting the names for all family members that
@@ -644,9 +650,9 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    if(any(!(str_detect(fam_vec, "^[mf]$") | str_detect(fam_vec, "^[mp]g[mf]$") | 
-             str_detect(fam_vec, "^s[0-9]*$") | str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
-             str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
+    if(any(!(stringr::str_detect(fam_vec, "^[mf]$") | stringr::str_detect(fam_vec, "^[mp]g[mf]$") | 
+             stringr::str_detect(fam_vec, "^s[0-9]*$") | stringr::str_detect(fam_vec, "^[mp]hs[0-9]*$")| 
+             stringr::str_detect(fam_vec, "^[mp]au[0-9]*$")))) stop("Some family members in fam_vec are not represented by valid strings! Use a string from the following list: \n
     - m (Mother)\n
     - f (Father)\n
     - mgm (Maternal grandmother)\n
@@ -727,11 +733,11 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[0-9]* (Full siblings)
-#' - mhs[0-9]* (Half-siblings - maternal side)
-#' - phs[0-9]* (Half-siblings - paternal side)
-#' - mau[0-9]* (Aunts/Uncles - maternal side)
-#' - pau[0-9]* (Aunts/Uncles - paternal side).
+#' - s(0-9)* (Full siblings)
+#' - mhs(0-9)* (Half-siblings - maternal side)
+#' - phs(0-9)* (Half-siblings - paternal side)
+#' - mau(0-9)* (Aunts/Uncles - maternal side)
+#' - pau(0-9)* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -838,17 +844,15 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #' returns the original covariance matrix.
 #' 
 #' @examples
-#' 
 #' covmat <- construct_covmat(sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2))
 #' correct_positive_definite(covmat)
 #' covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
 #' correct_positive_definite(covmat)
 #' 
-#' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single},
-#' \code{\link{construct_covmat_multi}}
+#' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single} and
+#' \code{\link{construct_covmat_multi}}.
 #' 
 #' @export
-
 correct_positive_definite = function(covmat, correction_val = .99, correction_limit = 100) {
   
   # Checking that covmat is symmetric
@@ -903,7 +907,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   
   # We also extract the vectors holding the family members
   fam_vec <- setdiff(attr(covmat,"fam_vec"), c("g","o"))
-  n_fam <- attr(covmat,"n_fam")[str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
+  n_fam <- attr(covmat,"n_fam")[stringr::str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
   
   while(any(eigen(covmat)$values < 0) && n <= correction_limit) {
     
