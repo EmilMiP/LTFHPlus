@@ -11,3 +11,5 @@
 ^docs$
 ^pkgdown$
 ^README\.Rmd$
+^vignettes$
+^tests$
