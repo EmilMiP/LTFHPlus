@@ -24,11 +24,11 @@ following list:
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
-\item s\link{0-9}* (Full siblings)
-\item mhs\link{0-9}* (Half-siblings - maternal side)
-\item phs\link{0-9}* (Half-siblings - paternal side)
-\item mau\link{0-9}* (Aunts/Uncles - maternal side)
-\item pau\link{0-9}* (Aunts/Uncles - paternal side).
+\item s[0-9]* (Full siblings)
+\item mhs[0-9]* (Half-siblings - maternal side)
+\item phs[0-9]* (Half-siblings - paternal side)
+\item mau[0-9]* (Aunts/Uncles - maternal side)
+\item pau[0-9]* (Aunts/Uncles - paternal side).
 Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 }}
 
@@ -60,6 +60,11 @@ for all individuals in all families. Note that this tibble has the format requir
 \code{\link{estimate_liability}}. The last tibble, \code{fam_ID}, connects the personal identifiers
 for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID} has the format
 required in \code{\link{estimate_liability}}.
+Note that if neither fam_vec nor n_fam are specified, the function returns the disease status,
+the current age/age of onset, the lower and upper thresholds, as well as the personal identifier
+for a single individual, namely the individual under consideration (called 'o').
+If both fam_vec and n_fam are defined, the user is asked to decide on which
+of the two vectors to use.
 }
 \description{
 \code{simulate_under_LTM} simulates thresholds under
@@ -70,6 +75,7 @@ structure.
 simulate_under_LTM()
 simulate_under_LTM(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")))
 simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim = 200, pop_prev = 0.05)
 
 }
 \seealso{

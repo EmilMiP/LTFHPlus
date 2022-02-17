@@ -17,11 +17,11 @@
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s(0-9)* (Full siblings)
-#' - mhs(0-9)* (Half-siblings - maternal side)
-#' - phs(0-9)* (Half-siblings - paternal side)
-#' - mau(0-9)* (Aunts/Uncles - maternal side)
-#' - pau(0-9)* (Aunts/Uncles - paternal side).
+#' - s\[0-9\]* (Full siblings)
+#' - mhs\[0-9\]* (Half-siblings - maternal side)
+#' - phs\[0-9\]* (Half-siblings - paternal side)
+#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
+#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #' @param sq.herit A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1.
 #' 
@@ -186,11 +186,11 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s(0-9)* (Full siblings)
-#' - mhs(0-9)* (Half-siblings - maternal side)
-#' - phs(0-9)* (Half-siblings - paternal side)
-#' - mau(0-9)* (Aunts/Uncles - maternal side)
-#' - pau(0-9)* (Aunts/Uncles - paternal side).
+#' - s\[0-9\]* (Full siblings)
+#' - mhs\[0-9\]* (Half-siblings - maternal side)
+#' - phs\[0-9\]* (Half-siblings - paternal side)
+#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
+#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -424,11 +424,11 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s(0-9)* (Full siblings)
-#' - mhs(0-9)* (Half-siblings - maternal side)
-#' - phs(0-9)* (Half-siblings - paternal side)
-#' - mau(0-9)* (Aunts/Uncles - maternal side)
-#' - pau(0-9)* (Aunts/Uncles - paternal side).
+#' - s\[0-9\]* (Full siblings)
+#' - mhs\[0-9\]* (Half-siblings - maternal side)
+#' - phs\[0-9\]* (Half-siblings - paternal side)
+#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
+#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -733,11 +733,11 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s(0-9)* (Full siblings)
-#' - mhs(0-9)* (Half-siblings - maternal side)
-#' - phs(0-9)* (Half-siblings - paternal side)
-#' - mau(0-9)* (Aunts/Uncles - maternal side)
-#' - pau(0-9)* (Aunts/Uncles - paternal side).
+#' - s\[0-9\]* (Full siblings)
+#' - mhs\[0-9\]* (Half-siblings - maternal side)
+#' - phs\[0-9\]* (Half-siblings - paternal side)
+#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
+#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.

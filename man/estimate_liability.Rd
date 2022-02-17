@@ -22,8 +22,8 @@ Must have at least two columns that hold the family identifier and the correspon
 personal identifiers, respectively. That is, for each family in fam_id there should
 be a list holding all individuals belonging to that family in pid. Note that the
 personal identifiers for all individuals must have a special format, as it must end
-with _?, where ? \eqn{\in \{g,o,m,f,mgm,mgf,pgm,pgf,s[0-9]\*, mhs[0-9]\*,phs[0-9]\*,
-mau[0-9]\*, pau[0-9]\* \}}. See \code{\link{construct_covmat}} for more information.}
+with _?, where ? \eqn{\in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\*, mhs\[0-9\]\*,phs\[0-9\]\*,
+mau\[0-9\]\*, pau\[0-9\]\* \}}. See \code{\link{construct_covmat}} for more information.}
 
 \item{threshs}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least three columns, one holding the personal identifier for all individuals,
@@ -87,8 +87,11 @@ full liability, the full liability or both.
 
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+# 
+sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=200, pop_prev = .05)
+estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 
 }
 \seealso{
-\code{future.apply::future_apply}
+\code{\link[future.apply]{future_apply}}
 }
