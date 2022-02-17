@@ -22,8 +22,8 @@ Must have at least two columns that hold the family identifier and the correspon
 personal identifiers, respectively. That is, for each family in fam_id there should
 be a list holding all individuals belonging to that family in pid. Note that the
 personal identifiers for all individuals must have a special format, as it must end
-with _$?$, where $ ? \in \{g,o,m,f,mgm,mgf,pgm,pgf,s[0-9]\ast, mhs[0-9]\ast,phs[0-9]\ast,
-mau[0-9]\ast, pau[0-9]\ast \}$. See \code{\link{construct_covmat}} for more information.}
+with _\eqn{?}, where \eqn{ ? \in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\ast, mhs\[0-9\]\ast,phs\[0-9\]\ast,
+mau\[0-9\]\ast, pau\[0-9\]\ast \}}. See \code{\link{construct_covmat}} for more information.}
 
 \item{threshs}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least three columns, one holding the personal identifier for all individuals,
