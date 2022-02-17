@@ -13,11 +13,11 @@
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - s[1-9]* (Full siblings)
-#' - mhs[1-9]* (Half-siblings - maternal side)
-#' - phs[1-9]* (Half-siblings - paternal side)
-#' - mau[1-9]* (Aunts/Uncles - maternal side)
-#' - pau[1-9]* (Aunts/Uncles - paternal side).
+#' - s(0-9)* (Full siblings)
+#' - mhs(0-9)* (Half-siblings - maternal side)
+#' - phs(0-9)* (Half-siblings - paternal side)
+#' - mau(0-9)* (Aunts/Uncles - maternal side)
+#' - pau(0-9)* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
@@ -42,13 +42,21 @@
 #' \code{\link{estimate_liability}}. The last tibble, \code{fam_ID}, connects the personal identifiers
 #' for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID} has the format
 #' required in \code{\link{estimate_liability}}.
+#' Note that if neither fam_vec nor n_fam are specified, the function returns the disease status,
+#' the current age/age of onset, the lower and upper thresholds, as well as the personal identifier
+#' for a single individual, namely the individual under consideration (called 'o').
+#' If both fam_vec and n_fam are defined, the user is asked to decide on which 
+#' of the two vectors to use.
 #' 
 #' @examples
 #' simulate_under_LTM()
 #' simulate_under_LTM(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")))
 #' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim = 200, pop_prev = 0.05)
 #' 
 #' @seealso \code{\link{}}
+#' 
+#' @importFrom dplyr %>%
 #' 
 #' @export
 simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, n_sim=1000, pop_prev = .1){
@@ -61,8 +69,15 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
   if(pop_prev <=0 || pop_prev >=1) stop("The population prevalence pop_prev must be positive and at most 1!")
 
-  # Compute the covariance matrix
-  covmat <- construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, sq.herit = sq.herit)
+  # Computing the covariance matrix.
+  # If both fam_vec and n_fam are empty, construct_covmat
+  # would usually return a warning. We supress this warning here.
+  if(is.null(fam_vec) && is.null(n_fam)){
+    
+    covmat <- suppressWarnings(construct_covmat_single(fam_vec = NULL, n_fam = NULL, add_ind = add_ind, sq.herit = sq.herit))
+  }else{
+    covmat <- construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, sq.herit = sq.herit)
+  }
   
   # Simulating n_sim liabilities for the each family member
   liabs <- mvtnorm::rmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
@@ -93,7 +108,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # In order for the parents to have a reasonable age,
   # their age depends on the age of their oldest child,
   # if children are available.
-  if(any(str_detect(colnames(liabs), ".*_age$"))){
+  if(any(stringr::str_detect(colnames(liabs), ".*_age$"))){
     
     liabs <- liabs %>% 
       mutate(., max_age = invoke(pmax, select(., ends_with("_age"))))
@@ -113,7 +128,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # In order for the grandparents to have a reasonable age,
   # their age depends on the age of their oldest child,
   # if children are available.
-  if(any(str_detect(colnames(liabs), "^m_age$") | str_detect(colnames(liabs), "^mau[0-9]*_age$"))){
+  if(any(stringr::str_detect(colnames(liabs), "^m_age$") | stringr::str_detect(colnames(liabs), "^mau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
       mutate(., m_max_age = invoke(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
@@ -122,7 +137,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
     liabs <- mutate(liabs, m_max_age = 25)
   }
   
-  if(any(str_detect(colnames(liabs), "^p_age$") | str_detect(colnames(liabs), "^pau[0-9]*_age$"))){
+  if(any(stringr::str_detect(colnames(liabs), "^p_age$") | stringr::str_detect(colnames(liabs), "^pau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
       mutate(., p_max_age = invoke(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
@@ -175,6 +190,8 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
 #' as the age of onset or the current age
 #' (depending on the disease status) for all individuals 
 #' given in fam_mem. 
+#' 
+#' @importFrom dplyr %>%
 construct_aoo <- function(fam_mem,.tbl, pop_prev){
   
   # Removing the genetic component from the 
@@ -213,6 +230,8 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
 #' @return A tibble holding the personal identifier (PID) as well as 
 #' the lower and the upper threshold for all individuals
 #' present in fem_mem.
+#' 
+#' @importFrom dplyr %>%
 construct_thresholds <- function(fam_mem, .tbl, pop_prev){
   
   # Removing the genetic component from the 
