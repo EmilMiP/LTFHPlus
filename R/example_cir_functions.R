@@ -59,10 +59,9 @@ age_to_thres = function(age, pop_prev = .1, age_mid = 60, slope = 1/8) {
 #' @export
 #' 
 cir_to_age = function(cir, pop_prev = .1, age_mid = 60, slope = 1/8) {
+  
   age_mid - log(pop_prev/cir - 1) * 1/slope
 }
-
-
 
 
 #'
@@ -81,7 +80,12 @@ cir_to_age = function(cir, pop_prev = .1, age_mid = 60, slope = 1/8) {
 #' @export
 
 liab_to_aoo = function(liab, pop_prev = .1, age_mid = 60, slope = 1/8) {
-  age_mid - log(pop_prev/stats::pnorm(liab, lower.tail = F) - 1)* 1/slope
+  
+  if(stats::pnorm(liab, lower.tail = F) >= pop_prev){
+    return(NA)
+  }else{
+    return(age_mid - log(pop_prev/stats::pnorm(liab, lower.tail = F) - 1)* 1/slope)
+  }
 }
 
 
