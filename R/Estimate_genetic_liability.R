@@ -1,6 +1,6 @@
 #' Estimating the genetic or full liability 
 #'
-#' \code{estimate_liability} estimate the genetic component of the full
+#' \code{estimate_liability} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history.
 #'
@@ -12,8 +12,8 @@
 #' personal identifiers, respectively. That is, for each family in fam_id there should
 #' be a list holding all individuals belonging to that family in pid. Note that the 
 #' personal identifiers for all individuals must have a special format, as it must end
-#' with _?, where ? \eqn{\in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\*, mhs\[0-9\]\*,phs\[0-9\]\*,
-#' mau\[0-9\]\*, pau\[0-9\]\* \}}. See \code{\link{construct_covmat}} for more information.
+#' with _$?$, where $ ? \in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\ast, mhs\[0-9\]\ast,phs\[0-9\]\ast,
+#' mau\[0-9\]\ast, pau\[0-9\]\ast \}$. See \code{\link{construct_covmat}} for more information.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
 #' and the remaining two holding the lower and upper thresholds, respectively.
@@ -23,7 +23,7 @@
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
 #' @param fam_id A string holding the name of the column in \code{family} that
-#' holds the family identifier.
+#' holds the family identifier. Defaults to "fam_ID".
 #' @param out A character or numeric vector indicating whether the genetic component
 #' of the full liability, the full liability or both should be returned. If out = c(1) or 
 #' out = c("genetic"), the genetic liability is estimated and returned. If out = c(2) or 
@@ -35,11 +35,12 @@
 #' standard error of the mean is below 0.2. Defaults to 0.01.
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
-#' (see \code{\link{future.apply::future_apply()}}). Defaults to FALSE.
-#' @param always_add A character vector or NULL. If always_ad = c("g","o"), both the genetic component 
+#' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param always_add A character vector or NULL. If always_add = c("g","o"), both the genetic component 
 #' of the full liability as well as the full liability will be added to the list of family members. 
 #' If always_add equals "g" or "o", the genetic component of the full liability or the full liability
 #' will be added, respectively. If always_add = NULL, no component will be added.
+#' Defaults to c("g","o").
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
