@@ -90,5 +90,5 @@ estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0
 
 }
 \seealso{
-\code{\link{future.apply::future_apply}}
+\code{future.apply::future_apply}
 }

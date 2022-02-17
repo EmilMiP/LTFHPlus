@@ -18,11 +18,11 @@ The string must be one of the following:
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
-\item s\link{0-9}* (Full siblings)
-\item mhs\link{0-9}* (Half-siblings - maternal side)
-\item phs\link{0-9}* (Half-siblings - paternal side)
-\item mau\link{0-9}* (Aunts/Uncles - maternal side)
-\item pau\link{0-9}* (Aunts/Uncles - paternal side).
+\item s[0-9]* (Full siblings)
+\item mhs[0-9]* (Half-siblings - maternal side)
+\item phs[0-9]* (Half-siblings - paternal side)
+\item mau[0-9]* (Aunts/Uncles - maternal side)
+\item pau[0-9]* (Aunts/Uncles - paternal side).
 }}
 
 \item{sq.herit}{A number representing the squared heritability on liability scale.
