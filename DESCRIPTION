@@ -1,6 +1,6 @@
 Type: Package
-Package: LTFHplus
-Title: Extending the package 'LTFHplus'
+Package: LTFHPlus
+Title: Extending the package 'LTFHPlus'
 Version: 0.1
 Date: 2022-02-16
 Authors@R: c(
@@ -8,7 +8,7 @@ Authors@R: c(
     person("Emil Michael", "Pedersen", , "emp@ph.au.dk", role = "aut"),
     person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut")
   )
-Description: Extending the available package 'LTFHplus' in order to allow
+Description: Extending the available package 'LTFHPlus' in order to allow
     for more flexible family strctures. 'LT-FH++' is an extension of
     'LT-FH' using a Gibbs sampler for sampling from the truncated
     multivariate normal distribution.

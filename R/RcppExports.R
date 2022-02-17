@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rtmvnorm_gibbs_cpp <- function(P, sd, lower, upper, fixed, to_return, x, n_sim, burn_in) {
-    .Call(`_LTFHplus_rtmvnorm_gibbs_cpp`, P, sd, lower, upper, fixed, to_return, x, n_sim, burn_in)
+    .Call(`_LTFHPlus_rtmvnorm_gibbs_cpp`, P, sd, lower, upper, fixed, to_return, x, n_sim, burn_in)
 }
 
