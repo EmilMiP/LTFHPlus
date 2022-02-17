@@ -59,6 +59,9 @@
 #' 
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+#' # 
+#' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=200, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' 
 #' @seealso \code{future.apply::future_apply}
 #' 
@@ -82,10 +85,10 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   if(sq.herit<0)stop("The squared heritability must be non-negative")
   if(sq.herit>1)stop("The squared heritability must be smaller than or equal to 1.")
   # Checking that family has two columns named pid_col and fam_id
-  if(!(pid %in% colnames(family))) stop(paste0("The colum ", pid," does not exist in the tibble family..."))
-  if(!(fam_id %in% colnames(family))) stop(paste0("The colum ", fam_id," does not exist in the tibble family..."))
+  if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
+  if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
   # And that pid is also present in the tibble threshs
-  if(!(pid %in% colnames(threshs))) stop(paste0("The colum ", pid," does not exist in the tibble threshs..."))
+  if(!(pid %in% colnames(threshs))) stop(paste0("The column ", pid," does not exist in the tibble threshs..."))
   # In addition, we check that threshs has two columns named lower and upper
   if(any(!c("lower","upper") %in% colnames(threshs))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   # Checking that tol is valid
