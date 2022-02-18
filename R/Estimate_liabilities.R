@@ -57,14 +57,17 @@
 #' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
 #' 
 #' @examples
-#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, 
-#' sq.herit = 0.5, n_sim=500, pop_prev = .05)
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
-#' pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
+#' add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
+#' parallel = FALSE, always_add = c("g","o"))
 #' # 
-#' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=200, pop_prev = .05)
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
-#' pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+#' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, 
+#' sq.herit = 0.5, n_sim=200, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), 
+#' tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
@@ -186,7 +189,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         fam_threshs <- bind_rows(thr, fam_threshs)
       }else if(nrow(thr) == 0){
         
-        fam_threshs <- bind_rows(tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
+        fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
         

@@ -73,9 +73,12 @@ structure.
 }
 \examples{
 simulate_under_LTM()
-simulate_under_LTM(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")))
-simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, sq.herit = 0.5, n_sim=500, pop_prev = .05)
-simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim = 200, pop_prev = 0.05)
+simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+c("m","mgm","mgf","s","mhs")))
+simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, 
+sq.herit = 0.5, n_sim=500, pop_prev = .05)
+simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, 
+n_sim = 200, pop_prev = 0.05)
 
 }
 \seealso{

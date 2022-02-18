@@ -85,12 +85,14 @@ This function can be used to estimate either the genetic component of the
 full liability, the full liability or both.
 }
 \examples{
-
-sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
-estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, 
+sq.herit = 0.5, n_sim=500, pop_prev = .05)
+estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
+pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=200, pop_prev = .05)
-estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
+pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 
 }
 \seealso{

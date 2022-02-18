@@ -68,8 +68,10 @@ can be specified using one of two possible formats.
 }
 \examples{
 construct_covmat()
-construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
-construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
+construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
+construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
 
 }
 \seealso{
