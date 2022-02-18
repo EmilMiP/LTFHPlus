@@ -42,7 +42,6 @@ Gibbs Sampler for the truncated multivariate normal distribution
 \examples{
 samp <- rtmvnorm.gibbs(10e3, sigma = matrix(c(1, 0.2, 0.2, 0.5), 2),
                        lower = c(-Inf, 0), upper = c(0, Inf), ind = 1:2)
-
 }
 \references{
 Kotecha, J. H., & Djuric, P. M. (1999, March). Gibbs sampling approach for

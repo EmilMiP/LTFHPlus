@@ -849,7 +849,7 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #' covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
 #' correct_positive_definite(covmat)
 #' 
-#' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single} and
+#' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat_multi}}.
 #' 
 #' @export

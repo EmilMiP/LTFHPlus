@@ -65,6 +65,6 @@ correct_positive_definite(covmat)
 
 }
 \seealso{
-\code{\link{construct_covmat}}, \code{\link{construct_covmat_single} and
+\code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
 \code{\link{construct_covmat_multi}}.
 }

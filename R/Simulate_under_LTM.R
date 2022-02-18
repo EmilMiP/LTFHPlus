@@ -54,7 +54,7 @@
 #' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, sq.herit = 0.5, n_sim=500, pop_prev = .05)
 #' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim = 200, pop_prev = 0.05)
 #' 
-#' @seealso \code{\link{}}
+#' @seealso \code{\link{construct_covmat}}
 #' 
 #' @importFrom dplyr %>%
 #' 

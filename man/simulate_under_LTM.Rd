@@ -79,5 +79,5 @@ simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_s
 
 }
 \seealso{
-\code{\link{}}
+\code{\link{construct_covmat}}
 }
