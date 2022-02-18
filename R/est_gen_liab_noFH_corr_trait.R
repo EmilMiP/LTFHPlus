@@ -4,10 +4,10 @@
 #' Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not
 #'
 #' @param h2_vec Liability scale heritability of the trait being analysed.
-#' @param gen_cor_vec vector of genetic correlations, in order of appearence in phenotype file
+#' @param gen_cor_vec vector of genetic correlations, in order of appearance in phenotype file
 #' @param phen tibble or data.frame with status of the individual in order of h2_vec.
 #' @param prev_vec Vector of prevalences in order of appearance in h2_vec.
-#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
+#' @param tol Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
 #'

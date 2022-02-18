@@ -8,7 +8,7 @@ Authors@R: c(
     person("Emil Michael", "Pedersen", , "emp@ph.au.dk", role = "aut"),
     person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut"))
 Description: Extending the available package 'LTFHPlus' in order to allow
-    for more flexible family strctures. 'LT-FH++' is an extension of
+    for more flexible family structures. 'LT-FH++' is an extension of
     'LT-FH' using a Gibbs sampler for sampling from the truncated
     multivariate normal distribution.
 License: GPL (>= 2)
@@ -25,10 +25,11 @@ Suggests:
     rmarkdown,
     testthat,
     tidyr,
-    mvtnorm
+    tmvtnorm
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Language: "en-GB"
 URL: https://github.com/JetteS/LTFHPlus

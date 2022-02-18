@@ -80,7 +80,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   }
   
   # Simulating n_sim liabilities for the each family member
-  liabs <- mvtnorm::rmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
+  liabs <- tmvtnorm::rmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
   # Adding the column names
   colnames(liabs) <- colnames(covmat)
   

@@ -13,7 +13,7 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' @param status_col_mother Column name of status for the mother
 #' @param status_col_siblings Column name of status for the siblings
 #' @param number_of_siblings_col Column name for the number of siblings for a given individual
-#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
+#' @param tol Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
 #'

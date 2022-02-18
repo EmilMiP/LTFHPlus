@@ -44,7 +44,7 @@
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
-#' threshs has a column named like the string given in pid as well as a colimn named "lower" and 
+#' threshs has a column named like the string given in pid as well as a column named "lower" and 
 #' a column named "upper" and if the squared heritability, out, tol and always_add are of the required form,
 #' then the function returns a tibble with either four or six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 

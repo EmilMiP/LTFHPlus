@@ -448,7 +448,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' 
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
-#' If it is not specified, the names will default to pheno1, pheno2, etc.
+#' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the 
@@ -496,7 +496,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   # Checking that phen_names is either NULL or a valid
   # vector of strings
   if(is.null(phen_names)){
-    phen_names <- paste0("pheno", 1:num_phen)
+    phen_names <- paste0("phenotype", 1:num_phen)
   }else{
     if(class(phen_names) != "character") phen_names <- as.character(phen_names)
     if(length(phen_names) != num_phen) stop("The number of names in phen_num and the number of phenotypes differ...")
@@ -756,7 +756,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' Defaults to 0.5.
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
-#' If it is not specified, the names will default to pheno1, pheno2, etc.
+#' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of 
@@ -826,7 +826,7 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #' 
 #' @param correction_val A positive number representing the amount by which
 #' sq.herit will be changed, if not all eigenvalues are positive. That is, correction_val
-#' is the number that will be multiplied to all off_diagnonal entries in sq.herit.
+#' is the number that will be multiplied to all off_diagonal entries in sq.herit.
 #' Defaults to 0.99.
 #' 
 #' @param correction_limit A positive integer representing the upper limit for the correction
@@ -838,7 +838,7 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #' \code{correct_positive_definite} tries to convert covmat into a positive definite
 #' matrix. If covmat has attributes "add_ind" and "sq.herit", with sq.herit being
 #' a matrix with at least two rows and columns, \code{correct_positive_definite} 
-#' computes a new covariance matrix using a slighty modified sq.herit. If the 
+#' computes a new covariance matrix using a slightly modified sq.herit. If the 
 #' correction is performed successfully, i.e. if the new covmat is positive definite,
 #' the new covariance matrix is returned. Otherwise, \code{correct_positive_definite}
 #' returns the original covariance matrix.
