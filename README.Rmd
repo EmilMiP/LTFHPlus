@@ -28,5 +28,5 @@ A detailed description of the liability threshold model conditioned on family hi
 You can install LTFHpp by:
 
 ```{r eval=FALSE}
-devtools::install_github("JetteS/LTFHPlus")
+devtools::install_github("JetteS/LTFHpp")
 ```

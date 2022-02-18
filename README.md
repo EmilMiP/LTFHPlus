@@ -21,5 +21,5 @@ and sex can be found [here](https://doi.org/10.1016/j.ajhg.2022.01.009).
 You can install LTFHpp by:
 
 ``` r
-devtools::install_github("JetteS/LTFHPlus")
+devtools::install_github("JetteS/LTFHpp")
 ```

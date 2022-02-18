@@ -1,13 +1,12 @@
+Package: LTFHpp
 Type: Package
-Package: LTFHPlus
 Title: Extending the package 'LTFHPlus'
-Version: 0.1
-Date: 2022-02-16
+Version: 0.2
+Date: 2022-02-18
 Authors@R: c(
     person("Jette", "Steinbach", , "jst@econ.au.dk", role = c("aut", "cre")),
     person("Emil Michael", "Pedersen", , "emp@ph.au.dk", role = "aut"),
-    person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut")
-  )
+    person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut"))
 Description: Extending the available package 'LTFHPlus' in order to allow
     for more flexible family strctures. 'LT-FH++' is an extension of
     'LT-FH' using a Gibbs sampler for sampling from the truncated
@@ -27,12 +26,9 @@ Suggests:
     testthat,
     tidyr,
     mvtnorm
-LinkingTo: 
-    Rcpp
-VignetteBuilder: 
-    knitr
+LinkingTo: Rcpp
+VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 URL: https://github.com/JetteS/LTFHPlus
-BugReports: https://github.com/EmilMiP/LTFHPlus/issues

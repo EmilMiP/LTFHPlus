@@ -87,7 +87,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # Turning the matrix into a tibble and adding the famnily ID
   liabs <- as_tibble(liabs) %>%
     mutate(fam_ID = paste0("fam", 1:n())) %>%
-    relocate(., fam_ID)
+    dplyr::relocate(., fam_ID)
   
   # Adding the disease status for all individuals.
   # RemarK: across() can be used to apply a function (.fns)

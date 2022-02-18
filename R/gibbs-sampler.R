@@ -25,13 +25,11 @@
 #' 
 #' Wilhelm, S., & Manjunath, B. G. (2010). tmvtnorm: A package for the truncated 
 #' multivariate normal distribution. The R Journal. \doi{10.32614/RJ-2010-005}
-#'
-#' @export
 #' 
 #' @examples
 #' samp <- rtmvnorm.gibbs(10e3, sigma = matrix(c(1, 0.2, 0.2, 0.5), 2),
 #'                        lower = c(-Inf, 0), upper = c(0, Inf), ind = 1:2)
-#' 
+#' @export
 rtmvnorm.gibbs <- function(n_sim, sigma, lower, upper, 
                            fixed = (lower == upper), 
                            ind = 1, burn_in = 1000) {
