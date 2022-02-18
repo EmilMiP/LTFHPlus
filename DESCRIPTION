@@ -17,6 +17,7 @@ Imports:
     dplyr,
     future.apply,
     progressr,
+    purrr,
     Rcpp,
     stringr,
     tibble,
