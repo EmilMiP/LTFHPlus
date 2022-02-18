@@ -18,14 +18,18 @@ Imports:
     future.apply,
     progressr,
     Rcpp,
-    stringr
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect,
+    tmvtnorm,
+    utils
 Suggests:
+    future,
     knitr,
     MASS,
     rmarkdown,
-    testthat,
-    tidyr,
-    tmvtnorm
+    testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 Encoding: UTF-8
