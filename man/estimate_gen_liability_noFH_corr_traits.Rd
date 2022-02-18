@@ -17,11 +17,11 @@ estimate_gen_liability_noFH_corr_traits(
 
 \item{h2_vec}{Liability scale heritability of the trait being analysed.}
 
-\item{gen_cor_vec}{vector of genetic correlations, in order of appearence in phenotype file}
+\item{gen_cor_vec}{vector of genetic correlations, in order of appearance in phenotype file}
 
 \item{prev_vec}{Vector of prevalences in order of appearance in h2_vec.}
 
-\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
+\item{tol}{Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
 \value{
 Returns the estimated genetic liabilities.

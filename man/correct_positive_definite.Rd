@@ -20,7 +20,7 @@ or \code{\link{construct_covmat_multi}} will have these attributes by default.}
 
 \item{correction_val}{A positive number representing the amount by which
 sq.herit will be changed, if not all eigenvalues are positive. That is, correction_val
-is the number that will be multiplied to all off_diagnonal entries in sq.herit.
+is the number that will be multiplied to all off_diagonal entries in sq.herit.
 Defaults to 0.99.}
 
 \item{correction_limit}{A positive integer representing the upper limit for the correction
@@ -33,7 +33,7 @@ eigenvalues are not positive and correction_val is a positive number,
 \code{correct_positive_definite} tries to convert covmat into a positive definite
 matrix. If covmat has attributes "add_ind" and "sq.herit", with sq.herit being
 a matrix with at least two rows and columns, \code{correct_positive_definite}
-computes a new covariance matrix using a slighty modified sq.herit. If the
+computes a new covariance matrix using a slightly modified sq.herit. If the
 correction is performed successfully, i.e. if the new covmat is positive definite,
 the new covariance matrix is returned. Otherwise, \code{correct_positive_definite}
 returns the original covariance matrix.

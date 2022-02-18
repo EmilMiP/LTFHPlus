@@ -49,7 +49,7 @@ Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
-If it is not specified, the names will default to pheno1, pheno2, etc.
+If it is not specified, the names will default to phenotype1, phenotype2, etc.
 Defaults to NULL.}
 }
 \value{

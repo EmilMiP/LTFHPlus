@@ -36,7 +36,7 @@ estimate_gen_liability_ltfh(
 
 \item{number_of_siblings_col}{Column name for the number of siblings for a given individual}
 
-\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
+\item{tol}{Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
 \value{
 Returns the estimated genetic liabilities.

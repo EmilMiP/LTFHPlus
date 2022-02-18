@@ -20,11 +20,11 @@ estimate_gen_liability_multi_trait(
 
 \item{thr.list}{list of tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.}
 
-\item{ind}{Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
+\item{ind}{Indices to return from the Gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.}
 
 \item{id_col}{Column names of IDs for family members.}
 
-\item{tol}{Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
+\item{tol}{Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01}
 }
 \value{
 Returns the estimated genetic liabilities.

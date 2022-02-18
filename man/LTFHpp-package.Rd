@@ -6,7 +6,7 @@
 \alias{LTFHpp-package}
 \title{LTFHpp: Extending the package 'LTFHPlus'}
 \description{
-Extending the available package 'LTFHPlus' in order to allow for more flexible family strctures. 'LT-FH++' is an extension of 'LT-FH' using a Gibbs sampler for sampling from the truncated multivariate normal distribution.
+Extending the available package 'LTFHPlus' in order to allow for more flexible family structures. 'LT-FH++' is an extension of 'LT-FH' using a Gibbs sampler for sampling from the truncated multivariate normal distribution.
 }
 \seealso{
 Useful links:
