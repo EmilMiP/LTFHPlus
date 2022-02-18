@@ -21,8 +21,6 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' # See R/Example/example_nosib.R for an example of use and input.
 #' @importFrom dplyr %>%
 #' @export
-
-
 estimate_gen_liability_ltfh = function(h2,
                                        phen, 
                                        child_threshold,
@@ -240,7 +238,7 @@ estimate_gen_liability_ltfh = function(h2,
         vals = list() #store simulated values
         vals.ctr = 1
         while (is.null(se) || se > tol) {
-          gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
+          gen_liabs = LTFHpp::rtmvnorm.gibbs(n_sim = 50e3,
                                                sigma = get_cov(h2, n_sib = cur_nsib),
                                                lower = lower,
                                                upper = upper,

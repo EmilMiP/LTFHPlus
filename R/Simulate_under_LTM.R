@@ -50,13 +50,16 @@
 #' 
 #' @examples
 #' simulate_under_LTM()
-#' simulate_under_LTM(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")))
-#' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, sq.herit = 0.5, n_sim=500, pop_prev = .05)
-#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim = 200, pop_prev = 0.05)
+#' simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+#' c("m","mgm","mgf","s","mhs")))
+#' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, 
+#' sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, 
+#' n_sim = 200, pop_prev = 0.05)
 #' 
 #' @seealso \code{\link{construct_covmat}}
 #' 
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% bind_cols select relocate mutate rowwise n across
 #' 
 #' @export
 simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, n_sim=1000, pop_prev = .1){
@@ -85,23 +88,23 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   colnames(liabs) <- colnames(covmat)
   
   # Turning the matrix into a tibble and adding the famnily ID
-  liabs <- as_tibble(liabs) %>%
+  liabs <- tibble::as_tibble(liabs) %>%
     mutate(fam_ID = paste0("fam", 1:n())) %>%
-    dplyr::relocate(., fam_ID)
+    relocate(., fam_ID)
   
   # Adding the disease status for all individuals.
   # RemarK: across() can be used to apply a function (.fns)
   # to a subset of columns (.cols) and storing the resulting
   # columns under pre-specified names (.names).
   # .cols uses the same syntax as select().
-  liabs <- mutate(liabs, across(.cols = -c(matches("^g$"),matches("^fam_ID$")), 
+  liabs <- mutate(liabs, across(.cols = -c(tidyselect::matches("^g$"), tidyselect::matches("^fam_ID$")), 
                                 .fns = ~ .x > qnorm(pop_prev, lower.tail = FALSE),
                                 .names = "{.col}_status" ))
   
   # Adding the age for all individuals.
   # We begin by adding the age for the individual as well as
   # its full- and half-siblings, if available.
-  liabs <- mutate(liabs, across(.cols = c(matches("^o$"), matches("^s[0-9]*$"), matches("^[mp]hs[0-9]*$")), 
+  liabs <- mutate(liabs, across(.cols = c(tidyselect::matches("^o$"), tidyselect::matches("^s[0-9]*$"), tidyselect::matches("^[mp]hs[0-9]*$")), 
                                 .fns = ~sample(10:40, size = n(), replace = TRUE),
                                 .names = "{.col}_age"))
   
@@ -111,17 +114,17 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   if(any(stringr::str_detect(colnames(liabs), ".*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., max_age = invoke(pmax, select(., ends_with("_age"))))
+      mutate(., max_age = purrr::invoke(pmax, select(., tidyselect::ends_with("_age"))))
   }else{
     
     liabs <- mutate(liabs, max_age = 0)
   }
   
   liabs <- liabs %>%
-    mutate(., across(.cols = c(matches("^[mf]$")), 
+    mutate(., across(.cols = c(tidyselect::matches("^[mf]$")), 
                      .fns = ~sample(18:30, size = n(), replace = TRUE) + max_age,
                      .names = "{.col}_age")) %>%
-    mutate(., across(.cols = c(matches("^[mp]au[0-9]*$")), 
+    mutate(., across(.cols = c(tidyselect::matches("^[mp]au[0-9]*$")), 
                      .fns = ~sample(12:40, size = n(), replace = TRUE) + max_age,
                      .names = "{.col}_age"))
   
@@ -131,7 +134,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   if(any(stringr::str_detect(colnames(liabs), "^m_age$") | stringr::str_detect(colnames(liabs), "^mau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., m_max_age = invoke(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
+      mutate(., m_max_age = purrr::invoke(pmax, select(., tidyselect::matches("^m_age$"), tidyselect::matches("^mau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, m_max_age = 25)
@@ -140,17 +143,17 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   if(any(stringr::str_detect(colnames(liabs), "^p_age$") | stringr::str_detect(colnames(liabs), "^pau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., p_max_age = invoke(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
+      mutate(., p_max_age = purrr::invoke(pmax, select(., tidyselect::matches("^f_age$"), tidyselect::matches("^pau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, p_max_age = 25)
   }
    
   liabs <- liabs %>%
-    mutate(., across(.cols = c(matches("^mg[mf]$")), 
+    mutate(., across(.cols = c(tidyselect::matches("^mg[mf]$")), 
                      .fns = ~sample(15:30, size = n(), replace = TRUE) + m_max_age,
                      .names = "{.col}_age")) %>%
-    mutate(., across(.cols = c(matches("^pg[mf]$")), 
+    mutate(., across(.cols = c(tidyselect::matches("^pg[mf]$")), 
                      .fns = ~sample(15:30, size = n(), replace = TRUE) + p_max_age,
                      .names = "{.col}_age")) %>%
     select(., -c(max_age, m_max_age, p_max_age))
@@ -168,7 +171,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
       paste0(i,"_", setdiff(colnames(covmat),c("g")))
     }))
   
-  return(list(sim_obs = select(liabs, c(fam_ID, ends_with("_status"), ends_with("_aoo"))), 
+  return(list(sim_obs = select(liabs, c(fam_ID, tidyselect::ends_with("_status"), tidyselect::ends_with("_aoo"))), 
               thresholds = threshs, 
               fam_ID = fam_ID))
 }
@@ -191,7 +194,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
 #' (depending on the disease status) for all individuals 
 #' given in fam_mem. 
 #' 
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% rowwise select mutate bind_cols
 construct_aoo <- function(fam_mem,.tbl, pop_prev){
   
   # Removing the genetic component from the 
@@ -203,7 +206,7 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
     
     # Selecting the liability, disease status and age for 
     # individual i, in order to compute the age of onset.
-    select(.tbl, c(matches(paste0("^",i,"$")), matches(paste0("^",i,"_[as].*$")))) %>%
+    select(.tbl, c(tidyselect::matches(paste0("^",i,"$")), tidyselect::matches(paste0("^",i,"_[as].*$")))) %>%
       rowwise() %>% 
       mutate(., !!as.symbol(paste0(i,"_aoo")) := ifelse(!!as.symbol(paste0(i,"_status")), 
                                                         round(liab_to_aoo(!!as.symbol(i), pop_prev = pop_prev)),
@@ -231,7 +234,7 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
 #' the lower and the upper threshold for all individuals
 #' present in fem_mem.
 #' 
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% rowwise select mutate bind_rows
 construct_thresholds <- function(fam_mem, .tbl, pop_prev){
   
   # Removing the genetic component from the 
@@ -243,7 +246,7 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev){
     
     # Selecting the family ID, disease status and age/aoo for 
     # individual i, in order to compute the thresholds.
-    select(.tbl, c(matches(paste0("^fam_ID$")),matches(paste0("^",i,"_status$")), matches(paste0("^",i,"_aoo$")))) %>%
+    select(.tbl, c(tidyselect::matches(paste0("^fam_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
       rowwise() %>% 
       mutate(., PID = paste0(fam_ID,"_",i), 
              upper = age_to_thres(!!as.symbol(paste0(i,"_aoo")), pop_prev = pop_prev), 

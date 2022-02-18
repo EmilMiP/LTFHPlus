@@ -57,16 +57,18 @@
 #' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
 #' 
 #' @examples
-#' 
-#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=500, pop_prev = .05)
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = T, 
+#' sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
+#' pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' # 
 #' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, n_sim=200, pop_prev = .05)
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, sq.herit = 0.5, 
+#' pid = "PID", fam_id = "fam_ID", out = c("genetic"), tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% pull bind_rows bind_cols
 #' 
 #' @export
 estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o")){
@@ -79,8 +81,8 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   fam_id <- as.character(fam_id)
   
   #Turning family and threshs into tibbles
-  family <- as_tibble(family)
-  threshs <- as_tibble(threshs)
+  family <- tibble::as_tibble(family)
+  threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
   if(sq.herit<0)stop("The squared heritability must be non-negative")
@@ -150,7 +152,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       
       if(ver == "y"){
         
-        install.packages("future.apply")
+        utils::install.packages("future.apply")
       }else{
         
         parallel <- FALSE
@@ -188,11 +190,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
         
-        fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
         
-        fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
       }
       
@@ -210,14 +212,14 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
           est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
                                       fixed = fixed, ind = out, burn_in = 1000) %>% 
             `colnames<-`(c("genetic", "full")[out]) %>% 
-            as_tibble()
+            tibble::as_tibble()
           
         }else{
           
           est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
                                       fixed = fixed, ind = out, burn_in = 1000) %>%
             `colnames<-`(c("genetic", "full")[out]) %>%
-            as_tibble() %>% 
+            tibble::as_tibble() %>% 
             bind_rows(est_liabs)
         }
         
@@ -229,7 +231,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       # If all standard errors are below the tolerance, 
       # the estimated liabilities as well as the corresponding 
       # standard error can be returned
-      return(setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
+      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
       
     }, future.seed = TRUE)
     
@@ -260,11 +262,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
         
-        fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
         
-        fam_threshs <- bind_rows(add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
       }
       
@@ -282,14 +284,14 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
           est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
                                       fixed = fixed, ind = out, burn_in = 1000) %>% 
             `colnames<-`(c("genetic", "full")[out]) %>% 
-            as_tibble()
+            tibble::as_tibble()
           
         }else{
           
           est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
                                       fixed = fixed, ind = out, burn_in = 1000) %>%
             `colnames<-`(c("genetic", "full")[out]) %>%
-            as_tibble() %>% 
+            tibble::as_tibble() %>% 
             bind_rows(est_liabs)
         }
         
@@ -301,14 +303,14 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       # If all standard errors are below the tolerance, 
       # the estimated liabilities as well as the corresponding 
       # standard error can be returned
-      return(setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
+      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
     })
   }
   
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information
-  family <- bind_cols(family, as_tibble(t(gibbs_res)))
+  family <- bind_cols(family, tibble::as_tibble(t(gibbs_res)))
 
   return(family)
 }

@@ -216,8 +216,10 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' 
 #' @examples
 #' construct_covmat()
-#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
-#' construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
+#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+#' n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
+#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_multi}},
 #' \code{\link{construct_covmat}}
@@ -309,7 +311,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
     if(add_ind){
-      n_fam <- c(setNames(c(1,1), c("g", "o")), n_fam)
+      n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
     
     # Extracting all family members that can only occur exactly once
@@ -468,9 +470,12 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' 
 #' @examples
 #' construct_covmat()
-#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), n_fam = NULL, add_ind = TRUE)
-#' construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), add_ind = FALSE)
-#' construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), phen_names = c("p1","p2"))
+#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+#' n_fam = NULL, add_ind = TRUE)
+#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE)
+#' construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), 
+#' phen_names = c("p1","p2"))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat}}.
@@ -591,7 +596,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
     if(add_ind){
-      n_fam <- c(setNames(c(1,1), c("g", "o")), n_fam)
+      n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
     # Extracting all family members that can occur exactly once
     single_indx <- which(stringr::str_detect(names(n_fam), "^[gomf]$") | stringr::str_detect(names(n_fam), "^[mp]g[mf]$"))
@@ -777,8 +782,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' 
 #' @examples
 #' construct_covmat()
-#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
-#' construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
+#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+#' n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
+#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
 #' construct_covmat(sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
@@ -844,9 +851,9 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #' returns the original covariance matrix.
 #' 
 #' @examples
-#' covmat <- construct_covmat(sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2))
-#' correct_positive_definite(covmat)
-#' covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
+#' 
+#' covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, 
+#' sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
 #' correct_positive_definite(covmat)
 #' 
 #' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
