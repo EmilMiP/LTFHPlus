@@ -72,6 +72,7 @@
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
 #' @importFrom dplyr %>% pull bind_rows bind_cols
+#' @importFrom rlang :=
 #' 
 #' @export
 estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o")){

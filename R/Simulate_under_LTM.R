@@ -195,6 +195,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
 #' given in fam_mem. 
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_cols
+#' @importFrom rlang :=
 construct_aoo <- function(fam_mem,.tbl, pop_prev){
   
   # Removing the genetic component from the 
