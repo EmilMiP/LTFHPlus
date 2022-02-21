@@ -1,3 +1,5 @@
+utils::globalVariables("fam_ID")
+utils::globalVariables("PID")
 #' Simulate under the liability threshold model.
 #'
 #' \code{simulate_under_LTM} simulates thresholds under
