@@ -218,7 +218,7 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
     select(.tbl, c(tidyselect::matches(paste0("^",i,"$")), tidyselect::matches(paste0("^",i,"_[as].*$")))) %>%
       rowwise() %>% 
       mutate(., !!as.symbol(paste0(i,"_aoo")) := ifelse(!!as.symbol(paste0(i,"_status")), 
-                                                        round(liab_to_aoo(!!as.symbol(i), pop_prev = pop_prev)),
+                                                        round(convert_liability_to_aoo(!!as.symbol(i), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
                                                         !!as.symbol(paste0(i,"_age")))) %>%
       select(., !!as.symbol(paste0(i,"_aoo")))
   }
@@ -258,10 +258,10 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev){
     select(.tbl, c(tidyselect::matches(paste0("^fam_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
       rowwise() %>% 
       mutate(., PID = paste0(fam_ID,"_",i), 
-             upper = age_to_thres(!!as.symbol(paste0(i,"_aoo")), pop_prev = pop_prev), 
+             upper = convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
              lower = ifelse(!!as.symbol(paste0(i,"_status")), 
-                            age_to_thres(!!as.symbol(paste0(i,"_aoo")), 
-                                         pop_prev = pop_prev),-Inf)) %>%
+                            convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
+                            -Inf)) %>%
       select(., PID, lower, upper)
     
   }) %>% do.call("bind_rows",.)
