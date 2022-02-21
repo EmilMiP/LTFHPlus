@@ -1,6 +1,4 @@
 
-
-#'
 #' Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not
 #'
 #' @param h2_vec Liability scale heritability of the trait being analysed.
