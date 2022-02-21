@@ -23,3 +23,9 @@ You can install LTFHpp by:
 ``` r
 devtools::install_github("JetteS/LTFHpp")
 ```
+
+<!-- badges: start -->
+
+[![R build
+status](https://github.com/JetteS/LTFHpp/workflows/R-CMD-check/badge.svg)](https://github.com/JetteS/LTFHpp/actions)
+<!-- badges: end -->
