@@ -19,6 +19,7 @@ Imports:
     progressr,
     purrr,
     Rcpp,
+    rlang,
     stringr,
     tibble,
     tidyr,
