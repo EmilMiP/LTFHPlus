@@ -1,5 +1,10 @@
 utils::globalVariables("fam_ID")
 utils::globalVariables("PID")
+utils::globalVariables("lower")
+utils::globalVariables("upper")
+utils::globalVariables("max_age")
+utils::globalVariables("m_max_age")
+utils::globalVariables("p_max_age")
 #' Simulate under the liability threshold model.
 #'
 #' \code{simulate_under_LTM} simulates thresholds under
@@ -54,14 +59,15 @@ utils::globalVariables("PID")
 #' simulate_under_LTM()
 #' simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
 #' c("m","mgm","mgf","s","mhs")))
-#' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = F, 
-#' sq.herit = 0.5, n_sim=500, pop_prev = .05)
-#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = T, sq.herit = 0.5, 
+#' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
+#' sq.herit = 0.5, n_sim = 500, pop_prev = .05)
+#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, 
 #' n_sim = 200, pop_prev = 0.05)
 #' 
 #' @seealso \code{\link{construct_covmat}}
 #' 
 #' @importFrom dplyr %>% bind_cols select relocate mutate rowwise n across
+#' @importFrom tmvtnorm rtmvnorm
 #' 
 #' @export
 simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, n_sim=1000, pop_prev = .1){
@@ -85,7 +91,7 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   }
   
   # Simulating n_sim liabilities for the each family member
-  liabs <- tmvtnorm::rmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
+  liabs <- rtmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
   # Adding the column names
   colnames(liabs) <- colnames(covmat)
   

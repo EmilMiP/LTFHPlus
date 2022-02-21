@@ -1,3 +1,5 @@
+utils::globalVariables("lower")
+utils::globalVariables("upper")
 #' Estimating the genetic or full liability 
 #'
 #' \code{estimate_liability} estimates the genetic component of the full

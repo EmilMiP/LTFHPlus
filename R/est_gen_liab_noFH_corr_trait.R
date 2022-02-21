@@ -32,7 +32,7 @@ estimate_gen_liability_noFH_corr_traits = function(phen,
   reduced$post_gen_no_fam <- NA
   reduced$post_gen_no_fam_se <- NA
   
-  cov_mat = generate_cov_matrix_noFH(h2_vec = h2_vec, gen_cor_vec = gen_cor_vec)
+  cov_mat = construct_covmat(h2_vec = h2_vec, gen_cor_vec = gen_cor_vec)
   
   for (i in 1:nrow(reduced)) {
     cur_config = unlist(reduced[i,1:ntraits])

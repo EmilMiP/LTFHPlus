@@ -1,6 +1,6 @@
 utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab", 
                          "post_gen_liab_se", "grp_est", "grp_se", "est_per_sib",
-                         "cases", "child_gen"))
+                         "cases", "child_gen", "cur_string", "string"))
 
 #' Estimate genetic liability similar to LT-FH
 #'
@@ -86,7 +86,7 @@ estimate_gen_liability_ltfh = function(h2,
                      }
                    )
       
-      cov = get_cov(h2 = h2, n_sib = ifelse(is.na(cur_nsib), 0, cur_nsib))
+      cov = construct_covmat(h2 = h2, n_sib = ifelse(is.na(cur_nsib), 0, cur_nsib))
       
       cov_size = nrow(cov)
       
@@ -153,7 +153,7 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
-      cov <- get_cov(h2, n_sib = cur_nsib)
+      cov <- construct_covmat(h2, n_sib = cur_nsib)
       tmp <- rtmvnorm.gibbs(100e3,
                             sigma = cov,
                             lower = lower,

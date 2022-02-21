@@ -52,7 +52,7 @@ estimate_gen_liability_multi_trait = function(corr.mat,
     }
     
     n_sib = length(full_fam) - 3
-    cov = get_full_cov(corr_mat = corr.mat, n_sib = n_sib)
+    cov = construct_covmat(corr_mat = corr.mat, n_sib = n_sib)
     
     #covergence check
     se = NULL 
