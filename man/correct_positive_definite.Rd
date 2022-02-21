@@ -57,13 +57,6 @@ tries to modify the underlying correlation matrix (called \code{sq.herit} in
 \code{\link{construct_covmat}} or \code{\link{construct_covmat_multi}}) by
 multiplying all off-diagonal entries in the correlation matrix by a given number.
 }
-\examples{
-
-covmat <- construct_covmat(fam_vec = c("m","f","s1"), add_ind = F, 
-sq.herit = matrix(c(0.5,0.5,0.5,0.5), nrow = 2))
-correct_positive_definite(covmat)
-
-}
 \seealso{
 \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
 \code{\link{construct_covmat_multi}}.
