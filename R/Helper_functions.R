@@ -1,5 +1,6 @@
 utils::globalVariables("cir")
 utils::globalVariables("thresh")
+
 #' CDF for truncated normal distribution.
 #' 
 #' \code{truncated_normal_cdf} computes the cumulative density
@@ -23,8 +24,11 @@ utils::globalVariables("thresh")
 #' returns the probability that the liability will take on a value less than
 #' or equal to \code{liability}.
 #'
-#' @examples 
-#' # curve(truncated_normal_cdf, from = qnorm(0.05, lower.tail = F), to = 3.5, xname = "Underlying liability")
+#' @examples
+#' \dontrun{
+#'  curve(truncated_normal_cdf, from = qnorm(0.05, lower.tail = F), to = 3.5, 
+#'        xname = "Underlying liability")
+#' }
 #' @export
 truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
   
@@ -53,7 +57,8 @@ The upper and lower cutoff points will be swapped...")
 #' 
 #' Given a person's age, \code{convert_age_to_cir} can be used
 #' to compute the cumulative incidence rate (cir), which is given
-#' by the formula \eqn{ pop_prev / (1 + exp((mid_point - age) * slope))}
+#' by the formula 
+#' \deqn{pop_prev / (1 + exp((mid_point - age) * slope))}
 #'
 #' @param age A positive number representing the individual's age.
 #' @param pop_prev A positive number representing the overall
@@ -69,8 +74,9 @@ The upper and lower cutoff points will be swapped...")
 #' the cumulative incidence rate.
 #'
 #' @examples 
-#' 
-#' # curve(convert_age_to_cir, from = 10, to = 110, xname = "age")
+#' \dontrun{
+#' curve(convert_age_to_cir, from = 10, to = 110, xname = "age")
+#' }
 #' @export
 convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
@@ -104,13 +110,14 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' 
 #' Given a person's age, \code{convert_age_to_thresh} can be used
 #' to first compute the cumulative incidence rate (cir), which is 
-#' then used to compute the threshold using  either 
-#' 
-#' 
-#' 
-#'  Overall, the formula used to compute
+#' then used to compute the threshold using either the
+#' logistic function or the truncated normal distribution.
+#' Under the logistic function, the formula used to compute
 #' the threshold from an individual's age is given by
-#' \eqn{qnorm(pop_prev / (1 + exp((mid_point - age) * slope)), lower.tail = F)}
+#' \deqn{qnorm(pop_prev / (1 + exp((mid_point - age) * slope)), lower.tail = F)},
+#' while it is given by 
+#' \deqn{qnorm((1 - (age-min_age)/max_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
+#' under the truncated normal distribution.
 #'
 #' @param age A positive number representing the individual's age.
 #' @param dist A string indicating which distribution to use. 
@@ -233,9 +240,9 @@ The upper and lower cutoff points will be swapped...")
 #' \code{convert_cir_to_age} computes the age
 #' from a person's cumulative incidence rate. 
 #' 
-#' Given a person's cumulative incidence rate (cir), \code{{convert_cir_to_age} 
+#' Given a person's cumulative incidence rate (cir), \code{convert_cir_to_age} 
 #' can be used to compute the corresponding age, which is given by
-#' \eqn{mid_point - log(pop_prev/cir - 1) * 1/slope}
+#' \deqn{mid_point - log(pop_prev/cir - 1) * 1/slope}
 #'
 #' @param cir A positive number representing the individual's cumulative 
 #' incidence rate.
@@ -253,7 +260,9 @@ The upper and lower cutoff points will be swapped...")
 #' the current age.
 #' 
 #' @examples 
-#' # curve(convert_cir_to_age, from = 0, to = 0.1, xname = "Cumulative incidence rate")
+#' \dontrun{
+#' curve(convert_cir_to_age, from = 0, to = 0.1, xname = "Cumulative incidence rate")
+#' }
 #' @export
 convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
@@ -289,12 +298,12 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' of onset from an individual's true underlying liability using 
 #' either the logistic function or the truncated normal distribution.
 #' 
-#' Given a person's cumulative incidence rate (cir), \code{{convert_liability_to_aoo} 
+#' Given a person's cumulative incidence rate (cir), \code{convert_liability_to_aoo} 
 #' can be used to compute the corresponding age. Under the logistic function,
 #' the age is given by
-#' \eqn{mid_point - log(pop_prev/cir - 1) * 1/slope,}
+#' \deqn{mid_point - log(pop_prev/cir - 1) * 1/slope},
 #' while it is given by 
-#' \eqn{(1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo}
+#' \deqn{(1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo}
 #' under the truncated normal distribution.
 #' 
 #' @param liability A number representing the individual's 
@@ -326,8 +335,12 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' the age of onset.
 #' 
 #' @examples 
-#' # curve(convert_liability_to_aoo, from = 1.3, to = 3.5, xname = "Underlying liability")
-#' # curve(convert_liability_to_aoo, from = qnorm(0.05, lower.tail = F), to = 3.5, xname = "Underlying liability", dist = "normal")
+#' \dontrun{
+#' curve(convert_liability_to_aoo, from = 1.3, to = 3.5, 
+#'       xname = "Underlying liability")
+#' curve(convert_liability_to_aoo, from = qnorm(0.05, lower.tail = F), to = 3.5, 
+#'       xname = "Underlying liability", dist = "normal")
+#' }
 #' @export
 convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
                                     min_aoo = 10, max_aoo = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf ) {
@@ -462,8 +475,11 @@ The upper and lower cutoff points will be swapped...")
 #' @examples 
 #' convert_observed_to_liability_scale()
 #' convert_observed_to_liability_scale(prop_cases=NULL)
-#' convert_observed_to_liability_scale(obs_sq.herit = 0.8, pop_prev = 1/44, prop_cases = NULL)
-#' convert_observed_to_liability_scale(obs_sq.herit = c(0.5,0.8), pop_prev = c(0.05, 1/44), prop_cases = NULL)
+#' convert_observed_to_liability_scale(obs_sq.herit = 0.8, pop_prev = 1/44, 
+#'                                     prop_cases = NULL)
+#' convert_observed_to_liability_scale(obs_sq.herit = c(0.5,0.8), 
+#'                                     pop_prev = c(0.05, 1/44), 
+#'                                     prop_cases = NULL)
 #' 
 #' @references
 #' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard, Peter M. Visscher (2011, March). Estimating
@@ -485,7 +501,7 @@ convert_observed_to_liability_scale <- function(obs_sq.herit = 0.5, pop_prev = 0
   # such that the fraction of observations larger than t is equal to 
   # the population prevalence pop_prev. That is
   # t = qnorm(pop_prev, lower.tail = FALSE)
-  z <- dnorm(qnorm(pop_prev, lower.tail = FALSE))
+  z <- stats::dnorm(stats::qnorm(pop_prev, lower.tail = FALSE))
   
   # Using one of the two possible transformations depending on whether 
   # prop_cases is NULL or not.
