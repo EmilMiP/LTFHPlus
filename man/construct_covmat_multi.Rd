@@ -43,7 +43,8 @@ the covariance matrix. Defaults to TRUE.}
 scale for a desired number of phenotypes as well as the correlation between these
 phenotypes. The heritabilities must be given on the diagonal,
 while the off-diagonal entries must hold the correlation between phenotypes.
-All squared heritabilities must be non-negative and at most 1.
+All squared heritabilities must be non-negative. Note that under the liability threshold model,
+the squared heritabilities must also be at most 1..
 All correlations must be between -1 and 1.
 Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).}
 
@@ -55,7 +56,7 @@ Defaults to NULL.}
 \value{
 If either fam_vec or n_fam is used as the argument, if it is of the
 required format and sq.herit is a numeric matrix satisfying that all
-diagonal entries are between 0 and 1 and that all off-diagonal
+diagonal entries are non-negative and that all off-diagonal
 entries are between -1 and 1, then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the number of phenotypes times
 the length of fam_vec or n_fam (+ 2 if add_ind=T).
