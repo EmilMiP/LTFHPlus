@@ -86,7 +86,7 @@ estimate_gen_liability_ltfh = function(h2,
                      }
                    )
       
-      cov = construct_covmat(h2 = h2, n_sib = ifelse(is.na(cur_nsib), 0, cur_nsib))
+      cov = construct_covmat()
       
       cov_size = nrow(cov)
       
@@ -112,9 +112,9 @@ estimate_gen_liability_ltfh = function(h2,
       vals = list() #store simulated values
       vals.ctr = 1
       while (is.null(se) || se > tol) {
-        gen_liabs = rtmvnorm.gibbs(50e3, 
+        gen_liabs = rtmvnorm.gibbs(n_sim = 50e3, 
                                    burn_in = 1000,
-                                   sigma = cov,
+                                   covmat = cov,
                                    lower = lower, 
                                    upper = upper,
                                    fixed = fixed)
@@ -153,13 +153,13 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
-      cov <- construct_covmat(h2, n_sib = cur_nsib)
-      tmp <- rtmvnorm.gibbs(100e3,
-                            sigma = cov,
+      cov <- construct_covmat()
+      tmp <- rtmvnorm.gibbs(n_sim = 100e3,
+                            covmat = cov,
                             lower = lower,
                             upper = upper,
                             fixed = rep(FALSE, nrow(cov)),
-                            ind = 1:nrow(cov)) 
+                            out = 1:nrow(cov)) 
       colnames(tmp) = c("child_gen", paste0(c("child", "father", "mother", paste0("sib", 1:cur_nsib)), "_full"))
       tmp = dplyr::as_tibble(tmp)
       
@@ -239,11 +239,11 @@ estimate_gen_liability_ltfh = function(h2,
         vals.ctr = 1
         while (is.null(se) || se > tol) {
           gen_liabs = LTFHpp::rtmvnorm.gibbs(n_sim = 50e3,
-                                               sigma = get_cov(h2, n_sib = cur_nsib),
+                                               covmat = construct_covmat(),
                                                lower = lower,
                                                upper = upper,
                                                fixed = fixed,
-                                               ind = 1,
+                                               out = 1,
                                                burn_in = 1000)
           vals[[vals.ctr]] = gen_liabs
           se = batchmeans::bm(unlist(vals))$se

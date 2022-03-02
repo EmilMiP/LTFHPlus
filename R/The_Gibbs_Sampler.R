@@ -26,7 +26,7 @@
 #' variables to fix. If \code{fixed} is a vector, it must have the same length as 
 #' lower and upper. Defaults to \code{TRUE} when \code{lowert} is equal to 
 #' \code{upper} and \code{FALSE} otherwise.
-#' @param out A numeric vector indicating which variables should be returned
+#' @param out An integer or numeric vector indicating which variables should be returned
 #' from the Gibbs sampler. If out = c(1), the first variable (usually the genetic 
 #' component of the full liability of the first phenotype) is estimated and returned. 
 #' If out = c(2), the second variable (usually full liability) is estimated and returned. 
@@ -70,19 +70,22 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   if(class(upper) != "numeric") stop("The upper cutoff point(s) must be numeric!")
   if(length(lower)!= length(upper)) stop("The lower and upper cutoff point(s) differ in length!")
   if(length(lower)!= 1 && length(lower)!= ncol(covmat)) stop("The length of the lower and upper cutoff point(s) must be 1 or equal to the dimension of the mutlivariable normal distribution!")
-  if(upper < lower){
-    cat("The upper cutoff point is below the lower cutoff point! \n 
-The upper and lower cutoff points will be swapped...")
+  if(any(upper < lower)){
+    cat("Warning message: \n Some lower cutoff points are larger than the corresponding upper cutoff points! \n
+        The lower and upper cutoff points will be swapped...")
     
-    lower <- lower + upper
-    upper <- lower - upper
-    lower <- lower - upper
+    swapping_indx <- which(upper < lower)
+    
+    lower[swapping_indx] <- lower[swapping_indx] + upper[swapping_indx]
+    upper[swapping_indx] <- lower[swapping_indx] - upper[swapping_indx]
+    lower[swapping_indx] <- lower[swapping_indx] - upper[swapping_indx]
   }
+  
   # Checking that fixed is valid
   fixed <- as.logical(fixed)
-  if(length(fixed) != 1 || length(fixed) != length(lower)) stop("fixed must be of length 1 or length(lower)!")
+  if(length(fixed) != 1 && length(fixed) != length(lower)) stop("fixed must be of length 1 or length(lower)!")
   # Checking whether out is valid
-  if(class(out) == "numeric"){
+  if(class(out) == "numeric" || class(out) == "integer"){
     
     out <- intersect(out, c(1:ncol(covmat)))
     

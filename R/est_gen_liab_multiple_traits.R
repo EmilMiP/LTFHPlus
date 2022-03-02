@@ -59,12 +59,12 @@ estimate_gen_liability_multi_trait = function(corr.mat,
     vals = list() #store simulated values
     vals.ctr = 1
     while (is.null(se) || se > tol) {
-      gen_liabs = rtmvnorm.gibbs(1e5,
+      gen_liabs = rtmvnorm.gibbs(n_sim = 1e5,
                                  burn_in = 1000,
-                                 sigma   = cov,
+                                 covmat   = cov,
                                  lower   = thres_info_comb$lower, 
                                  upper   = thres_info_comb$upper,
-                                 ind     = ind,
+                                 out     = ind,
                                  fixed   = thres_info_comb$upper - thres_info_comb$lower < 1e-4)
       vals[[vals.ctr]] = gen_liabs
       se = batchmeans::bm(unlist(vals))$se

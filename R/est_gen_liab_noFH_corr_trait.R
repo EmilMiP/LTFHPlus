@@ -32,7 +32,7 @@ estimate_gen_liability_noFH_corr_traits = function(phen,
   reduced$post_gen_no_fam <- NA
   reduced$post_gen_no_fam_se <- NA
   
-  cov_mat = construct_covmat(h2_vec = h2_vec, gen_cor_vec = gen_cor_vec)
+  cov_mat = construct_covmat()
   
   for (i in 1:nrow(reduced)) {
     cur_config = unlist(reduced[i,1:ntraits])
@@ -50,9 +50,9 @@ estimate_gen_liability_noFH_corr_traits = function(phen,
     vals = list() #store simulated values
     vals.ctr = 1
     while (is.null(se) || se > tol) {
-      gen_liabs = rtmvnorm.gibbs(50e3, 
+      gen_liabs = rtmvnorm.gibbs(n_sim = 50e3, 
                                  burn_in = 1000,
-                                 sigma = cov_mat,
+                                 covmat  = cov_mat,
                                  lower = lower, 
                                  upper = upper,
                                  fixed = fixed)

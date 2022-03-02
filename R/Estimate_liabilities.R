@@ -163,7 +163,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
     cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
         The lower and upper thresholds will be swapped...")
     
-    swapping_indx <- which(any(pull(threshs, lower) > pull(threshs, upper)))
+    swapping_indx <- which(pull(threshs, lower) > pull(threshs, upper))
     
     threshs$lower[swapping_indx] <- threshs$lower[swapping_indx] + threshs$upper[swapping_indx]
     threshs$upper[swapping_indx] <- threshs$lower[swapping_indx] - threshs$upper[swapping_indx]
@@ -303,7 +303,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         fam_threshs <- bind_rows(thr, fam_threshs)
       }else if(nrow(thr) == 0){
         
-        fam_threshs <- bind_rows(tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
+        fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
       }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g$")){
         
