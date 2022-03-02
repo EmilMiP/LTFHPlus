@@ -12,8 +12,9 @@ estimate_liability(
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
+  always_add = c("g", "o"),
   parallel = FALSE,
-  always_add = c("g", "o")
+  progress = FALSE
 )
 }
 \arguments{
@@ -21,16 +22,32 @@ estimate_liability(
 Must have at least two columns that hold the family identifier and the corresponding
 personal identifiers, respectively. That is, for each family in fam_id there should
 be a list holding all individuals belonging to that family in pid. Note that the
-personal identifiers for all individuals must have a special format, as it must end
-with _\eqn{?}, where \eqn{ ? \in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\ast, mhs\[0-9\]\ast,phs\[0-9\]\ast,
-mau\[0-9\]\ast, pau\[0-9\]\ast \}}. See \code{\link{construct_covmat}} for more information.}
+personal identifiers for all individuals must have a special format. It must be end
+with _?, where ? is one of the following abbreviations
+\itemize{
+\item g (Genetic component of the full liability)
+\item o (full liability)
+\item m (Mother)
+\item f (Father)
+\item mgm (Maternal grandmother)
+\item mgf (Maternal grandfather)
+\item pgm (Paternal grandmother)
+\item pgf (Paternal grandfather)
+\item s[0-9]* (Full siblings)
+\item mhs[0-9]* (Half-siblings - maternal side)
+\item phs[0-9]* (Half-siblings - paternal side)
+\item mau[0-9]* (Aunts/Uncles - maternal side)
+\item pau[0-9]* (Aunts/Uncles - paternal side).
+See also \code{\link{construct_covmat}}.
+}}
 
 \item{threshs}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least three columns, one holding the personal identifier for all individuals,
 and the remaining two holding the lower and upper thresholds, respectively.}
 
 \item{sq.herit}{A number representing the squared heritability on liability scale
-for a single phenotype. Must be non-negative and at most 1.
+for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+the squared heritability must also be at most 1.
 Defaults to 0.5.}
 
 \item{pid}{A string holding the name of the column in \code{family} and
@@ -50,15 +67,18 @@ Defaults to c(1).}
 Equals the standard error of the mean. That is, a tolerance of 0.2 means that the
 standard error of the mean is below 0.2. Defaults to 0.01.}
 
-\item{parallel}{A logical scalar indicating whether computations should be performed parallel.
-In order for this to be possible, the user must install the library "future.apply" and create a plan
-(see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
-
 \item{always_add}{A character vector or NULL. If always_add = c("g","o"), both the genetic component
 of the full liability as well as the full liability will be added to the list of family members.
 If always_add equals "g" or "o", the genetic component of the full liability or the full liability
 will be added, respectively. If always_add = NULL, no component will be added.
 Defaults to c("g","o").}
+
+\item{parallel}{A logical scalar indicating whether computations should be performed parallel.
+In order for this to be possible, the user must install the library "future.apply" and create a plan
+(see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
+
+\item{progress}{A logical scalar indicating whether the function should display a progress bar.
+Defaults to FALSE.}
 }
 \value{
 If family and threshs are two matrices, lists or data frames that can be converted into
@@ -87,6 +107,7 @@ full liability, the full liability or both.
 \examples{
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
 sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
 parallel = FALSE, always_add = c("g","o"))

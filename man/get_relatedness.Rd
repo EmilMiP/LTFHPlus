@@ -26,11 +26,12 @@ The string must be one of the following:
 }}
 
 \item{sq.herit}{A number representing the squared heritability on liability scale.
-Must be non-negative and at most 1.}
+Must be non-negative. Note that under the liability threshold model,
+the squared heritability must also be at most 1.}
 }
 \value{
 If both s1 and s2 are strings chosen from the mentioned list of strings and sq.herit is a number
-satisfying 0 <= sq.herit <= 1, then the output will be a number that equals the percentage of shared
+satisfying 0 <= sq.herit, then the output will be a number that equals the percentage of shared
 DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
 }
 \description{

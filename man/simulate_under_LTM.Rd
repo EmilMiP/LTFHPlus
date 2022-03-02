@@ -41,7 +41,8 @@ liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
 \item{sq.herit}{A number representing the squared heritability on liability scale
-for a single phenotype. Must be non-negative and at most 1.
+for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+the squared heritability must also be at most 1.
 Defaults to 0.5.}
 
 \item{n_sim}{A positive number representing the number of simulations. Defaults to 1000.}
@@ -51,7 +52,7 @@ overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.}
 }
 \value{
 If either fam_vec or n_fam is used as the argument, if it is of the required format,
-if sq.herit is a number satisfying 0 <= sq.herit <= 1, n_sim is a strictly positive number,
+if sq.herit is a number satisfying 0 <= sq.herit, n_sim is a strictly positive number,
 and pop_prev is a positive number that is at most one,
 then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
 holds the disease status and the current age/age of onset for all family members in each
