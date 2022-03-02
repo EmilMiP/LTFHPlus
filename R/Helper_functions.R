@@ -410,5 +410,94 @@ The upper and lower cutoff points will be swapped...")
     # Computing the age of onset
     return((1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo)
   }
+}
+
+#' Convert the heritability on the observed scale to that on the liability scale
+#' 
+#' \code{convert_observed_to_liability_scale} transforms the heritability on the 
+#' observed scale to the heritability on the liability scale.
+#' 
+#' This function can be used to transform the heritability on the observed 
+#' scale to that on the liability scale. \code{convert_observed_to_liability_scale}
+#' uses either Equation 17 (if prop_cases = NULL) or Equation 23 from
+#' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
+#' Missing Heritability for Diseases from Genome-wide Association Studies",
+#' The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
+#' \doi{10.1016/j.ajhg.2011.02.002} to transform the heritability on the observed
+#' scale to the heritability on the liability scale.
+#' 
+#' @param obs_sq.herit A number or numeric vector representing the squared heritability(ies)
+#' on the observed scale. Must be non-negative and at most 1. Defaults to 0.5
+#' @param pop_prev A number or numeric vector representing the population prevalence(s). All 
+#' entries must be non-negative and at most one.
+#' If it is a vector, it must have the same length as obs_sq.herit. Defaults to 0.05. 
+#' @param prop_cases Either NULL or a number or a numeric vector representing the proportion
+#' of cases in the sample. All entries must be non-negative and at most one. 
+#' If it is a vector, it must have the same length as obs_sq.herit. Defaults to 0.5.
+#' 
+#' If \code{obs_sq.herit}, \code{pop_prev} and \code{prop_cases} are non-negative numbers 
+#' that are at most one, the function returns the squared heritability on the liability
+#' scale using Equation 23 from 
+#' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
+#' Missing Heritability for Diseases from Genome-wide Association Studies",
+#' The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
+#' \doi{10.1016/j.ajhg.2011.02.002}.
+#' If \code{obs_sq.herit}, \code{pop_prev} and \code{prop_cases} are non-negative numeric
+#' vectors where all entries are at most one, the function returns a vector of the same
+#' length as obq_sq.herit. Each entry holds to the squared heritability on the liability
+#' scale which was obtained from the corresponding entry in obs_sq.herit using Equation 23.
+#' If \code{obs_sq.herit} and \code{pop_prev} are non-negative numbers that are at most
+#' one and \code{prop_cases} is \code{NULL}, the function returns the squared heritability 
+#' on the liability scale using Equation 17 from 
+#' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
+#' Missing Heritability for Diseases from Genome-wide Association Studies",
+#' The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
+#' \doi{10.1016/j.ajhg.2011.02.002}. 
+#' If \code{obs_sq.herit} and \code{pop_prev} are non-negative numeric vectors such that
+#' all entries are at most one, while \code{prop_cases} is \code{NULL},
+#' \code{convert_observed_to_liability_scale} returns a vector of the same
+#' length as obq_sq.herit. Each entry holds to the squared heritability on the liability
+#' scale which was obtained from the corresponding entry in obs_sq.herit using Equation 17.
+#' 
+#' @examples 
+#' convert_observed_to_liability_scale()
+#' convert_observed_to_liability_scale(prop_cases=NULL)
+#' convert_observed_to_liability_scale(obs_sq.herit = 0.8, pop_prev = 1/44, prop_cases = NULL)
+#' convert_observed_to_liability_scale(obs_sq.herit = c(0.5,0.8), pop_prev = c(0.05, 1/44), prop_cases = NULL)
+#' 
+#' @references
+#' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard, Peter M. Visscher (2011, March). Estimating
+#' Missing Heritability for Diseases from Genome-wide Association Studies. In The American Journal 
+#' of Human Genetics (Vol. 88, Issue 3, pp. 294-305). \doi{10.1016/j.ajhg.2011.02.002}
+#' 
+#' @export
+convert_observed_to_liability_scale <- function(obs_sq.herit = 0.5, pop_prev = 0.05, prop_cases = 0.5){
   
+  # Checking that the observed squared heritabilities are valid
+  if(any(obs_sq.herit<0))stop("The observed squared heritability(ies) must be non-negative")
+  if(any(obs_sq.herit>1))stop("The observed squared heritability(ies) must be smaller than or equal to one")
+  # Checking that the population prevalences are valid
+  if(any(pop_prev<0))stop("The population prevalence(s) must be non-negative")
+  if(any(pop_prev>1))stop("The population prevalence(s) must be smaller than or equal to one")
+  
+  # Defining the variable z, which is the height of the truncated
+  # normal curve at the point t, and where t is the truncated point,
+  # such that the fraction of observations larger than t is equal to 
+  # the population prevalence pop_prev. That is
+  # t = qnorm(pop_prev, lower.tail = FALSE)
+  z <- dnorm(qnorm(pop_prev, lower.tail = FALSE))
+  
+  # Using one of the two possible transformations depending on whether 
+  # prop_cases is NULL or not.
+  if(is.null(prop_cases)){
+    
+    return(obs_sq.herit * (pop_prev*(1-pop_prev))/(z^2))
+  }else{
+    
+    # Checking that the proportions of cases are valid
+    if(any(prop_cases<0))stop("The proportion(s) of cases must be non-negative")
+    if(any(prop_cases>1))stop("The proportion(s) of cases must be smaller than or equal to one")
+    
+    return(obs_sq.herit * (pop_prev*(1-pop_prev))/(z^2) * (pop_prev*(1-pop_prev))/(prop_cases*(1-prop_cases)))
+  }
 }
