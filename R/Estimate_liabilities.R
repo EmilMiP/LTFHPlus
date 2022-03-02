@@ -1,5 +1,6 @@
 utils::globalVariables("lower")
 utils::globalVariables("upper")
+
 #' Estimating the genetic or full liability 
 #'
 #' \code{estimate_liability} estimates the genetic component of the full
@@ -13,9 +14,22 @@ utils::globalVariables("upper")
 #' Must have at least two columns that hold the family identifier and the corresponding
 #' personal identifiers, respectively. That is, for each family in fam_id there should
 #' be a list holding all individuals belonging to that family in pid. Note that the 
-#' personal identifiers for all individuals must have a special format, as it must end
-#' with _\eqn{?}, where \eqn{ ? \in \{g,o,m,f,mgm,mgf,pgm,pgf,s\[0-9\]\ast, mhs\[0-9\]\ast,phs\[0-9\]\ast,
-#' mau\[0-9\]\ast, pau\[0-9\]\ast \}}. See \code{\link{construct_covmat}} for more information.
+#' personal identifiers for all individuals must have a special format. It must be end
+#' with _?, where ? is one of the following abbreviations 
+#' - g (Genetic component of the full liability)
+#' - o (full liability)
+#' - m (Mother)
+#' - f (Father)
+#' - mgm (Maternal grandmother)
+#' - mgf (Maternal grandfather)
+#' - pgm (Paternal grandmother)
+#' - pgf (Paternal grandfather)
+#' - s\[0-9\]* (Full siblings)
+#' - mhs\[0-9\]* (Half-siblings - maternal side)
+#' - phs\[0-9\]* (Half-siblings - paternal side)
+#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
+#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
 #' and the remaining two holding the lower and upper thresholds, respectively.
@@ -44,6 +58,8 @@ utils::globalVariables("upper")
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param progress  A logical scalar indicating whether the function should display a progress bar.
+#' Defaults to FALSE.
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
@@ -60,7 +76,6 @@ utils::globalVariables("upper")
 #' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
 #' 
 #' @examples
-#' 
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 #' add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
 #' 
@@ -80,10 +95,12 @@ utils::globalVariables("upper")
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, always_add = c("g","o"), parallel = FALSE){
+estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
+                               tol = 0.01, always_add = c("g","o"), parallel = FALSE, progress = FALSE){
   
-  # Turning parallel into class logical
+  # Turning parallel and progress into class logical
   parallel <- as.logical(parallel)
+  progress <- as.logical(progress)
   
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
@@ -185,6 +202,12 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   # Extracting the families
   fam_list <- pull(family, !!as.symbol(pid))
   
+  # If progress = TRUE, a progress bar will be displayed
+  if(progress){
+    
+    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+  }
+  
   if(parallel){
     
     cat(paste0("The number of workers is ", future::nbrOfWorkers()))
@@ -199,7 +222,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g") | str_detect(fam, "^.*_o"))], pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(pid))), ]
       # Adding the individuals present in always_add
       thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
@@ -210,11 +233,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g$")){
         
         fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o$")){
         
         fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
@@ -271,7 +294,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g") | str_detect(fam, "^.*_o"))], pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(pid))), ]
       # Adding the individuals present in always_add
       thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
@@ -282,11 +305,11 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         fam_threshs <- bind_rows(tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g$")){
         
         fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
                                  fam_threshs)
-      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o")){
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o$")){
         
         fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
                                  fam_threshs)
@@ -326,7 +349,16 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
       # the estimated liabilities as well as the corresponding 
       # standard error can be returned
       return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
+      
+      # If progress = TRUE, a progress bar will be displayed
+      if(progress){
+        utils::setTxtProgressBar(pb, i)
+      }
     })
+  }
+  
+  if(progress){
+    close(pb) # Close the connection
   }
   
   # Finally, we can add all estimated liabilities as well
