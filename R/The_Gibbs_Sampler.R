@@ -69,7 +69,7 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   if(class(lower) != "numeric") stop("The lower cutoff point(s) must be numeric!")
   if(class(upper) != "numeric") stop("The upper cutoff point(s) must be numeric!")
   if(length(lower)!= length(upper)) stop("The lower and upper cutoff point(s) differ in length!")
-  if(length(lower)!= 1 || length(lower)!= ncol(covmat)) stop("The length of the lower and upper cutoff point(s) must be 1 or equal to the dimension of the mutlivariable normal distribution!")
+  if(length(lower)!= 1 && length(lower)!= ncol(covmat)) stop("The length of the lower and upper cutoff point(s) must be 1 or equal to the dimension of the mutlivariable normal distribution!")
   if(upper < lower){
     cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
