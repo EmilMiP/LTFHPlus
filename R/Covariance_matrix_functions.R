@@ -1,4 +1,3 @@
-
 #' Relatedness between a pair of family members
 #'
 #' \code{get_relatedness} returns the relatedness times the
@@ -23,10 +22,11 @@
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #' @param sq.herit A number representing the squared heritability on liability scale.
-#' Must be non-negative and at most 1.
+#' Must be non-negative. Note that under the liability threshold model,
+#' the squared heritability must also be at most 1.
 #' 
 #' @return If both s1 and s2 are strings chosen from the mentioned list of strings and sq.herit is a number
-#' satisfying 0 <= sq.herit <= 1, then the output will be a number that equals the percentage of shared 
+#' satisfying 0 <= sq.herit, then the output will be a number that equals the percentage of shared 
 #' DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
 #' 
 #' @note If you are only interested in the percentage of shared DNA, set \code{sq.herit = 1}.
@@ -82,7 +82,7 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
         - pau[0-9]* (Aunts/Uncles - paternal side).")
   # Checking that the heritability is valid
   if(sq.herit<0)stop("The squared heritability must be non-negative!")
-  if(sq.herit>1)stop("The squared heritability must be smaller or equal to 1!")
+  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
   
   # Getting the percentage of shared DNA
   if(str_detect(s1, "^o$")){
@@ -199,11 +199,12 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
 #' @param sq.herit A number representing the squared heritability on liability scale
-#' for a single phenotype. Must be non-negative and at most 1.
+#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+#' the squared heritability must also be at most 1.
 #' Defaults to 0.5.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the required format and sq.herit is a number
-#' satisfying 0 <= sq.herit <= 1, then the output will be a named covariance matrix. The number of rows and columns
+#' satisfying 0 <= sq.herit, then the output will be a named covariance matrix. The number of rows and columns
 #' correspond to the length of fam_vec or n_fam (+ 2 if add_ind=T). 
 #' If both fam_vec = c()/NULL and n_fam = c()/NULL, the 
 #' function returns a \eqn{2 \times 2} matrix holding only the correlation
@@ -232,6 +233,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   # Checking that the squared heritability is valid
   if(is.null(sq.herit)) stop("The squared heritability must be specified!")
   if(sq.herit<0) stop("The squared heritability must be non-negative")
+  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
   
   # If neither fam_vec nor n_fam are specified, the
   # covariance matrix will simply include the 
@@ -444,7 +446,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' scale for a desired number of phenotypes as well as the correlation between these
 #' phenotypes. The heritabilities must be given on the diagonal,
 #' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All squared heritabilities must be non-negative and at most 1.
+#' All squared heritabilities must be non-negative. Note that under the liability threshold model,
+#' the squared heritabilities must also be at most 1..
 #' All correlations must be between -1 and 1.
 #' Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).
 #' 
@@ -455,7 +458,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the 
 #' required format and sq.herit is a numeric matrix satisfying that all 
-#' diagonal entries are between 0 and 1 and that all off-diagonal
+#' diagonal entries are non-negative and that all off-diagonal
 #' entries are between -1 and 1, then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
 #' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
@@ -489,7 +492,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   # Checking that the heritabilities are valid
   if(is.null(sq.herit)) stop("The squared heritabilities and correlations must be specified!")
   if(any(diag(sq.herit<0))) stop("All squared heritabilities must be non-negative")
-  if(any(diag(sq.herit>1))) stop("All squared heritabilities must be smaller than or equal to 1.")
+  if(any(diag(sq.herit>1))) cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
   # Checking that all correlations are valid
   if(any(abs(sq.herit)>1)) stop("All correlations in sq.herit must be between -1 and 1!")
   # In addition, sq.herit must be symmetric
@@ -756,7 +759,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' the correlation between these phenotypes. When sq.herit is a matrix, 
 #' the heritabilities must be given on the diagonal,
 #' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All squared heritabilities must be non-negative and at most 1.
+#' All squared heritabilities must be non-negative. Note that under the liability threshold model,
+#' the squared heritabilities must also be at most 1.
 #' All correlations must be between -1 and 1.
 #' Defaults to 0.5.
 #' @param phen_names A character vector holding the phenotype names. These names
@@ -766,8 +770,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of 
 #' the required format and sq.herit is either a number satisfying 
-#' 0 <= sq.herit <= 1 or a numeric matrix satisfying that all 
-#' diagonal entries are between 0 and 1 and that all off-diagonal
+#' 0 <= sq.herit or a numeric matrix satisfying that all 
+#' diagonal entries are non-negative and that all off-diagonal
 #' entries are between -1 and 1, then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
 #' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
@@ -857,9 +861,9 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 correct_positive_definite = function(covmat, correction_val = .99, correction_limit = 100) {
   
   # Checking that covmat is symmetric
-  if(!isSymmetric.matrix(covmat)) stop("covmat must be symmetric!")
+  if(!isSymmetric.matrix(covmat)) stop("The covariance matrix covmat must be symmetric!")
   # and numeric
-  if(!is.numeric(covmat)) stop("covmat must be numeric!")
+  if(!is.numeric(covmat)) stop("The covariance matrix covmat must be numeric!")
   
   # Checking whether all eigenvalues are positive
   if(any(eigen(covmat)$values < 0)){

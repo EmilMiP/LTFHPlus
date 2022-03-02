@@ -33,14 +33,15 @@ utils::globalVariables("p_max_age")
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
 #' @param sq.herit A number representing the squared heritability on liability scale
-#' for a single phenotype. Must be non-negative and at most 1.
+#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+#' the squared heritability must also be at most 1.
 #' Defaults to 0.5.
 #' @param n_sim A positive number representing the number of simulations. Defaults to 1000.
 #' @param pop_prev A positive number representing the population prevalence, i.e. the 
 #' overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the required format,
-#' if sq.herit is a number satisfying 0 <= sq.herit <= 1, n_sim is a strictly positive number,
+#' if sq.herit is a number satisfying 0 <= sq.herit, n_sim is a strictly positive number,
 #' and pop_prev is a positive number that is at most one, 
 #' then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
 #' holds the disease status and the current age/age of onset for all family members in each
@@ -72,6 +73,11 @@ utils::globalVariables("p_max_age")
 #' @export
 simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, n_sim=1000, pop_prev = .1){
   
+  # Turning add_ind into class logical
+  add_ind <- as.logical(add_ind)
+  # Checking that the heritability is valid
+  if(sq.herit<0)stop("The squared heritability must be non-negative")
+  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
   # Checking that n_sim is a number
   if(class(n_sim) != "numeric") stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive

@@ -20,7 +20,8 @@ utils::globalVariables("upper")
 #' Must have at least three columns, one holding the personal identifier for all individuals,
 #' and the remaining two holding the lower and upper thresholds, respectively.
 #' @param sq.herit A number representing the squared heritability on liability scale
-#' for a single phenotype. Must be non-negative and at most 1.
+#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+#' the squared heritability must also be at most 1.
 #' Defaults to 0.5.
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
@@ -35,14 +36,14 @@ utils::globalVariables("upper")
 #' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
 #' Equals the standard error of the mean. That is, a tolerance of 0.2 means that the 
 #' standard error of the mean is below 0.2. Defaults to 0.01.
-#' @param parallel A logical scalar indicating whether computations should be performed parallel.
-#' In order for this to be possible, the user must install the library "future.apply" and create a plan
-#' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
 #' @param always_add A character vector or NULL. If always_add = c("g","o"), both the genetic component 
 #' of the full liability as well as the full liability will be added to the list of family members. 
 #' If always_add equals "g" or "o", the genetic component of the full liability or the full liability
 #' will be added, respectively. If always_add = NULL, no component will be added.
 #' Defaults to c("g","o").
+#' @param parallel A logical scalar indicating whether computations should be performed parallel.
+#' In order for this to be possible, the user must install the library "future.apply" and create a plan
+#' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
@@ -59,8 +60,10 @@ utils::globalVariables("upper")
 #' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
 #' 
 #' @examples
+#' 
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 #' add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' 
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
 #' sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
 #' parallel = FALSE, always_add = c("g","o"))
@@ -77,7 +80,7 @@ utils::globalVariables("upper")
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, parallel = FALSE, always_add = c("g","o")){
+estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, always_add = c("g","o"), parallel = FALSE){
   
   # Turning parallel into class logical
   parallel <- as.logical(parallel)
@@ -92,7 +95,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   
   # Checking that the heritability is valid
   if(sq.herit<0)stop("The squared heritability must be non-negative")
-  if(sq.herit>1)stop("The squared heritability must be smaller than or equal to 1.")
+  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
   if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
@@ -136,6 +139,19 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   # we select only the relevant ones.
   family <- select(family, !!as.symbol(fam_id), !!as.symbol(pid))
   threshs <- select(threshs, !!as.symbol(pid), lower, upper)
+  
+  # Finally, we also check whether all lower thresholds are 
+  # smaller than or equal to the upper thresholds
+  if(any(pull(threshs, lower) > pull(threshs, upper))){
+    cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+        The lower and upper thresholds will be swapped...")
+    
+    swapping_indx <- which(any(pull(threshs, lower) > pull(threshs, upper)))
+    
+    threshs$lower[swapping_indx] <- threshs$lower[swapping_indx] + threshs$upper[swapping_indx]
+    threshs$upper[swapping_indx] <- threshs$lower[swapping_indx] - threshs$upper[swapping_indx]
+    threshs$lower[swapping_indx] <- threshs$lower[swapping_indx] - threshs$upper[swapping_indx]
+  }
   
   # If parallel = T, future_lapply needs to be installed 
   if(parallel){
@@ -215,15 +231,15 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         if(n_gibbs == 1){
           
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, ind = out, burn_in = 1000) %>% 
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, out = out, burn_in = 1000) %>% 
             `colnames<-`(c("genetic", "full")[out]) %>% 
             tibble::as_tibble()
           
         }else{
           
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, ind = out, burn_in = 1000) %>%
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, out = out, burn_in = 1000) %>%
             `colnames<-`(c("genetic", "full")[out]) %>%
             tibble::as_tibble() %>% 
             bind_rows(est_liabs)
@@ -287,15 +303,15 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
         
         if(n_gibbs == 1){
           
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, ind = out, burn_in = 1000) %>% 
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, out = out, burn_in = 1000) %>% 
             `colnames<-`(c("genetic", "full")[out]) %>% 
             tibble::as_tibble()
           
         }else{
           
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, sigma = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, ind = out, burn_in = 1000) %>%
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                      fixed = fixed, out = out, burn_in = 1000) %>%
             `colnames<-`(c("genetic", "full")[out]) %>%
             tibble::as_tibble() %>% 
             bind_rows(est_liabs)
