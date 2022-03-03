@@ -17,7 +17,7 @@ convert_age_to_thresh(
 )
 }
 \arguments{
-\item{age}{A positive number representing the individual's age.}
+\item{age}{A non-negative number representing the individual's age.}
 
 \item{dist}{A string indicating which distribution to use.
 If dist = "logistic", the logistic function will be used to

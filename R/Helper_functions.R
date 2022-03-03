@@ -119,7 +119,7 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' \deqn{qnorm((1 - (age-min_age)/max_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
 #' under the truncated normal distribution.
 #'
-#' @param age A positive number representing the individual's age.
+#' @param age A non-negative number representing the individual's age.
 #' @param dist A string indicating which distribution to use. 
 #' If dist = "logistic", the logistic function will be used to 
 #' compute the age of onset.
@@ -155,8 +155,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   
   # Checking that age is valid
   if(class(age) != "numeric") stop("The age must be numeric!")
-  if(age<=0) stop("The age must be positive!")
-  if(age >=150) warning("At this point, it is unrealistic to be of age 150 or older!")
+  if(age<0) stop("The age must be non-negative!")
   
   # Checking that dist is either logistic or normal.
   if(class(dist) == "character"){
