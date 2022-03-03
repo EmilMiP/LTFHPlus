@@ -1,6 +1,4 @@
 utils::globalVariables("i")
-
-#'
 #' Estimates genetic liability based off of multiple phenotypes, family history, and prevalence information for each trait.
 #'
 #' @param corr.mat Correlation matrix for each of the traits being analysed. 

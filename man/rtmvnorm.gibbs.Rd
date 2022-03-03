@@ -37,7 +37,7 @@ variables to fix. If \code{fixed} is a vector, it must have the same length as
 lower and upper. Defaults to \code{TRUE} when \code{lowert} is equal to
 \code{upper} and \code{FALSE} otherwise.}
 
-\item{out}{A numeric vector indicating which variables should be returned
+\item{out}{An integer or numeric vector indicating which variables should be returned
 from the Gibbs sampler. If out = c(1), the first variable (usually the genetic
 component of the full liability of the first phenotype) is estimated and returned.
 If out = c(2), the second variable (usually full liability) is estimated and returned.
