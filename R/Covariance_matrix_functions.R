@@ -542,7 +542,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$sq.herit <- sq.herits
+    attributes(covmat)$corrmat <- corrmat
     attributes(covmat)$phenotype_names <- phen_names
     
     return(covmat)
@@ -650,7 +651,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- n_fam
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$sq.herit <- sq.herits
+    attributes(covmat)$corrmat <- corrmat
     attributes(covmat)$phenotype_names <- phen_names
     
     return(covmat)
@@ -708,7 +710,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     attributes(covmat)$fam_vec <- fam_vec
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$sq.herit <- sq.herits
+    attributes(covmat)$corrmat <- corrmat
     attributes(covmat)$phenotype_names <- phen_names
     
     return(covmat)
@@ -804,7 +807,7 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
     
   }else{
     
-    return(construct_covmat_multi(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, corrmat = corrmat, sq.herit = sq.herit, phen_names = phen_names))
+    return(construct_covmat_multi(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, corrmat = corrmat, sq.herits = sq.herit, phen_names = phen_names))
   } 
 }
 
@@ -907,8 +910,8 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   # Storing the old covariance matrix
   old_covmat <- covmat
   # The diagonal of sq.herit will remain unchanged
-  sq.herit <- attr(covmat,"sq.herit")
-  diag_val <- diag(sq.herit)
+  sq.herits <- attr(covmat,"sq.herit")
+  corrmat <- attr(covmat,"corrmat")
   
   # We also extract the vectors holding the family members
   fam_vec <- setdiff(attr(covmat,"fam_vec"), c("g","o"))
@@ -916,12 +919,11 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   
   while(any(eigen(covmat)$values < 0) && n <= correction_limit) {
     
-    # Changing the sq.herit matrix slightly. All off_diagonal entries
-    # will be multiplied by correction_val, all diagonal entries will remain unchanged.
-    sq.herit <- sq.herit*correction_val
-    diag(sq.herit) <- diag_val
+    # Changing the corrmat matrix slightly by 
+    # multiplying all entries by correction_val.
+    corrmat <- corrmat*correction_val
     # Computing a new covariance matrix
-    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, add_ind = attr(covmat,"add_ind"), sq.herit = sq.herit, phen_names = attr(covmat,"phenotype_names"))
+    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, add_ind = attr(covmat,"add_ind"), corrmat = corrmat, sq.herit = sq.herit, phen_names = attr(covmat,"phenotype_names"))
     # Updating 
     n <- n+1
   }
