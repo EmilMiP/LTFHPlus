@@ -216,10 +216,10 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
 #' 
 #' @examples
-#' construct_covmat()
-#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+#' construct_covmat_single()
+#' construct_covmat_single(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
 #' n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
-#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
+#' construct_covmat_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
 #' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_multi}},
@@ -445,10 +445,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' The full correlations must be given on the diagonal,
 #' while the off-diagonal entries must hold the genetic correlations between phenotypes.
 #' All correlations must be between -1 and 1.
-#' Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).
 #' @param sq.herits A numeric vector representing the squared heritability on liability scale
 #' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
-#' Defaults to c(0.5,0.5).
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
@@ -470,27 +468,34 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
 #' 
 #' @examples
-#' construct_covmat()
-#' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
-#' n_fam = NULL, add_ind = TRUE)
-#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE)
-#' construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), 
-#' phen_names = c("p1","p2"))
+#' construct_covmat_multi(fam_vec = NULL, 
+#'                        corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2), 
+#'                        sq.herits = c(0.37,0.44),
+#'                        phen_names = c("p1","p2"))
+#' construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+#'                        n_fam = NULL, 
+#'                        add_ind = TRUE,
+#'                        corrmat = diag(3),
+#'                        sq.herits = c(0.8, 0.65))
+#' construct_covmat_multi(fam_vec = NULL, 
+#'                        n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
+#'                        add_ind = FALSE,
+#'                        corrmat = diag(2),
+#'                        sq.herits = c(0.75,0.85))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat}}.
 #' 
 #' @export
 construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, 
-                                   corrmat = matrix(c(0.5,0.2,0.2,0.5), nrow = 2), sq.herits = c(0.5,0.5), phen_names = NULL){
+                                   corrmat, sq.herits, phen_names = NULL){
   
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
   # Checking that the heritabilities are valid
   if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
+  if(class(sq.herits)!= "numeric" & class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
   if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
   if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
   
@@ -791,10 +796,13 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' @examples
 #' construct_covmat()
 #' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
-#' n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
-#' construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
-#' construct_covmat(sq.herit = matrix(c(0.5,0.2,0.2,0.5), nrow = 2))
+#'                  n_fam = NULL, 
+#'                  add_ind = TRUE, 
+#'                  sq.herit = 0.5)
+#' construct_covmat(fam_vec = NULL, 
+#'                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
+#'                  add_ind = FALSE, sq.herit = 0.3)
+#' construct_covmat(sq.herit = c(0.5,0.5), corrmat = matrix(c(0.6,0.2,0.2,0.4), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
 #' \code{\link{construct_covmat_multi}}
@@ -923,7 +931,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
     # multiplying all entries by correction_val.
     corrmat <- corrmat*correction_val
     # Computing a new covariance matrix
-    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, add_ind = attr(covmat,"add_ind"), corrmat = corrmat, sq.herit = sq.herit, phen_names = attr(covmat,"phenotype_names"))
+    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, add_ind = attr(covmat,"add_ind"), corrmat = corrmat, sq.herit = sq.herits, phen_names = attr(covmat,"phenotype_names"))
     # Updating 
     n <- n+1
   }

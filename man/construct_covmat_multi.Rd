@@ -8,8 +8,8 @@ construct_covmat_multi(
   fam_vec = c("m", "f", "s1", "mgm", "mgf", "pgm", "pgf"),
   n_fam = NULL,
   add_ind = TRUE,
-  corrmat = matrix(c(0.5, 0.2, 0.2, 0.5), nrow = 2),
-  sq.herits = c(0.5, 0.5),
+  corrmat,
+  sq.herits,
   phen_names = NULL
 )
 }
@@ -44,12 +44,10 @@ the covariance matrix. Defaults to TRUE.}
 number of phenotypes as well as the full correlation.
 The full correlations must be given on the diagonal,
 while the off-diagonal entries must hold the genetic correlations between phenotypes.
-All correlations must be between -1 and 1.
-Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).}
+All correlations must be between -1 and 1.}
 
 \item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
-Defaults to c(0.5,0.5).}
+for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
@@ -87,13 +85,20 @@ the correlation between the corresponding phenotypes. The family members
 can be specified using one of two possible formats.
 }
 \examples{
-construct_covmat()
-construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
-n_fam = NULL, add_ind = TRUE)
-construct_covmat(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-c("m","mgm","mgf","s","mhs")), add_ind = FALSE)
-construct_covmat(sq.herit = matrix(c(0.4,0.2,0.2,0.7), nrow = 2), 
-phen_names = c("p1","p2"))
+construct_covmat_multi(fam_vec = NULL, 
+                       corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2), 
+                       sq.herits = c(0.37,0.44),
+                       phen_names = c("p1","p2"))
+construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
+                       n_fam = NULL, 
+                       add_ind = TRUE,
+                       corrmat = diag(3),
+                       sq.herits = c(0.8, 0.65))
+construct_covmat_multi(fam_vec = NULL, 
+                       n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
+                       add_ind = FALSE,
+                       corrmat = diag(2),
+                       sq.herits = c(0.75,0.85))
 
 }
 \seealso{
