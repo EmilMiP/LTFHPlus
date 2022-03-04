@@ -10,6 +10,7 @@ construct_covmat(
   n_fam = NULL,
   add_ind = TRUE,
   sq.herit = 0.5,
+  corrmat = NULL,
   phen_names = NULL
 )
 }
@@ -41,15 +42,16 @@ liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
 \item{sq.herit}{Either a number representing the squared heritability
-on liability scale for one single phenotype or a matrix holding the squared
-heritability on liability scale for the different phenotypes as well as
-the correlation between these phenotypes. When sq.herit is a matrix,
-the heritabilities must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All squared heritabilities must be non-negative. Note that under the liability threshold model,
-the squared heritabilities must also be at most 1.
+on liability scale for one single phenotype or a numeric vector representing
+the squared heritabilities on liability scale for a positive number of phenotypes.
+All entries in sq.herit must be non-negative and at most 1.}
+
+\item{corrmat}{Either NULL or a numeric matrix holding the genetic correlation between the desired
+number of phenotypes as well as the full correlation.
+The full correlations must be given on the diagonal,
+while the off-diagonal entries must hold the genetic correlations between phenotypes.
 All correlations must be between -1 and 1.
-Defaults to 0.5.}
+Defaults to NULL.}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
@@ -58,9 +60,8 @@ Defaults to NULL.}
 }
 \value{
 If either fam_vec or n_fam is used as the argument, if it is of
-the required format and sq.herit is either a number satisfying
-0 <= sq.herit or a numeric matrix satisfying that all
-diagonal entries are non-negative and that all off-diagonal
+the required format, if sq.herit is either a number or a numeric vector satisfying
+that all entries are non-negative and corrmat is a numeric matrix satisfying that all
 entries are between -1 and 1, then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the number of phenotypes times
 the length of fam_vec or n_fam (+ 2 if add_ind=T).

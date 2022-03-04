@@ -8,7 +8,8 @@ construct_covmat_multi(
   fam_vec = c("m", "f", "s1", "mgm", "mgf", "pgm", "pgf"),
   n_fam = NULL,
   add_ind = TRUE,
-  sq.herit = matrix(c(0.5, 0.2, 0.2, 0.5), nrow = 2),
+  corrmat = matrix(c(0.5, 0.2, 0.2, 0.5), nrow = 2),
+  sq.herits = c(0.5, 0.5),
   phen_names = NULL
 )
 }
@@ -39,14 +40,16 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{sq.herit}{A numeric matrix holding the squared heritability on liability
-scale for a desired number of phenotypes as well as the correlation between these
-phenotypes. The heritabilities must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All squared heritabilities must be non-negative. Note that under the liability threshold model,
-the squared heritabilities must also be at most 1..
+\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
+number of phenotypes as well as the full correlation.
+The full correlations must be given on the diagonal,
+while the off-diagonal entries must hold the genetic correlations between phenotypes.
 All correlations must be between -1 and 1.
 Defaults to matrix(c(0.5,0.2,0.2,0.5), nrow = 2).}
+
+\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
+for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+Defaults to c(0.5,0.5).}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
