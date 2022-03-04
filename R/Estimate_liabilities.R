@@ -91,7 +91,7 @@ utils::globalVariables("upper")
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols
+#' @importFrom dplyr %>% pull bind_rows bind_cols select
 #' @importFrom rlang :=
 #' 
 #' @export
@@ -107,12 +107,15 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   fam_id <- as.character(fam_id)
   
   #Turning family and threshs into tibbles
-  family <- tibble::as_tibble(family)
-  threshs <- tibble::as_tibble(threshs)
+  # if they are not of class tbl
+  if(!("tbl_df" %in% class(family))) family <- tibble::as_tibble(family)
+  if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
+  
   
   # Checking that the heritability is valid
-  if(sq.herit<0)stop("The squared heritability must be non-negative")
-  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
+  if(class(sq.herit)!= "numeric" && class(sq.herit)!= "integer")stop("The squared heritability must be numeric!")
+  if(sq.herit<0)stop("The squared heritability must be non-negative!")
+  if(sq.herit>1)stop("Under the liability threshold model, the squared heritability must be smaller than or equal to 1!")
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
   if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
