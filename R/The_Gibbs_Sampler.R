@@ -58,7 +58,7 @@
 rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (lower == upper), out = c(1), burn_in = 1000) {
   
   # Checking that n_sim is a number
-  if(class(n_sim) != "numeric") stop("The number of simulations n_sim must be numeric!")
+  if(class(n_sim) != "numeric" && class(n_sim) != "integer") stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive
   if(n_sim <=0)stop("n_sim must be a positive number!")
   # Checking that covmat is symmetric
@@ -102,11 +102,9 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   # Sorting out
   out <- sort(out)
   # Checking that burn_in is valid
-  if(class(burn_in) != "numeric") stop("burn_in must be numeric!")
+  if(class(burn_in) != "numeric" && class(burn_in) != "integer") stop("burn_in must be numeric!")
   if(burn_in < 0) stop("burn_in must be non-negative!")
   if(burn_in == Inf) stop("burn_in must be finite!")
-  
-  
   
   
   # Start with medians of univariate distributions

@@ -76,8 +76,9 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # Turning add_ind into class logical
   add_ind <- as.logical(add_ind)
   # Checking that the heritability is valid
-  if(sq.herit<0)stop("The squared heritability must be non-negative")
-  if(sq.herit>1)cat("Warning message: \n Under the liability threshold model, the squared heritability must be smaller than or equal to 1.")
+  if(class(sq.herit) != "numeric" && class(sq.herit) != "integer")stop("The squared heritability must be numeric!")
+  if(sq.herit<0)stop("The squared heritability must be non-negative!")
+  if(sq.herit>1)stop("Under the liability threshold model, the squared heritability must be smaller than or equal to 1!")
   # Checking that n_sim is a number
   if(class(n_sim) != "numeric") stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive
