@@ -7,7 +7,7 @@
 convert_age_to_cir(age, pop_prev = 0.1, mid_point = 60, slope = 1/8)
 }
 \arguments{
-\item{age}{A positive number representing the individual's age.}
+\item{age}{A non-negative number representing the individual's age.}
 
 \item{pop_prev}{A positive number representing the overall
 population prevalence. Must be at most 1. Defaults to 0.1.}

@@ -33,10 +33,10 @@ utils::globalVariables("thresh")
 truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
   
   # Checking that the liability is valid
-  if(class(liability) != "numeric") stop("The liability must be numeric!")
+  if(class(liability) != "numeric" && class(liability) != "integer") stop("The liability must be numeric!")
   # Checking that the lower and upper cutoff points are valid
-  if(class(lower) != "numeric") stop("The lower cutoff point must be numeric!")
-  if(class(upper) != "numeric") stop("The upper cutoff point must be numeric!")
+  if(class(lower) != "numeric" && class(lower) != "integer") stop("The lower cutoff point must be numeric!")
+  if(class(upper) != "numeric" && class(upper) != "integer") stop("The upper cutoff point must be numeric!")
   if(upper < lower){
     cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
@@ -60,7 +60,7 @@ The upper and lower cutoff points will be swapped...")
 #' by the formula 
 #' \deqn{pop_prev / (1 + exp((mid_point - age) * slope))}
 #'
-#' @param age A positive number representing the individual's age.
+#' @param age A non-negative number representing the individual's age.
 #' @param pop_prev A positive number representing the overall
 #' population prevalence. Must be at most 1. Defaults to 0.1.
 #' @param mid_point A positive number representing the mid point 
@@ -81,21 +81,21 @@ The upper and lower cutoff points will be swapped...")
 convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
   # Checking that age is valid
-  if(class(age) != "numeric") stop("The age must be numeric!")
-  if(age<=0) stop("The age must be positive!")
+  if(class(age) != "numeric" && class(age) != "integer") stop("The age must be numeric!")
+  if(age<0) stop("The age must be non-negative!")
   if(age >=150) warning("At this point, it is unrealistic to be of age 150 or older!")
   
   # Checking that pop_prev is valid
-  if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
+  if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
   if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
   if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
   
   # Checking that mid_point is valid
-  if(class(mid_point) != "numeric") stop("The mid point mid_point must be numeric!")
+  if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
   if(mid_point<=0)stop("The mid point mid_point must be positive!")
   
   # Checking that slope is valid
-  if(class(slope) != "numeric") stop("The slope must be numeric!")
+  if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
   
   cir <- pop_prev / (1 + exp((mid_point - age) * slope))
   
@@ -154,7 +154,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
                                  min_age = 10, max_age = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
   
   # Checking that age is valid
-  if(class(age) != "numeric") stop("The age must be numeric!")
+  if(class(age) != "numeric" && class(age) != "integer") stop("The age must be numeric!")
   if(age<0) stop("The age must be non-negative!")
   
   # Checking that dist is either logistic or normal.
@@ -181,16 +181,16 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   if(dist == "logistic"){
     
     # Checking that pop_prev is valid
-    if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
+    if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
     if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
     if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
     
     # Checking that mid_point is valid
-    if(class(mid_point) != "numeric") stop("The mid point mid_point must be numeric!")
+    if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
     if(mid_point<=0)stop("The mid point mid_point must be positive!")
     
     # Checking that slope is valid
-    if(class(slope) != "numeric") stop("The slope must be numeric!")
+    if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
     
     # Computing the threshold
     thresh <- stats::qnorm(pop_prev / (1 + exp((mid_point - age) * slope)), lower.tail = F)
@@ -202,8 +202,8 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   if(dist == "normal"){
     
     # Checking that min_age and max_age are valid.
-    if(class(min_age) != "numeric") stop("The earliest age min_age must be numeric!")
-    if(class(max_age) != "numeric") stop("The latest age max_age must be numeric!")
+    if(class(min_age) != "numeric" && class(min_age) != "integer") stop("The earliest age min_age must be numeric!")
+    if(class(max_age) != "numeric" && class(max_age) != "integer") stop("The latest age max_age must be numeric!")
     if(min_age <= 0) stop("The earliest age min_age must be positive!")
     if(max_age <= 0) stop("The latest age max_age must be positive!")
     if(min_age > max_age){
@@ -216,8 +216,8 @@ The earliest and latest age will be swapped...")
     }
     
     # Checking that the lower and upper cutoff points are valid
-    if(class(lower) != "numeric") stop("The lower cutoff point must be numeric!")
-    if(class(upper) != "numeric") stop("The upper cutoff point must be numeric!")
+    if(class(lower) != "numeric" && class(lower) != "integer") stop("The lower cutoff point must be numeric!")
+    if(class(upper) != "numeric" && class(upper) != "integer") stop("The upper cutoff point must be numeric!")
     if(upper < lower){
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
@@ -266,20 +266,20 @@ The upper and lower cutoff points will be swapped...")
 convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
   # Checking that age is valid
-  if(class(cir) != "numeric") stop("The cumulative incidence rate cir must be numeric!")
+  if(class(cir) != "numeric" && class(cir) != "integer") stop("The cumulative incidence rate cir must be numeric!")
   if(cir<=0) stop("The cumulative incidence rate cir must be positive!")
   
   # Checking that pop_prev is valid
-  if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
+  if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
   if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
   if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
   
   # Checking that mid_point is valid
-  if(class(mid_point) != "numeric") stop("The mid point mid_point must be numeric!")
+  if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
   if(mid_point<=0)stop("The mid point mid_point must be positive!")
   
   # Checking that slope is valid
-  if(class(slope) != "numeric") stop("The slope must be numeric!")
+  if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
   
   if(cir >= pop_prev){
     
@@ -345,7 +345,7 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
                                     min_aoo = 10, max_aoo = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf ) {
   
   # Checking that liability is valid
-  if(class(liability) != "numeric") stop("The liability must be numeric!")
+  if(class(liability) != "numeric" && class(liability) != "integer") stop("The liability must be numeric!")
   
   # Checking that dist is either logistic or normal.
   if(class(dist) == "character"){
@@ -371,16 +371,16 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   if(dist == "logistic"){
     
     # Checking that pop_prev is valid
-    if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
+    if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
     if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
     if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
     
     # Checking that mid_point is valid
-    if(class(mid_point) != "numeric") stop("The mid point mid_point must be numeric!")
+    if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
     if(mid_point<=0)stop("The mid point mid_point must be positive!")
     
     # Checking that slope is valid
-    if(class(slope) != "numeric") stop("The slope must be numeric!")
+    if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
     
     # Computing the age of onset
     if(stats::pnorm(liability, lower.tail = F) >= pop_prev){
@@ -394,8 +394,8 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   if(dist == "normal"){
     
     # Checking that min_aoo and max_aoo are valid.
-    if(class(min_aoo) != "numeric") stop("The earliest age of onset min_aoo must be numeric!")
-    if(class(max_aoo) != "numeric") stop("The latest age of onset max_aoo must be numeric!")
+    if(class(min_aoo) != "numeric" && class(min_aoo) != "integer") stop("The earliest age of onset min_aoo must be numeric!")
+    if(class(max_aoo) != "numeric" && class(max_aoo) != "integer") stop("The latest age of onset max_aoo must be numeric!")
     if(min_aoo <= 0) stop("The earliest age of onset min_aoo must be positive!")
     if(max_aoo <= 0) stop("The latest age of onset max_aoo must be positive!")
     if(min_aoo > max_aoo){
@@ -408,8 +408,8 @@ The earliest and latest age of onset will be swapped...")
     }
     
     # Checking that the lower and upper cutoff points are valid
-    if(class(lower) != "numeric") stop("The lower cutoff point must be numeric!")
-    if(class(upper) != "numeric") stop("The upper cutoff point must be numeric!")
+    if(class(lower) != "numeric" && class(lower) != "integer") stop("The lower cutoff point must be numeric!")
+    if(class(upper) != "numeric" && class(upper) != "integer") stop("The upper cutoff point must be numeric!")
     if(upper < lower){
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
@@ -489,11 +489,13 @@ The upper and lower cutoff points will be swapped...")
 convert_observed_to_liability_scale <- function(obs_sq.herit = 0.5, pop_prev = 0.05, prop_cases = 0.5){
   
   # Checking that the observed squared heritabilities are valid
-  if(any(obs_sq.herit<0))stop("The observed squared heritability(ies) must be non-negative")
-  if(any(obs_sq.herit>1))stop("The observed squared heritability(ies) must be smaller than or equal to one")
+  if(class(obs_sq.herit) != "numeric" && class(obs_sq.herit) != "integer") stop("The observed squared heritability(ies) must be numeric!")
+  if(any(obs_sq.herit<0))stop("The observed squared heritability(ies) must be non-negative!")
+  if(any(obs_sq.herit>1))stop("The observed squared heritability(ies) must be smaller than or equal to one!")
   # Checking that the population prevalences are valid
-  if(any(pop_prev<0))stop("The population prevalence(s) must be non-negative")
-  if(any(pop_prev>1))stop("The population prevalence(s) must be smaller than or equal to one")
+  if(class(pop_prev) != "numeric" && class(pop_prev) != "integer")stop("The population prevalence(s) must be numeric!")
+  if(any(pop_prev<0))stop("The population prevalence(s) must be non-negative!")
+  if(any(pop_prev>1))stop("The population prevalence(s) must be smaller than or equal to one!")
   
   # Defining the variable z, which is the height of the truncated
   # normal curve at the point t, and where t is the truncated point,
@@ -510,8 +512,9 @@ convert_observed_to_liability_scale <- function(obs_sq.herit = 0.5, pop_prev = 0
   }else{
     
     # Checking that the proportions of cases are valid
-    if(any(prop_cases<0))stop("The proportion(s) of cases must be non-negative")
-    if(any(prop_cases>1))stop("The proportion(s) of cases must be smaller than or equal to one")
+    if(class(prop_cases) != "numeric" && class(prop_cases) != "integer") stop("The proportion(s) of cases must be numeric!")
+    if(any(prop_cases<0))stop("The proportion(s) of cases must be non-negative!")
+    if(any(prop_cases>1))stop("The proportion(s) of cases must be smaller than or equal to one!")
     
     return(obs_sq.herit * (pop_prev*(1-pop_prev))/(z^2) * (pop_prev*(1-pop_prev))/(prop_cases*(1-prop_cases)))
   }
