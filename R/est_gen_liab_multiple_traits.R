@@ -1,4 +1,4 @@
-utils::globalVariables("i")
+utils::globalVariables("")
 #' Estimating the genetic or full liability for multiple phenotypes
 #'
 #' \code{estimate_liability_multi} estimates the genetic component of the full
@@ -77,7 +77,7 @@ utils::globalVariables("i")
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number
+#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
 #' @importFrom rlang :=
 #' 
 #' @export
@@ -97,7 +97,7 @@ estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = 
   
   # Checking that the heritability is valid
   if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herit)!= "integer")stop("The squared heritabilities must be numeric!")
+  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
   if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
   if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
@@ -221,7 +221,7 @@ The lower and upper thresholds will be swapped...")
       fam <- unlist(fam_list[i])
 
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
+      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
                               corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
@@ -302,10 +302,17 @@ The lower and upper thresholds will be swapped...")
       fam <- unlist(fam_list[i])
       
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = phen_names)
+      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
+                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
       
-      
+      if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
+        
+        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
+        
+      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
+        
+        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
+      }
       
       # Extracting the thresholds for all family members 
       # and all phenotypes
