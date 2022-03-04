@@ -222,11 +222,15 @@ The lower and upper thresholds will be swapped...")
 
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = phen_names)
+                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
-        which(stringr::str_detect(colnames(cov), "^g_"))
+        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
+      
+      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
+          
+        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
       }
       
       # Extracting the thresholds for all family members 
