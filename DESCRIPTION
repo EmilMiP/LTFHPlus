@@ -1,16 +1,18 @@
-Package: LTFHpp
+Package: LTFHPlus
 Type: Package
-Title: Extending the package 'LTFHPlus'
-Version: 0.2
-Date: 2022-02-18
+Title: Implementation of 'LT-FH++'
+Version: 2.0
+Date: 2022-03-10
 Authors@R: c(
-    person("Jette", "Steinbach", , "jst@econ.au.dk", role = c("aut", "cre")),
-    person("Emil Michael", "Pedersen", , "emp@ph.au.dk", role = "aut"),
-    person("Florian", "Privé", , "florian.prive.21@gmail.com", role = "aut"))
-Description: Extending the available package 'LTFHPlus' in order to allow
-    for more flexible family structures. 'LT-FH++' is an extension of
-    'LT-FH' using a Gibbs sampler for sampling from the truncated
-    multivariate normal distribution.
+    person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
+    person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
+    person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
+    person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"),
+    person("Jette", "Steinbach", , "jst@econ.au.dk", role = "ctb"))
+Description: Implementation of 'LT-FH++', an extension of 'LT-FH'
+    which uses a Gibbs sampler for sampling from the truncated
+    multivariate normal distribution. 'LT-FH++' allows for 
+    flexible family structures.
 License: GPL (>= 2)
 Imports: 
     batchmeans,
@@ -38,4 +40,4 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Language: "en-GB"
-URL: https://github.com/JetteS/LTFHPlus
+URL: https://github.com/EmilMiP/LTFHPlus

@@ -238,7 +238,7 @@ estimate_gen_liability_ltfh = function(h2,
         vals = list() #store simulated values
         vals.ctr = 1
         while (is.null(se) || se > tol) {
-          gen_liabs = LTFHpp::rtmvnorm.gibbs(n_sim = 50e3,
+          gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
                                                covmat = construct_covmat(),
                                                lower = lower,
                                                upper = upper,
