@@ -213,7 +213,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   
   if(parallel){
     
-    cat(paste0("The number of workers is ", future::nbrOfWorkers()))
+    cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
       # Extract family members
