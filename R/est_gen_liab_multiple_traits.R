@@ -1,9 +1,8 @@
-utils::globalVariables("")
 #' Estimating the genetic or full liability for multiple phenotypes
 #'
 #' \code{estimate_liability_multi} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
-#' on their family history for a variable number of penotypes.
+#' on their family history for a variable number of phenotypes.
 #'
 #' This function can be used to estimate either the genetic component of the 
 #' full liability, the full liability or both for a variable number of traits.
@@ -64,16 +63,19 @@ utils::globalVariables("")
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
 #' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the squared heritability, out, tol and always_add are of the required form,
-#' then the function returns a tibble with either four or six columns (depending on the length of out).
+#' a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
+#' then the function returns a tibble with at least six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 
-#' If out is equal to c(1) or c("genetic"), the third and fourth column hold the estimated genetic 
-#' liability as well as the corresponding standard error, respectively. 
-#' If out equals c(2) or c("full"), the third and fourth column hold the estimated full liability 
-#' as well as the corresponding standard error, respectively. 
-#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth column hold the estimated 
-#' genetic liability as well as the corresponding standard error, respectively, while the fifth and
-#' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
+#' If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic 
+#' liability as well as the corresponding standard error for the first phenotype, respectively. 
+#' If out equals c(2) or c("full"), the third and fourth columns hold the estimated full liability 
+#' as well as the corresponding standard error for the first phenotype, respectively. 
+#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth columns hold the estimated 
+#' genetic liability as well as the corresponding standard error for the first phenotype, respectively, 
+#' while the fifth and sixth columns hold the estimated full liability as well as the corresponding standard error
+#' for the first phenotype, respectively.
+#' The remaining columns hold the estimated genetic liabilities and/or the estimated full liabilities
+#' as well as the corresponding standard errors for the remaining phenotypes.
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
@@ -213,7 +215,7 @@ The lower and upper thresholds will be swapped...")
   
   if(parallel){
     
-    cat(paste0("The number of workers is ", future::nbrOfWorkers()))
+    cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
       
