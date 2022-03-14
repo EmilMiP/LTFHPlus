@@ -25,7 +25,7 @@ A detailed description of the liability threshold model conditioned on family hi
 
 # Installation
 
-You can install LTFHpp by:
+You can install LTFHPlus by:
 
 ```{r eval=FALSE}
 devtools::install_github("EmilMiP/LTFHPlus")

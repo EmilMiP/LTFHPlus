@@ -21,7 +21,7 @@ model conditioned on family history, age of onset and sex can be found
 
 # Installation
 
-You can install LTFHpp by:
+You can install LTFHPlus by:
 
 ``` r
 devtools::install_github("EmilMiP/LTFHPlus")
