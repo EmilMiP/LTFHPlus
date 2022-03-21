@@ -1,26 +1,43 @@
 Package: LTFHPlus
 Type: Package
 Title: Implementation of 'LT-FH++'
-Version: 1.1
-Date: 2021-04-06
+Version: 2.0
+Date: 2022-03-10
 Authors@R: c(
-  person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
-  person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
-  person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
-  person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"))
-Description: Implementation of 'LT-FH++', an extension of 'LT-FH' using a Gibbs 
-    sampler for sampling from the truncated multivariate normal distribution.
+    person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
+    person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
+    person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
+    person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"),
+    person("Jette", "Steinbach", , "jst@econ.au.dk", role = "aut"))
+Description: Implementation of 'LT-FH++', an extension of 'LT-FH'
+    which uses a Gibbs sampler for sampling from the truncated
+    multivariate normal distribution. 'LT-FH++' allows for 
+    flexible family structures.
 License: GPL (>= 2)
 Imports: 
     batchmeans,
     dplyr,
-  	future.apply,
-  	progressr,
-    Rcpp
-Suggests:
+    future.apply,
+    progressr,
+    purrr,
+    Rcpp,
+    rlang,
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect,
     tmvtnorm,
+    utils
+Suggests:
+    future,
+    knitr,
+    MASS,
+    rmarkdown,
     testthat
 LinkingTo: Rcpp
-RoxygenNote: 7.1.1
-Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr
 Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Language: "en-GB"
+URL: https://github.com/EmilMiP/LTFHPlus
