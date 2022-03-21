@@ -1,11 +1,10 @@
 library(LTFHPlus)
 library(ggplot2)
 library(gridExtra)
-library(future.apply)
-library(dplyr)
+
 
 #number of individuals
-N = 10000
+N = 5000
 #constructing correlation matrix for LT-FH++
 h2_1 = .5
 h2_2 = .5
@@ -100,7 +99,7 @@ for (i in seq_along(all_phen)) {
 
 
 #performing the LT-FH++ analysis
-multi = estimate_gen_liability_multi_trait(corr.mat = corr_mat,
+multi = estimate_gen_liability_multi_trait(corr_mat = corr_mat,
                                            phen.list = all_phen,
                                            thr.list = all_thr)
 plan(sequential) # removing the sessions created by multisession.
