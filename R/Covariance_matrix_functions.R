@@ -435,7 +435,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   add_ind <- as.logical(add_ind)
   
   # Checking that the heritabilities are valid
-  if(check_proportion(sq.herit)){invisible()}
+  if(check_proportion(sq.herits)){invisible()}
   
   # Checking that all correlations are valid
   if(check_correlation_matrix(genetic_corrmat)){invisible()}
@@ -701,8 +701,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' construct_covmat(fam_vec = NULL, 
 #'                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
 #'                  add_ind = FALSE, sq.herit = 0.3)
-#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(0.6,1,1,0.4), nrow = 2),
-#' full_corrmat = matrix(c(0.7,1,1,0.6), nrow = 2))
+#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.6,0.4,1), nrow = 2),
+#' full_corrmat = matrix(c(1,0.7,0.6,1), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
 #' \code{\link{construct_covmat_multi}}
