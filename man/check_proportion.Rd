@@ -2,35 +2,34 @@
 % Please edit documentation in R/Internal_functions.R
 \name{check_proportion}
 \alias{check_proportion}
-\title{Checking that a proportion is valid}
+\title{Checking that proportions are valid}
 \usage{
 check_proportion(prop)
 }
 \arguments{
-\item{prop}{A number or integer representing the proportion that
-needs to be validated.}
+\item{prop}{A number, integer or numeric vector representing the proportions that
+need to be validated.}
 }
 \value{
-If \code{prop} is a valid proportion that is of class \code{numeric}
+If \code{prop} are valid proportions of class \code{numeric}
 or \code{integer}, non-negative and at most one,
 then the function will return TRUE. Otherwise, the function aborts.
 }
 \description{
-\code{check_proportion} checks whether a proportion is valid, i.e.
-whether it is non-negative and at most one
+\code{check_proportion} checks whether proportions are valid, i.e.
+whether they are non-negative and at most one.
 }
 \details{
-This function can be used to check whether a proportion is non-negative
-and at most one
+This function can be used to check whether proportions are non-negative
+and at most one.
 }
 \examples{
+\dontrun{
 check_proportion(0.2)
 check_proportion(0.04)
 check_proportion(0)
 check_proportion(1)
 
-
-\dontrun{
 # This will result in errors:
 check_proportion(2)
 check_proportion(-0.5)

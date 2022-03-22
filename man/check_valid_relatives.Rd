@@ -2,13 +2,14 @@
 % Please edit documentation in R/Internal_functions.R
 \name{check_valid_relatives}
 \alias{check_valid_relatives}
-\title{Checking that a relative is represented by a valid string}
+\title{Checking that relatives are represented by valid strings}
 \usage{
-check_valid_relatives(relative)
+check_valid_relatives(relatives)
 }
 \arguments{
-\item{relative}{A string representing a relative.
-The string must be one of the following
+\item{relatives}{A string or character vector representing
+the relatives.
+All strings must be chosen among the following abbreviations
 \itemize{
 \item g (Genetic component of full liability)
 \item o (Full liability)
@@ -27,16 +28,17 @@ for the function to return TRUE.
 }}
 }
 \value{
-If \code{relative} is a string chosen from the mentioned list of strings,
+If \code{relatives} is a string or character vector such that
+all strings are chosen from the mentioned list of strings,
 then the function will return TRUE. Otherwise, the function is aborted.
 }
 \description{
-\code{check_valid_relatives} checks whether a relative is represented
-by a valid abbreviation.
+\code{check_valid_relatives} checks whether relatives are represented
+by valid abbreviations.
 }
 \details{
-This function can be used to check whether a relative is represented
-by a valid abbreviation. A valid abbreviation is one of the following:
+This function can be used to check whether relatives are represented
+by valid abbreviations. A valid abbreviation is one of the following:
 \itemize{
 \item g (Genetic component of full liability)
 \item o (Full liability)
@@ -54,12 +56,11 @@ by a valid abbreviation. A valid abbreviation is one of the following:
 }
 }
 \examples{
+\dontrun{
 check_valid_relatives("g")
 check_valid_relatives("o")
 check_valid_relatives("mgm")
 
-
-\dontrun{
 # This will result in errors:
 get_relatedness("a")
 get_relatedness(m)
