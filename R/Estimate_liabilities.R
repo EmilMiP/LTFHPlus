@@ -1,11 +1,14 @@
-#' Estimating the genetic or full liability for multiple phenotypes
+utils::globalVariables("lower")
+utils::globalVariables("upper")
+
+#' Estimating the genetic or full liability 
 #'
-#' \code{estimate_liability_multi} estimates the genetic component of the full
+#' \code{estimate_liability} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
-#' on their family history for a variable number of phenotypes.
+#' on their family history.
 #'
 #' This function can be used to estimate either the genetic component of the 
-#' full liability, the full liability or both for a variable number of traits.
+#' full liability, the full liability or both. 
 #'
 #' @param family A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least two columns that hold the family identifier and the corresponding
@@ -28,19 +31,12 @@
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least five columns; one holding the personal identifier for all individuals,
-#' and the remaining four holding the lower and upper thresholds for the first and second
-#' phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-#' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
-#' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-#' thresholds corresponding to the first phenotype. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
-#' @param corrmat A numeric matrix holding the genetic correlation between the desired 
-#' number of phenotypes as well as the full correlation. 
-#' The full correlations must be given on the diagonal,
-#' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All correlations must be between -1 and 1.
+#' Must have at least three columns, one holding the personal identifier for all individuals,
+#' and the remaining two holding the lower and upper thresholds, respectively.
+#' @param sq.herit A number representing the squared heritability on liability scale
+#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
+#' the squared heritability must also be at most 1.
+#' Defaults to 0.5.
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
 #' @param fam_id A string holding the name of the column in \code{family} that
@@ -54,6 +50,11 @@
 #' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
 #' Equals the standard error of the mean. That is, a tolerance of 0.2 means that the 
 #' standard error of the mean is below 0.2. Defaults to 0.01.
+#' @param always_add A character vector or NULL. If always_add = c("g","o"), both the genetic component 
+#' of the full liability as well as the full liability will be added to the list of family members. 
+#' If always_add equals "g" or "o", the genetic component of the full liability or the full liability
+#' will be added, respectively. If always_add = NULL, no component will be added.
+#' Defaults to c("g","o").
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
@@ -63,28 +64,40 @@
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
 #' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
-#' then the function returns a tibble with at least six columns (depending on the length of out).
+#' a column named "upper" and if the squared heritability, out, tol and always_add are of the required form,
+#' then the function returns a tibble with either four or six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 
-#' If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic 
-#' liability as well as the corresponding standard error for the first phenotype, respectively. 
-#' If out equals c(2) or c("full"), the third and fourth columns hold the estimated full liability 
-#' as well as the corresponding standard error for the first phenotype, respectively. 
-#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth columns hold the estimated 
-#' genetic liability as well as the corresponding standard error for the first phenotype, respectively, 
-#' while the fifth and sixth columns hold the estimated full liability as well as the corresponding standard error
-#' for the first phenotype, respectively.
-#' The remaining columns hold the estimated genetic liabilities and/or the estimated full liabilities
-#' as well as the corresponding standard errors for the remaining phenotypes.
+#' If out is equal to c(1) or c("genetic"), the third and fourth column hold the estimated genetic 
+#' liability as well as the corresponding standard error, respectively. 
+#' If out equals c(2) or c("full"), the third and fourth column hold the estimated full liability 
+#' as well as the corresponding standard error, respectively. 
+#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth column hold the estimated 
+#' genetic liability as well as the corresponding standard error, respectively, while the fifth and
+#' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
+#' 
+#' @examples
+#' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
+#' add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+#' 
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
+#' parallel = FALSE, always_add = c("g","o"))
+#' # 
+#' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
+#' sq.herit = 0.5, n_sim=200, pop_prev = .05)
+#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), 
+#' tol = 0.01, parallel = FALSE, always_add = c("g","o"))
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
+#' @importFrom dplyr %>% pull bind_rows bind_cols select
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
-                                     parallel = FALSE, progress = FALSE){
+estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
+                               tol = 0.01, always_add = c("g","o"), parallel = FALSE, progress = FALSE){
+  
   # Turning parallel and progress into class logical
   parallel <- as.logical(parallel)
   progress <- as.logical(progress)
@@ -94,29 +107,28 @@ estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = 
   fam_id <- as.character(fam_id)
   
   #Turning family and threshs into tibbles
+  # if they are not of class tbl
   if(!("tbl_df" %in% class(family))) family <- tibble::as_tibble(family)
   if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
   
+  
   # Checking that the heritability is valid
-  if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
-  if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
-  if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
-  # Checking that all correlations are valid
-  if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
-  if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
-  # In addition, corrmat must be symmetric
-  if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
+  if(class(sq.herit)!= "numeric" && class(sq.herit)!= "integer")stop("The squared heritability must be numeric!")
+  if(sq.herit<0)stop("The squared heritability must be non-negative!")
+  if(sq.herit>1)stop("Under the liability threshold model, the squared heritability must be smaller than or equal to 1!")
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
   if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
   # And that pid is also present in the tibble threshs
   if(!(pid %in% colnames(threshs))) stop(paste0("The column ", pid," does not exist in the tibble threshs..."))
-  # In addition, we check that threshs has columns named lower and upper
-  if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
+  # In addition, we check that threshs has two columns named lower and upper
+  if(any(!c("lower","upper") %in% colnames(threshs))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   # Checking that tol is valid
-  if(class(tol) != "numeric" && class(tol) != "integer") stop("The tolerance must be numeric!")
+  if(class(tol) != "numeric") stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
+  # Checking that always_add is a vector of strings
+  if(class(always_add) != "character" & class(always_add) != "NULL" ) stop("always_add must be of class character!") 
+  always_add <- intersect(always_add, c("g","o"))
   # Checking that out is either a character vector or a
   # numeric vector 
   if(class(out) == "numeric"){
@@ -146,32 +158,19 @@ estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = 
   # If the tibble consists of more than the required columns, 
   # we select only the relevant ones.
   family <- select(family, !!as.symbol(fam_id), !!as.symbol(pid))
-  threshs <- select(threshs, !!as.symbol(pid), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
-  
-  # Now we can extract the number of phenotypes
-  n_pheno <- nrow(corrmat)
-  if(ncol(threshs) != (2*n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in corrmat...\
-Does all columns have the required names?")
-  
-  # As well as the phenotype names
-  pheno_names <- sub("lower_", "", colnames(threshs)[stringr::str_detect(colnames(threshs), "^lower_")], ignore.case = TRUE)
+  threshs <- select(threshs, !!as.symbol(pid), lower, upper)
   
   # Finally, we also check whether all lower thresholds are 
   # smaller than or equal to the upper thresholds
-  for ( pheno in pheno_names ) {
-  
+  if(any(pull(threshs, lower) > pull(threshs, upper))){
+    cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+        The lower and upper thresholds will be swapped...")
     
-    if(any(pull(threshs, !!as.symbol(paste0("lower_", pheno))) > pull(threshs, !!as.symbol(paste0("upper_", pheno))))){
-      cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
-The lower and upper thresholds will be swapped...")
-      
-      swapping_indx <- which(pull(threshs, !!as.symbol(paste0("lower_", pheno))) > pull(threshs, !!as.symbol(paste0("upper_", pheno))))
-      
-      threshs <- mutate(threshs, !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) + !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno)))) %>% 
-        mutate(., !!as.symbol(paste0("upper_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("upper_", pheno)))) %>% 
-        mutate(., !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno))))
-    }
+    swapping_indx <- which(pull(threshs, lower) > pull(threshs, upper))
+    
+    threshs$lower[swapping_indx] <- threshs$lower[swapping_indx] + threshs$upper[swapping_indx]
+    threshs$upper[swapping_indx] <- threshs$lower[swapping_indx] - threshs$upper[swapping_indx]
+    threshs$lower[swapping_indx] <- threshs$lower[swapping_indx] - threshs$upper[swapping_indx]
   }
   
   # If parallel = T, future_lapply needs to be installed 
@@ -212,50 +211,41 @@ The lower and upper thresholds will be swapped...")
     pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
   }
   
-  
   if(parallel){
     
     cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
-      
       # Extract family members
       fam <- unlist(fam_list[i])
-
+      # Remove individual o and/or g from the set (if present)
+      full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
-      
-      if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
-      
-      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
-          
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
-      }
+      # If always_add holds "g" or "o", add_ind must be TRUE
+      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      # and all phenotypes
-      intermed_res = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(pid))), ]
+      # Adding the individuals present in always_add
+      thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
-      for(pheno in pheno_names){
+      if(nrow(thr) == 2){
         
-        if(which(pheno_names == pheno) == 1){
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno)))
+        fam_threshs <- bind_rows(thr, fam_threshs)
+      }else if(nrow(thr) == 0){
         
-        }else{
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno))) %>% 
-            bind_rows(fam_threshs,.)
-        }
-
+        fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
+                                 fam_threshs)
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g$")){
+        
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
+                                 fam_threshs)
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o$")){
+        
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
+                                 fam_threshs)
       }
-      rm(intermed_res)
-        
+      
       # Setting the variables needed for Gibbs sampler
       fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
       std_err <- rep(Inf, length(out))
@@ -286,12 +276,10 @@ The lower and upper thresholds will be swapped...")
         # Adding one to the counter
         n_gibbs <- n_gibbs +1
       }
-        
       # If all standard errors are below the tolerance, 
       # the estimated liabilities as well as the corresponding 
       # standard error can be returned
       return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
-    
       
     }, future.seed = TRUE)
     
@@ -301,41 +289,34 @@ The lower and upper thresholds will be swapped...")
     gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
       
       # Extract family members
-      fam <- unlist(fam_list[i])
-      
+      fam <- fam_list[[i]]
+      # Remove individual o and/or g from the set (if present)
+      full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
       # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
-      
-      if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
-        
-      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
-      }
+      # If always_add holds "g" or "o", add_ind must be TRUE
+      cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
       
       # Extracting the thresholds for all family members 
-      # and all phenotypes
-      intermed_res = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
+      fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(pid))), ]
+      # Adding the individuals present in always_add
+      thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(pid))), ]
       
-      for(pheno in pheno_names){
+      if(nrow(thr) == 2){
         
-        if(which(pheno_names == pheno) == 1){
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno)))
-          
-        }else{
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno))) %>% 
-            bind_rows(fam_threshs,.)
-        }
+        fam_threshs <- bind_rows(thr, fam_threshs)
+      }else if(nrow(thr) == 0){
         
+        fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(pid) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
+                                 fam_threshs)
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_g$")){
+        
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "o", lower = -Inf, upper =Inf),
+                                 fam_threshs)
+      }else if(str_detect(pull(thr,!!as.symbol(pid)),"^.*_o$")){
+        
+        fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(pid) := "g", lower = -Inf, upper =Inf, .before = 1),
+                                 fam_threshs)
       }
-      rm(intermed_res)
       
       # Setting the variables needed for Gibbs sampler
       fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
@@ -387,6 +368,6 @@ The lower and upper thresholds will be swapped...")
   # as their estimated standard errors to the tibble holding
   # the family information
   family <- bind_cols(family, tibble::as_tibble(t(gibbs_res)))
-  
+
   return(family)
 }

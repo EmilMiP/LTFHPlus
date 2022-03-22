@@ -6,8 +6,14 @@
 \alias{LTFHPlus-package}
 \title{LTFHPlus: Implementation of 'LT-FH++'}
 \description{
-Implementation of 'LT-FH++', an extension of 'LT-FH' using a Gibbs 
-    sampler for sampling from the truncated multivariate normal distribution.
+Implementation of 'LT-FH++', an extension of 'LT-FH' which uses a Gibbs sampler for sampling from the truncated multivariate normal distribution. 'LT-FH++' allows for flexible family structures.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/EmilMiP/LTFHPlus}
+}
+
 }
 \author{
 \strong{Maintainer}: Emil Michael Pedersen \email{emp@ph.au.dk}
@@ -21,6 +27,7 @@ Other contributors:
 \itemize{
   \item Bjarni Jóhann Vilhjálmsson \email{bjv@econ.au.dk} [thesis advisor]
   \item Esben Agerbo \email{ea@econ.au.dk} [thesis advisor]
+  \item Jette Steinbach \email{jst@econ.au.dk} [contributor]
 }
 
 }

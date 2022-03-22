@@ -1,6 +1,7 @@
 library(LTFHPlus)
 library(ggplot2) 
 library(gridExtra)
+library(dplyr)
 
 
 
@@ -56,7 +57,7 @@ phen = lapply(1:N, function(i) {
     list(age_vec),
     list(aoo_vec))
 }) %>% do.call("rbind", . ) %>% #outputs list, combining with rbind 
-  as_tibble() %>% # converting to tibble
+  as_tibble(.name_repair = 'unique') %>% # converting to tibble
   rename("ids" = "V1", "sex" = "V2", "status" = "V3", "age" = "V4", "aoo" = "V5") # renaming columns
 
 
@@ -206,5 +207,4 @@ p3 = ggplot(simu_liab, aes(x = ltfh, y = child_gen, color = sapply(phen$status, 
 #grid.arrange(p1, p2, p3)
 
 grid.arrange(p1, p3)
-
 

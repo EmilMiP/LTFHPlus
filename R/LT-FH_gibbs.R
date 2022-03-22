@@ -1,6 +1,6 @@
 utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab", 
                          "post_gen_liab_se", "grp_est", "grp_se", "est_per_sib",
-                         "cases", "child_gen"))
+                         "cases", "child_gen", "cur_string", "string"))
 
 #' Estimate genetic liability similar to LT-FH
 #'
@@ -13,7 +13,7 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' @param status_col_mother Column name of status for the mother
 #' @param status_col_siblings Column name of status for the siblings
 #' @param number_of_siblings_col Column name for the number of siblings for a given individual
-#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
+#' @param tol Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
@@ -21,8 +21,6 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' # See R/Example/example_nosib.R for an example of use and input.
 #' @importFrom dplyr %>%
 #' @export
-
-
 estimate_gen_liability_ltfh = function(h2,
                                        phen, 
                                        child_threshold,
@@ -64,16 +62,32 @@ estimate_gen_liability_ltfh = function(h2,
   
 
   # All cases with no sibling status ----------------------------------------
-  reduced_max_1_sibling = reduced %>% dplyr::filter(!!as.symbol(status_col_siblings) == 0)
- 
+  reduced_max_1_sibling = reduced %>% dplyr::filter((!!as.symbol(status_col_siblings) == 0 & !!as.symbol(number_of_siblings_col) > 1) | 
+                                                     !!as.symbol(number_of_siblings_col) <= 1 |
+                                                     is.na(!!as.symbol(number_of_siblings_col)) |
+                                                     is.na(!!as.symbol(status_col_siblings)))
+
   if(nrow(reduced_max_1_sibling) > 0) { #only do this if we actually have configurations in the data.
     for (i in 1:nrow(reduced_max_1_sibling)) {
       #extract number of siblings and construct the thresholds and covariance matrix
-      cur_nsib = unlist(reduced_max_1_sibling[i, 5])
-      full_fam = c(unlist(reduced_max_1_sibling[i,1:3]), rep(0, cur_nsib))
+      cur_nsib = reduced_max_1_sibling[[number_of_siblings_col]][i]
+      cur_sib_stat = reduced_max_1_sibling[[status_col_siblings]][i]
+      full_fam = c(unlist(reduced_max_1_sibling[i,1:3]), 
+                   if(is.na(cur_sib_stat) & is.na(cur_nsib)) {
+                     #do nothing. no info
+                     } else if(is.na(cur_sib_stat) & !is.na(cur_nsib)) {
+                       rep(NA, cur_nsib)
+                     }else if(!is.na(cur_nsib) & cur_sib_stat == 0) {
+                     rep(0, cur_nsib)
+                     } else if (!is.na(cur_nsib) & cur_nsib == 1 & cur_sib_stat == 1) {
+                       1
+                     } else { 
+                       1
+                     }
+                   )
       
-      cov = get_cov(h2 = h2, n_sib = cur_nsib)
-      
+      cov = construct_covmat()
+
       cov_size = nrow(cov)
       
       lower = rep(-Inf, cov_size)
@@ -82,12 +96,13 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for parents:
       upper[-1][2:3][full_fam[2:3] == 0] = parent_threshold
       lower[-1][2:3][full_fam[2:3] == 1] = parent_threshold
-      #assigning thresholds for parents:
+      #assigning thresholds for children:
       upper[2][full_fam[1] == 0] = child_threshold
       lower[2][full_fam[1] == 1] = child_threshold
       
-      if (cur_nsib > 0) {
-        upper[4 + 1:cur_nsib] = child_threshold
+      if (!is.na(cur_nsib) && cur_nsib > 0) {
+        upper[4 + 1:cur_nsib][full_fam[-(1:3)] == 0] = child_threshold
+        lower[4 + 1:cur_nsib][full_fam[-(1:3)] == 1] = child_threshold
       }
       
       fixed <- (upper - lower) < 1e-4
@@ -97,9 +112,9 @@ estimate_gen_liability_ltfh = function(h2,
       vals = list() #store simulated values
       vals.ctr = 1
       while (is.null(se) || se > tol) {
-        gen_liabs = rtmvnorm.gibbs(50e3, 
+        gen_liabs = rtmvnorm.gibbs(n_sim = 50e3, 
                                    burn_in = 1000,
-                                   sigma = cov,
+                                   covmat = cov,
                                    lower = lower, 
                                    upper = upper,
                                    fixed = fixed)
@@ -120,7 +135,7 @@ estimate_gen_liability_ltfh = function(h2,
 
   # All configurations with sibling status ----------------------------------
   
-  reduced_atleast_2_siblings = reduced %>% dplyr::filter(!!as.symbol(number_of_siblings_col) > 1, !!as.symbol(status_col_siblings) == 1)
+  reduced_atleast_2_siblings = reduced %>% dplyr::filter(!!as.symbol(number_of_siblings_col) > 1 & !is.na(!!as.symbol(status_col_siblings)) & !!as.symbol(status_col_siblings) == 1)
   
   if(nrow(reduced_atleast_2_siblings) > 0) {
     
@@ -138,35 +153,60 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
-      
-      tmp <- tmvtnorm::rtmvnorm(n = 100e3, mean = rep(0, 4 + cur_nsib), sigma = get_cov(h2, n_sib = cur_nsib),
-                                lower = lower,
-                                upper = upper, 
-                                algorithm = "gibbs") 
+
+      cov <- construct_covmat()
+      tmp <- rtmvnorm.gibbs(n_sim = 100e3,
+                            covmat = cov,
+                            lower = lower,
+                            upper = upper,
+                            fixed = rep(FALSE, nrow(cov)),
+                            out = 1:nrow(cov)) 
       colnames(tmp) = c("child_gen", paste0(c("child", "father", "mother", paste0("sib", 1:cur_nsib)), "_full"))
       tmp = dplyr::as_tibble(tmp)
       
       cur_string = paste(reduced_atleast_2_siblings[n,1:3], collapse = " ")
       tmp[,3:4] = (tmp[,3:4] > parent_threshold) + 0
       tmp[,-c(1,3:4)] = (tmp[,-c(1,3:4)] > child_threshold) + 0
-      #dplyr::mutate_all(tmp, .funs =  trans2 ) %>%
-      # dplyr::mutate_all(.funs = trans) %>% 
-      tmp %>%
-        dplyr::select(-child_gen) %>%
-        dplyr::group_by_all() %>%
-        dplyr::summarise(n = n(), .groups = 'drop') %>% 
-        dplyr::mutate("cases" = (dplyr::select(., dplyr::contains("sib")) %>% rowSums)) %>% 
-        dplyr::filter(cases != 0) %>%
-        dplyr::select(-dplyr::contains("sib")) %>%
-        dplyr::group_by(dplyr::select(., -n)) %>%
-        dplyr::summarise(n = sum(n), .groups = 'drop') %>% 
-        dplyr::mutate(string = do.call(paste, dplyr::select(.,1:3))) %>% 
-        dplyr::select(-dplyr::contains("full")) %>% 
-        dplyr::filter(string == cur_string) %>%
-        dplyr::mutate(n_tot = sum(n)) %>%
-        dplyr::mutate(prob = n / n_tot) %>% 
-        dplyr::arrange(cases) %>% 
-        dplyr::pull(prob) 
+
+      
+      if(!any(is.na(reduced_atleast_2_siblings[n,1:3]))) { # if no NA's
+        tmp %>%
+          dplyr::select(-child_gen) %>%
+          dplyr::group_by_all() %>%
+          dplyr::summarise(n = n(), .groups = 'drop') %>% 
+          dplyr::mutate("cases" = (dplyr::select(., dplyr::contains("sib")) %>% rowSums)) %>% 
+          dplyr::filter(cases != 0) %>%
+          dplyr::select(-dplyr::contains("sib")) %>%
+          dplyr::group_by(dplyr::select(., -n)) %>%
+          dplyr::summarise(n = sum(n), .groups = 'drop') %>% 
+          dplyr::mutate(string = do.call(paste, dplyr::select(.,1:3))) %>% 
+          dplyr::select(-dplyr::contains("full")) %>% 
+          dplyr::filter(string == cur_string) %>%
+          dplyr::mutate(n_tot = sum(n),
+                        prob = n / n_tot) %>% 
+          dplyr::arrange(cases) %>% 
+          dplyr::pull(prob) 
+        
+      } else { #if some NA's
+        cols_no_na = which(is.na(reduced_atleast_2_siblings[n,1:3])) + 1
+        na_string  = paste(reduced_atleast_2_siblings[n,1:3], collapse = " ")
+        tmp %>%
+          dplyr::select(-child_gen, -cols_no_na) %>%
+          dplyr::group_by_all() %>%
+          dplyr::summarise(n = n(), .groups = 'drop') %>% 
+          dplyr::mutate("cases" = (dplyr::select(., dplyr::contains("sib")) %>% rowSums)) %>%
+          dplyr::filter(cases != 0) %>%
+          dplyr::select(-dplyr::contains("sib")) %>%
+          dplyr::group_by(dplyr::select(., -n)) %>%
+          dplyr::summarise(n = sum(n), .groups = 'drop') %>% 
+          dplyr::mutate(string = na_string) %>% 
+          dplyr::select(-dplyr::contains("full")) %>% 
+          dplyr::filter(string == cur_string) %>%
+          dplyr::mutate(n_tot = sum(n), 
+                        prob = n / n_tot) %>% 
+          dplyr::arrange(cases) %>% 
+          dplyr::pull(prob)
+      }
     })
     
     
@@ -200,11 +240,11 @@ estimate_gen_liability_ltfh = function(h2,
         vals.ctr = 1
         while (is.null(se) || se > tol) {
           gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
-                                               sigma = get_cov(h2, n_sib = cur_nsib),
+                                               covmat = construct_covmat(),
                                                lower = lower,
                                                upper = upper,
                                                fixed = fixed,
-                                               ind = 1,
+                                               out = 1,
                                                burn_in = 1000)
           vals[[vals.ctr]] = gen_liabs
           se = batchmeans::bm(unlist(vals))$se
@@ -220,19 +260,21 @@ estimate_gen_liability_ltfh = function(h2,
       reduced_atleast_2_siblings$est_per_sib[[i]] =  dplyr::as_tibble(cbind(combs[-1,], res)) %>%
         dplyr::mutate(string = rowSums(dplyr::select(., 1:ncol(combs)))) %>%
         dplyr::group_by(string) %>%
-        dplyr::summarise(grp_est = mean(post_gen_liab), .groups = "drop") %>% dplyr::arrange(string) %>% dplyr::pull(grp_est)
+        dplyr::summarise(grp_est = mean(post_gen_liab), .groups = "drop") %>% 
+        dplyr::arrange(string) %>% 
+        dplyr::pull(grp_est)
       #naive sd estimate:
       reduced_atleast_2_siblings$post_gen_liab_se[[i]] =  dplyr::as_tibble(cbind(combs[-1,], res)) %>%
-        dplyr::summarise(grp_se  = mean(post_gen_liab_se), .groups = "drop") %>%  dplyr::pull(grp_se)
+        dplyr::summarise(grp_se  = mean(post_gen_liab_se), .groups = "drop") %>%
+        dplyr::pull(grp_se)
       
       p(sprintf("%g", pbn))
       pbn = pbn + 1
     }
     #Final estimate is genetic liability times probability.
     reduced_atleast_2_siblings = reduced_atleast_2_siblings %>% 
-      dplyr::mutate("post_gen_liab" = sapply((Map("*", est_per_sib, probs)), sum)) %>% 
+      dplyr::mutate("post_gen_liab" = sapply(Map("*", est_per_sib, probs), sum)) %>% 
       dplyr::select(-probs, -est_per_sib)
-
   }
   
   #combine results
