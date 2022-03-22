@@ -1,0 +1,175 @@
+---
+title: "LT-FH++ Multiple Traits Example"
+author: "Emil M. Pedersen"
+date: "9/7/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LT-FH++ Multiple Traits Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE
+)
+```
+
+First, we will load the packages that we will need for the example:
+```{r message=FALSE}
+library(LTFHPlus)
+library(dplyr)
+library(MASS)
+library(future.apply)
+library(tidyr)
+```
+
+### Global parameters
+The strategy from here is to generate the necessary information for each individual in the example. We will start out by setting some global parameters:
+
+```{r}
+N = 10000 #number of individuals
+nsib = 2 #number of siblings
+#constructing correlation matrix for LT-FH++
+h2_1 = .5
+h2_2 = .5
+gen_cor = .5
+corr_mat = diag(c(h2_1, h2_2))
+corr_mat[1,2] <- corr_mat[2,1] <- gen_cor * sqrt(h2_1 * h2_2)
+
+#calculates the sex-specific prevalences used to determine status:
+multiplier = 1
+prev = c(0.08, 0.02) * multiplier
+
+nthreads = 5  # number of threads to use for LT-FH++
+```
+It is worth noting that these values can be set more or less anything the reader would want/need. Our choice of prevalence vector is to illustrate LT-FH++'s ability to estimate the genetic liability, even when the cases are not equally distributed between the sexes. Other prevalence vectors could be used, for instance one with the same prevalence between sexes. Extensions to the correlation matrix can also be made to include more disorders, or to change the correlations or the heritabilities.
+
+### Setting up input
+
+LT-FH++ for multiple phenotypes requires 3 types of input, name **corr.mat**, **phen.list**, and **thr.list**, which is the covariance matrix on liability scale, a list of ids (where each list entry is a family), and finally a list of the upper and lower limit for each individual and each trait used by the truncated normal in LT-FH++.
+
+With the global parameters set, we will simulate the liabilities for each family member based on a multivariate normal, which is an extension of the covariance matrix described in the [LT-FH++] paper. Next, we assign ages to each individual. The child's age act as a baseline age, and the age of parents and siblings are determined based off of the child's age.
+
+We will be using a covariance matrix to simulate the liabilities for each disorder and each family member that is given by
+```{r}
+#correlation matrix
+round( 100* get_full_cov(corr_mat = corr_mat, n_sib = 0), 2)
+
+#simulate liabilities
+liabs = MASS::mvrnorm(n = N, mu = rep(0, 2*(4 + nsib)), 
+                      Sigma = get_full_cov(corr_mat = corr_mat, n_sib = nsib))
+
+#Age of children, parents, and siblings
+child_age = runif(N, 10, 60)
+father_age  = child_age + runif(N, 20, 35)
+mother_age  = child_age + runif(N, 20, 35)
+children_sex = sample(1:2, size = N, replace = TRUE)
+if(nsib > 0) {
+  sibling_sex = replicate(nsib, sample(1:2, size = N, replace = TRUE))
+  sibling_age = replicate(nsib, runif(N, -15, 15) + child_age)
+}
+```
+
+
+#### Generating phen.list
+
+The input for multiple traits is a slight generalization of the input for a single trait. For each trait the input will be the same, however we will put the input for each trait in a list.
+
+```{r message=FALSE, warning=FALSE}
+#constructing a list of phenotypes
+all_phen = list()
+for (j in 1:nrow(corr_mat)) {
+
+  tmp = lapply(1:N, function(i) {
+    cur_liabs  = liabs[i, (4 + nsib) * (j-1) + 1:(4 + nsib)][-1]
+    id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) )
+    sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,])
+    age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,])
+    status_vec = sapply(seq_along(sex_vec), function(ii) {
+      (cur_liabs[ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
+    })
+    aoo_vec = rep(NA, length(id_vec))
+
+    cases = status_vec == 1
+    aoo_vec[cases] = LTFHPlus::liab_to_aoo(liab = cur_liabs[cases],
+                                           pop_prev = prev[sex_vec[cases]])
+    c(list(id_vec),
+      list(sex_vec),
+      list(status_vec),
+      list(age_vec),
+      list(aoo_vec))
+  })
+
+  
+  all_phen[[j]] = do.call("rbind", tmp) %>% 
+    as_tibble(.name_repair = 'unique') %>%
+    rename("ids" = "...1", "sex" = "...2", "status" = "...3", "age" = "...4", "aoo" = "...5")
+}
+all_phen
+```
+Where the first row of each disorder is given by
+```{r }
+lapply(all_phen, function(x) { 
+  x %>% 
+    slice(1) %>%
+    tidyr::unnest(cols = colnames(x))
+  })
+```
+NOTE: The ids, sex and age will be the same across all traits considered. There *may* be differences in status (and as a result age-of-onset) between disorders. 
+
+
+#### Generating thr.list
+
+The other input is **thr.list**, which will contain the ids and an upper and lower limit of possible liabilities for each individual. 
+```{r }
+#calculating threshold for every individual
+all_thr = list()
+for (i in seq_along(all_phen)) {
+  phen = all_phen[[i]]
+  #assigning thresholds for each family
+  tmp = lapply(1:nrow(phen), function(n) {
+    res = list()
+    ids   = phen$ids[[n]]
+    cases = phen$status[[n]] == 1
+    lower = rep(-Inf, length(ids))
+    upper = rep( Inf, length(ids))
+    
+    lower[cases] <- upper[cases] <- LTFHPlus::age_to_thres(age = phen$aoo[[n]][cases], 
+                                                           pop_prev = prev[phen$sex[[n]][cases]])
+    
+    upper[!cases] <- LTFHPlus::age_to_thres(age = phen$age[[n]][!cases],
+                                            pop_prev = prev[phen$sex[[n]][!cases]])
+    res$ids = ids
+    res$lower = lower
+    res$upper = upper
+#    return(tibble(ids = ids, lower = lower, upper = upper))
+    res
+  })
+  #combining all values into one tibble
+  all_thr[[i]] = lapply(tmp, as_tibble) %>% bind_rows()
+}
+all_thr
+```
+NOTE: In this simple example the thresholds will be the same across traits for the *controls*, However the cases have a threshold that depends on the age-of-onset. In real-world data, the thresholds will be different across traits due multiple factors, such as sexes or cohort effects, as well a prevalence differences between traits.
+
+
+
+### Running LT-FH++
+
+With all input parameters generated and the correlation matrix for all traits set in the global settings, we have everything we need to run *LT-FH++* for multiple traits. The package **Future.apply** can be used to parallelize the computations, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize `r nthreads` threads. 
+
+```{r }
+#Setting up parallelization backend
+plan(tweak(multisession, workers = nthreads))
+#performs LT-FH++ analysis
+
+#performing the LT-FH++ analysis
+multi = estimate_gen_liability_multi_trait(corr.mat = corr_mat,
+                                           phen.list = all_phen,
+                                           thr.list = all_thr)
+multi
+```
+NOTE: The output of the multi trait analysis is for the first phenotype provided in the list, i.e. the one accessed with "phen.list[[1]]". Results for the other phenotypes provided is currently only available by rerunning the analysis and rearranging the order of the phenotypes.

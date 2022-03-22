@@ -1,0 +1,146 @@
+---
+title: "LT-FH++ Example"
+author: "Emil M. Pedersen"
+date: "5/7/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LT-FH++ Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE
+)
+```
+
+First, we will load the packages that we will need for the example:
+```{r message=FALSE}
+library(LTFHPlus)
+library(dplyr)
+library(MASS)
+library(future.apply)
+library(tidyr)
+```
+
+### Global parameters
+The strategy from here is to generate the necessary information for each individual in the example. We will start out by setting some global parameters:
+
+```{r}
+N = 10000 #number of individuals
+h2 = .5 #heritability
+nsib = 2 #number of siblings
+
+#calculates the sex-specific prevalences used to determine status:
+multiplier = 1
+prev = c(0.08, 0.02) * multiplier
+
+nthreads = 5  # number of threads to use for LT-FH++
+```
+It is worth noting that these values can be set more or less anything the reader would want/need. Our choice of prevalence vector is to illustrate LT-FH++'s ability to estimate the genetic liability, even when the cases are not equally distributed between the sexes. Other prevalence vectors could be used, for instance one with the same prevalence between sexes.
+
+### Setting up input
+
+LT-FH++ requires 3 types of input, name **h2**, **phen**, and **thr**, which is the heritability on liability scale, a list of ids (where each list entry is a family), and finally the upper and lower limit for each individual used by the truncated normal in LT-FH++.
+
+With the global parameters set, we will simulate the liabilities for each family member based on the multivariate normal described in the [LT-FH++] paper. Next, we assign ages to each individual. The child's age act as a baseline age, and the age of parents and siblings are determined based off of the child's age.
+```{r}
+#simulate liabilities
+liabs = MASS::mvrnorm(n = N, mu = rep(0, 4 + nsib), Sigma = get_cov(h2, n_sib = nsib))
+
+#Age of children, parents, and siblings
+child_age = runif(N, 10, 60)
+father_age  = child_age + runif(N, 20, 35)
+mother_age  = child_age + runif(N, 20, 35)
+children_sex = sample(1:2, size = N, replace = TRUE)
+if(nsib > 0) {
+  sibling_sex = replicate(nsib, sample(1:2, size = N, replace = TRUE))
+  sibling_age = replicate(nsib, runif(N, -15, 15) + child_age)
+}
+```
+#### Generating phen
+Next, we want to assign sex, status, age-of-onset(aoo) to each individual, including the family members.  
+
+```{r message=FALSE}
+#Constructing tibble with list entries, each row is a family. assuming order: os, father, mother, siblings (if any)
+phen = lapply(1:N, function(i) {
+  cur_liabs  = liabs[i, 1:(4 + nsib)][-1] #get full liabilities of all family members
+  id_vec     = c(i , paste0(i, c("_f", "_m")), if(nsib > 0) paste0(i, "_s", 1:nsib) ) # assign ids
+  sex_vec    = c(children_sex[i], 1:2, if(nsib > 0) sibling_sex[i,]) #assign sex
+  age_vec    = c(child_age[i], father_age[i], mother_age[i], if (nsib > 0) sibling_age[i,]) # assign age
+  status_vec = sapply(seq_along(sex_vec), function(ii) { #who are cases?
+    (cur_liabs[ii] > qnorm(prev[sex_vec[ii]], lower.tail = F)) + 0L
+  })
+  #assign age-of-onset for cases
+  aoo_vec = rep(NA, length(id_vec)) 
+  
+  cases = status_vec == 1
+  aoo_vec[cases] = LTFHPlus::liab_to_aoo(liab = cur_liabs[cases],
+                                         pop_prev = prev[sex_vec[cases]])
+  #return information
+  c(list(id_vec),
+    list(sex_vec),
+    list(status_vec),
+    list(age_vec),
+    list(aoo_vec))
+}) %>% do.call("rbind", . ) %>% #outputs list, combining with rbind 
+  as_tibble(.name_repair = 'unique') %>% # converting to tibble
+  rename("ids" = "...1", "sex" = "...2", "status" = "...3", "age" = "...4", "aoo" = "...5") %>% # renaming columns
+  print()
+```
+The output is a tibble with list entries, meaning each row is a family in the order of child, father, mother, and siblings (if any). This keeps all relevant information for each family accessible in an easy manner for processing later on. Each family can be easily accessed, e.g.:
+
+```{r }
+phen %>% 
+  slice(1) %>% 
+  tidyr::unnest(cols = colnames(phen))
+```
+Since we expect the family sizes to vary between families and we wanted to accomodate this, we found it simplest to work with lists or tibbles with list entries. This means the **phen** input, which is the first input, is simply the *ids* column from *phen*.
+
+#### Generating thr
+
+The other input is **thr**, which will contain the ids and an upper and lower limit of possible liabilities for each individual. 
+```{r }
+#assigning thresholds for each family
+thr = lapply(1:nrow(phen), function(n) {
+  res = list()
+  ids   = phen$ids[[n]]
+  cases = phen$status[[n]] == 1
+  lower = rep(-Inf, length(ids))
+  upper = rep( Inf, length(ids))
+  
+  lower[cases] <- upper[cases] <- LTFHPlus::age_to_thres(age = phen$aoo[[n]][cases], pop_prev = prev[phen$sex[[n]][cases]])
+  
+  upper[!cases] <- LTFHPlus::age_to_thres(age = phen$age[[n]][!cases], pop_prev = prev[phen$sex[[n]][!cases]])
+  res$ids = ids
+  res$lower = lower
+  res$upper = upper
+  res
+}) %>% 
+  lapply(., as_tibble) %>% 
+  bind_rows() %>%
+  print()
+
+```
+
+### Running LT-FH++
+
+With all input parameters generated and the heritability set in the global settings, we have everything we need to run *LT-FH++*. The package **Future.apply** can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize `r nthreads` threads. 
+
+```{r }
+phen = dplyr::select(phen, ids)
+
+#Setting up parallelization backend
+plan(tweak(multisession, workers = nthreads))
+#performs LT-FH++ analysis
+simu_liab = estimate_gen_liability(h2 = h2,
+                       phen = phen,
+                       thr = thr,
+                       id_col = "ids")
+simu_liab = simu_liab %>% mutate(ids = sapply(ids, function(x) x[1])) %>% print()
+```
+From here the object simu_liab can be saved and used in your GWAS method of choice.
+
