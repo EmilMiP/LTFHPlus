@@ -1,6 +1,145 @@
 utils::globalVariables("cir")
 utils::globalVariables("thresh")
 
+#' Positive definite matrices
+#'
+#' \code{correct_positive_definite} verifies that a given covariance matrix
+#' is indeed positive definite by checking that all eigenvalues are positive.
+#' If the given covariance matrix is not positive definite, 
+#' \code{correct_positive_definite} tries to modify the underlying correlation matrices
+#' genetic_corrmat and full_corrmat in order to obtain a positive definite 
+#' covariance matrix.
+#'
+#' This function can be used to verify that a given covariance matrix 
+#' is positive definite. It calculates all eigenvalues in order to
+#' investigate whether they are all positive. This property is necessary 
+#' if the covariance matrix should be used as a Gaussian covariance matrix.
+#' It is especially useful to check whether any covariance matrix obtained
+#' by \code{\link{construct_covmat_multi}} is positive definite.
+#' If the given covariance matrix is not positive definite, \code{correct_positive_definite}
+#' tries to modify the underlying correlation matrices (called \code{genetic_corrmat} and 
+#' \code{full_corrmat} in \code{\link{construct_covmat}} or \code{\link{construct_covmat_multi}}) by 
+#' multiplying all off-diagonal entries in the correlation matrices by a given number.
+#'
+#' @param covmat A symmetric and numeric matrix. If the covariance matrix 
+#' should be corrected, it must have a number of attributes, such as
+#' \code{attr(covmat,"fam_vec")}, \code{attr(covmat,"n_fam")}, 
+#' \code{attr(covmat,"add_ind")}, \code{attr(covmat,"sq.herit")},
+#' \code{attr(covmat,"genetic_corrmat")}, \code{attr(covmat,"full_corrmat")}
+#' and \code{attr(covmat,"phenotype_names")}. Any covariance matrix 
+#' obtained by \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} 
+#' or \code{\link{construct_covmat_multi}} will have these attributes by default. 
+#' @param correction_val A positive number representing the amount by which
+#' \code{genetic_corrmat} and \code{full_corrmat} will be changed, if not all 
+#' eigenvalues are positive. That is, correction_val is the number that will be
+#' multiplied to all off_diagonal entries in \code{genetic_corrmat} and \code{full_corrmat}.
+#' Defaults to 0.99.
+#' @param correction_limit A positive integer representing the upper limit for the correction
+#' procedure. Defaults to 100.
+#' 
+#' @return If \code{covmat} is a symmetric and numeric matrix and all eigenvalues are
+#' positive, \code{correct_positive_definite} simply returns \code{covmat}. If some 
+#' eigenvalues are not positive and \code{correction_val} is a positive number, 
+#' \code{correct_positive_definite} tries to convert \code{covmat} into a positive definite
+#' matrix. If \code{covmat} has attributes \code{add_ind}, \code{sq.herit},
+#' \code{genetic_corrmat}, \code{full_corrmat} and \code{phenotype_names}, 
+#' \code{correct_positive_definite} computes a new covariance matrix using slightly
+#' modified correlation matrices \code{genetic_corrmat} and \code{full_corrmat}.
+#' If the correction is performed successfully, i.e. if the new covariance matrix 
+#' is positive definite,the new covariance matrix is returned. 
+#' Otherwise, \code{correct_positive_definite} returns the original covariance matrix.
+#' 
+#' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
+#' \code{\link{construct_covmat_multi}}.
+#' 
+#' @export
+correct_positive_definite = function(covmat, correction_val = .99, correction_limit = 100) {
+  
+  # Checking that covmat is symmetric
+  if(!isSymmetric.matrix(covmat)) stop("The covariance matrix covmat must be symmetric!")
+  # and numeric
+  if(!is.numeric(covmat)) stop("The covariance matrix covmat must be numeric!")
+  
+  # Checking whether all eigenvalues are positive
+  if(any(eigen(covmat)$values < 0)){
+    
+    cat("The specified covariance matrix is not positive definite. \n")
+  }else{
+    
+    return(covmat)
+  }
+  
+  # If some eigenvalues are negative, correction_val must be specified,
+  # it must be numeric and positive in order to correct the covariance matrix.
+  if(class(correction_val) != "numeric") stop("correction_val must be numeric!")
+  if(correction_val <= 0) stop("correction_val must be positive!")
+  
+  # In addition, covmat must have several attributes holding the 
+  # family members (fam_vec or n_fam), a logical add_ind as well as
+  # a numeric value or numeric matrix sq.herit and numeric matrices
+  # genetic_corrmat and full_corrmat in order to change
+  # the correlation matrix.
+  if(is.null(attr(covmat,"add_ind")) || is.null(attr(covmat,"sq.herit")) || 
+     is.null(attr(covmat,"genetic_corrmat")) || is.null(attr(covmat,"full_corrmat"))){
+    
+    warning("The required attributes are missing... The covariance matrix could not be corrected!")
+    return(covmat)
+  }
+  
+  # If the covariance matrix is for a single phenotype, it is not
+  # possible to correct the covariance matrix.
+  if(length(attr(covmat,"sq.herit"))==1){
+    warning("The covariance matrix cannot be corrected...")
+    return(covmat)
+  }
+  
+  # Furthermore, correction_limit must be a positive integer
+  if(class(correction_limit) != "numeric") stop("correction_limit must be numeric!")
+  if(correction_limit <= 0) stop("Correction limit must be positive!")
+  
+  cat("Trying to correct the covariance matrix...\n")
+  
+  # The covariance matrix will be modified at most correction_limit times.
+  n <- 0
+  # Storing the old covariance matrix
+  old_covmat <- covmat
+  
+  # We also extract the vectors holding the family members
+  fam_vec <- setdiff(attr(covmat,"fam_vec"), c("g","o"))
+  n_fam <- attr(covmat,"n_fam")[stringr::str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
+  
+  while(any(eigen(covmat)$values < 0) && n <= correction_limit) {
+    
+    # Changing the correlation matrices slightly by 
+    # multiplying all entries by correction_val.
+    genetic_corrmat <- attr(covmat,"genetic_corrmat")*correction_val
+    diag(genetic_corrmat) <- 1
+    full_corrmat <- attr(covmat,"full_corrmat")*correction_val
+    diag(full_corrmat) <- 1
+    # Computing a new covariance matrix
+    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, 
+                               add_ind = attr(covmat,"add_ind"), 
+                               genetic_corrmat = genetic_corrmat,
+                               full_corrmat = full_corrmat,
+                               sq.herits = attr(covmat,"sq.herit"), 
+                               phen_names = attr(covmat,"phenotype_names"))
+    # Updating 
+    n <- n+1
+  }
+  
+  # If the matrix has been modified correction_limit times, 
+  # the correction step is aborted
+  if(n > correction_limit){
+    cat("The covariance matrix could not be corrected. Consider revisiting it.\n")
+    return(old_covmat)
+  }
+  
+  cat(paste0("The correction was performed successfully! All off-diagonal entries are corrected by", round(correction_val^n,digits = 3),".\n"))
+  
+  return(covmat)
+}
+
+
 #' CDF for truncated normal distribution.
 #' 
 #' \code{truncated_normal_cdf} computes the cumulative density
