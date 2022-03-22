@@ -21,13 +21,13 @@ Useful links:
 Authors:
 \itemize{
   \item Florian Privé \email{florian.prive.21@gmail.com} [thesis advisor]
+  \item Jette Steinbach \email{jst@econ.au.dk}
 }
 
 Other contributors:
 \itemize{
   \item Bjarni Jóhann Vilhjálmsson \email{bjv@econ.au.dk} [thesis advisor]
   \item Esben Agerbo \email{ea@econ.au.dk} [thesis advisor]
-  \item Jette Steinbach \email{jst@econ.au.dk} [contributor]
 }
 
 }

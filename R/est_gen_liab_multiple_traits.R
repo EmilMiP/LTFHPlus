@@ -1,5 +1,5 @@
 #' Estimating the genetic or full liability for multiple phenotypes
-#'
+#' FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
 #' \code{estimate_liability_multi} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history for a variable number of phenotypes.

@@ -1,5 +1,7 @@
 #' Estimating the genetic or full liability for multiple phenotypes
 #' using prevalence information
+#' 
+#' FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
 #'
 #' \code{estimate_liability_prevalence} estimates the genetic component of 
 #' the full liability and/or the full liability for a number of individuals 
