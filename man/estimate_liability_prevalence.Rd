@@ -8,7 +8,8 @@ using prevalence information}
 estimate_liability_prevalence(
   status,
   sq.herits,
-  corrmat,
+  genetic_corrmat,
+  full_corrmat,
   prevalences,
   pid = "PID",
   out = c(1),
@@ -28,11 +29,15 @@ phenotype names.}
 \item{sq.herits}{A numeric vector representing the squared heritability on liability scale
 for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
 
-\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
-number of phenotypes as well as the full correlation.
-The full correlations must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All correlations must be between -1 and 1.}
+\item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
+
+\item{full_corrmat}{A  numeric matrix holding the full correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
 
 \item{prevalences}{A numeric, non-negative vector holding the prevalences.
 All prevalences must be at most one.}

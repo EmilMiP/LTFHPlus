@@ -117,11 +117,12 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
     full_corrmat <- attr(covmat,"full_corrmat")*correction_val
     diag(full_corrmat) <- 1
     # Computing a new covariance matrix
-    covmat <- construct_covmat(fam_vec = fam_vec, n_fam = n_fam, 
+    covmat <- construct_covmat(fam_vec = fam_vec, 
+                               n_fam = n_fam, 
                                add_ind = attr(covmat,"add_ind"), 
                                genetic_corrmat = genetic_corrmat,
                                full_corrmat = full_corrmat,
-                               sq.herits = attr(covmat,"sq.herit"), 
+                               sq.herit = attr(covmat,"sq.herit"), 
                                phen_names = attr(covmat,"phenotype_names"))
     # Updating 
     n <- n+1

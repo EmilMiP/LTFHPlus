@@ -36,11 +36,14 @@
 #' thresholds corresponding to the first phenotype. 
 #' @param sq.herits A numeric vector representing the squared heritability on liability scale
 #' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
-#' @param corrmat A numeric matrix holding the genetic correlation between the desired 
-#' number of phenotypes as well as the full correlation. 
-#' The full correlations must be given on the diagonal,
-#' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All correlations must be between -1 and 1.
+#' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
+#' @param full_corrmat A  numeric matrix holding the full correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
 #' @param fam_id A string holding the name of the column in \code{family} that
@@ -83,7 +86,8 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
+estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat, full_corrmat,
+                                     pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
                                      parallel = FALSE, progress = FALSE){
   # Turning parallel and progress into class logical
   parallel <- as.logical(parallel)
@@ -224,7 +228,8 @@ The lower and upper thresholds will be swapped...")
 
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                              genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                              sq.herit = sq.herits, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
@@ -305,7 +310,8 @@ The lower and upper thresholds will be swapped...")
       
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                              genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                              sq.herit = sq.herits, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
