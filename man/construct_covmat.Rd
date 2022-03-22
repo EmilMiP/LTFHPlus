@@ -115,8 +115,8 @@ construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"),
 construct_covmat(fam_vec = NULL, 
                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
                  add_ind = FALSE, sq.herit = 0.3)
-construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(0.6,1,1,0.4), nrow = 2),
-full_corrmat = matrix(c(0.7,1,1,0.6), nrow = 2))
+construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.6,0.4,1), nrow = 2),
+full_corrmat = matrix(c(1,0.7,0.6,1), nrow = 2))
 
 }
 \seealso{

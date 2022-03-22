@@ -29,11 +29,10 @@ entries equal to 1 and off-diagonal entries between -1 and 1 as well as whether
 it is symmetric.
 }
 \examples{
+\dontrun{
 check_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
 check_correlation_matrix(diag(3))
 
-
-\dontrun{
 # This will result in errors:
 check_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2))
 check_correlation_matrix(matrix(nrow=2, ncol = 2))
