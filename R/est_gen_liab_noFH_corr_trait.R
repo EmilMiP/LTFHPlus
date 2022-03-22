@@ -1,72 +1,298 @@
-
-
+#' Estimating the genetic or full liability for multiple phenotypes
+#' using prevalence information
 #'
-#' Estimate genetic liability when multiple traits and prevalence information for each trait are available, but family history is not
+#' \code{estimate_liability_prevalence} estimates the genetic component of 
+#' the full liability and/or the full liability for a number of individuals 
+#' based solely on prevalence information for a variable number of 
+#' phenotypes.
 #'
-#' @param h2_vec Liability scale heritability of the trait being analysed.
-#' @param gen_cor_vec vector of genetic correlations, in order of appearence in phenotype file
-#' @param phen tibble or data.frame with status of the individual in order of h2_vec.
-#' @param prev_vec Vector of prevalences in order of appearance in h2_vec.
-#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
+#' This function can be used to estimate either the genetic component of the 
+#' full liability, the full liability or both for a variable number of traits,
+#' when no family history is available, but prevalence information for each 
+#' phenotype can be obtained.
 #'
-#' @return Returns the estimated genetic liabilities.
-#'
-#' @examples 
-#' # See R/Example/example_nosib.R for an example of use and input.
-#' @importFrom dplyr %>%
-#' @export
+#' @param status A matrix, list or data frame that can be converted into a tibble.
+#' Must have at least three columns; one holding the personal identifier for all individuals,
+#' and the remaining holding the phenotype status for the first and second
+#' phenotype, respectively. It must be possible to tie each status variable
+#' to a specific phenotype uniquely. The function will use the column names to create
+#' phenotype names. 
+#' @param sq.herits A numeric vector representing the squared heritability on liability scale
+#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
+#' @param full_corrmat A  numeric matrix holding the full correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
+#' @param prevalences A numeric, non-negative vector holding the prevalences. 
+#' All prevalences must be at most one. 
+#' @param  pid A string holding the name of the column in \code{status} that hold 
+#' the personal identifier. Defaults to "PID".
+#' @param out A character or numeric vector indicating whether the genetic component
+#' of the full liability, the full liability or both should be returned. If out = c(1) or 
+#' out = c("genetic"), the genetic liability is estimated and returned. If out = c(2) or 
+#' out = c("full"), the full liability is estimated and returned. If out = c(1,2) or 
+#' out = c("genetic", "full"), both components are estimated and returned. 
+#' Defaults to c(1).
+#' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
+#' Equals the standard error of the mean. That is, a tolerance of 0.2 means that the 
+#' standard error of the mean is below 0.2. Defaults to 0.01.
+#' @param parallel A logical scalar indicating whether computations should be performed parallel.
+#' In order for this to be possible, the user must install the library "future.apply" and create a plan
+#' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param progress  A logical scalar indicating whether the function should display a progress bar.
+#' Defaults to FALSE.
 #' 
+#' @return If \code{status} is a matrix, list or data frame that can be converted into a
+#' tibble and that has a column named \code{PID} and if the squared heritabilities, corrmat, 
+#' out and tol are of the required form, then the function returns a tibble with at least
+#' five columns (depending on the length of out). 
+#' The first column corresponds to the columns pid. 
+#' If out is equal to c(1) or c("genetic"), the second and third columns hold the estimated genetic 
+#' liability as well as the corresponding standard error for the first phenotype, respectively. 
+#' If out equals c(2) or c("full"), the second and third columns hold the estimated full liability 
+#' as well as the corresponding standard error for the first phenotype, respectively. 
+#' If out is equal to c(1,2) or c("genetic","full"), the second and third columns hold the estimated 
+#' genetic liability as well as the corresponding standard error for the first phenotype, while the fourth and
+#' fifth columns hold the estimated full liability as well as the corresponding standard error for the
+#' same phenotype. 
+#' The remaining columns hold the estimated genetic liabilities and/or the estimated full liabilities
+#' as well as the corresponding standard errors for the remaining phenotypes.
+#' 
+#' @seealso \code{\link[future.apply]{future_apply}}
+#' 
+#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
+#' @importFrom rlang :=
+#' 
+#' @export
+estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, full_corrmat,
+                                         prevalences, pid = "PID", out = c(1), tol = 0.01, 
+                                         parallel = FALSE, progress = FALSE){
+  
+  # Turning parallel and progress into class logical
+  parallel <- as.logical(parallel)
+  progress <- as.logical(progress)
+  
+  # Turning pid into a string
+  pid <- as.character(pid)
+  
+  # Turning threshs into a 
+  if(!("tbl_df" %in% class(status))) status <- tibble::as_tibble(status)
+  
+  # Checking that the heritabilities are valid
+  if(check_proportion(sq.herits)){invisible()}
+  # Checking that all correlations are valid
+  if(check_correlation_matrix(genetic_corrmat)){invisible()}
+  if(check_correlation_matrix(full_corrmat)){invisible()}
+  # Checking that all prevalences are valid
+  if(check_proportion(prevalences)){invisible()}
 
-
-estimate_gen_liability_noFH_corr_traits = function(phen, 
-                                                   h2_vec, 
-                                                   gen_cor_vec,
-                                                   prev_vec,
-                                                   tol = .01) {
-  ntraits = length(h2_vec)
+  # And that pid is also present in the tibble threshs
+  if(!(pid %in% colnames(status))) stop(paste0("The column ", pid," does not exist in the tibble status"))
   
-  reduced = phen %>% # we assume first column is ID, rest are phenotype columns in order of h2_vec
-    dplyr::select(-1) %>% 
-    dplyr::group_by_all() %>% 
-    dplyr::slice_head() %>%
-    dplyr::ungroup()
-  
-  reduced$post_gen_no_fam <- NA
-  reduced$post_gen_no_fam_se <- NA
-  
-  cov_mat = generate_cov_matrix_noFH(h2_vec = h2_vec, gen_cor_vec = gen_cor_vec)
-  
-  for (i in 1:nrow(reduced)) {
-    cur_config = unlist(reduced[i,1:ntraits])
+  # Checking that tol is valid
+  if(class(tol) != "numeric" && class(tol) != "integer") stop("The tolerance must be numeric!")
+  if(tol <= 0) stop("The tolerance must be strictly positive!")
+  # Checking that out is either a character vector or a
+  # numeric vector 
+  if(class(out) == "numeric"){
     
-    lower = rep(-Inf, 1 + ntraits)
-    upper = rep(Inf,  1 + ntraits)
+    out <- intersect(out, c(1,2))
     
-    lower[-1][!is.na(cur_config) & (cur_config == 1)] <- stats::qnorm(prev_vec[!is.na(cur_config) & (cur_config == 1)], lower.tail = FALSE)
-    upper[-1][!is.na(cur_config) & (cur_config == 0)] <- stats::qnorm(prev_vec[!is.na(cur_config) & (cur_config == 0)], lower.tail = FALSE)
+  }else if(class(out) == "character"){
     
-    fixed = rep(FALSE, 1 + ntraits)
-    
-    # estimate genetic liability & covergence check
-    se = NULL 
-    vals = list() #store simulated values
-    vals.ctr = 1
-    while (is.null(se) || se > tol) {
-      gen_liabs = rtmvnorm.gibbs(50e3, 
-                                 burn_in = 1000,
-                                 sigma = cov_mat,
-                                 lower = lower, 
-                                 upper = upper,
-                                 fixed = fixed)
-      vals[[vals.ctr]] = gen_liabs
-      se = batchmeans::bm(unlist(vals))$se
-      vals.ctr =  vals.ctr + 1
-    }
-    #calculate the final values
-    est = batchmeans::bm(unlist(vals))
-    reduced$post_gen_no_fam[i]    = est$est
-    reduced$post_gen_no_fam_se[i] = est$se
-    
+    out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
+    out[out == "genetic"] <- 1
+    out[out == "full"] <- 2
+    out <- as.numeric(out)
+  }else{
+    stop("out must be a numeric or character vector!")
   }
-  return(dplyr::left_join(phen, reduced))
+  
+  # Checking whether out is empty
+  if(length(out) == 0){
+    
+    cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
+    out <- c(1)
+  }
+  
+  # Sorting out
+  out <- sort(out)
+
+  
+  # Now we can extract the number of phenotypes
+  n_pheno <- nrow(sq.herits)
+  if(ncol(status) != (n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
+The number of columns in status is not equal to the number of phenotypes specified in sq.herits...\
+Does all columns have the required names?")
+  
+  # As well as the phenotype names
+  pheno_names <- colnames(status)[-1]
+  
+  
+  # If parallel = T, future_lapply needs to be installed 
+  if(parallel){
+    if(!("future.apply" %in% library()$results[,1])){
+      
+      count <- 1
+      ver <- "a"
+      while(!(ver %in% c("y","n"))){
+        
+        if(count < 4){
+          
+          count <- count + 1 
+          ver <- readline(prompt="In order to use a parallelized version of this function, the package future.apply must be installed. \n 
+                          Do you want to install future.apply now [y/n]?: ")
+        }else{
+          
+          stop("Function aborted...")
+        }
+      }
+      
+      if(ver == "y"){
+        
+        utils::install.packages("future.apply")
+      }else{
+        
+        parallel <- FALSE
+      }
+    }
+  }
+
+  # If progress = TRUE, a progress bar will be displayed
+  if(progress){
+    
+    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+  }
+  
+  if(parallel){
+    
+    cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
+    
+    # As all families have the same structure (each family solely includes
+    # the individual itself), we can use the same covariance matrix for 
+    # all families
+    # Constructing the covariance matrix
+    cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
+                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                            sq.herit = sq.herits, phen_names = pheno_names)
+    
+    gibbs_res <- future.apply::future_sapply(X= 1:nrow(status), FUN = function(i){
+      
+      cur_config <- status[i,]
+      
+      # Setting the variables needed for Gibbs sampler
+      lower <- rep(-Inf, 2*n_pheno)
+      upper <- rep(Inf, 2*n_pheno)
+      fixed <- rep(FALSE, 2*n_pheno)
+      std_err <- rep(Inf, length(out))
+      names(std_err) <- c("genetic", "full")[out]
+      n_gibbs <- 1
+      
+      # Running Gibbs sampler
+      while(any(std_err > tol)){
+        
+        if(n_gibbs == 1){
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = lower, upper = upper,
+                                      fixed = fixed, out = out, burn_in = 1000) %>% 
+            `colnames<-`(c("genetic", "full")[out]) %>% 
+            tibble::as_tibble()
+          
+        }else{
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower =lower, upper = upper,
+                                      fixed = fixed, out = out, burn_in = 1000) %>%
+            `colnames<-`(c("genetic", "full")[out]) %>%
+            tibble::as_tibble() %>% 
+            bind_rows(est_liabs)
+        }
+        
+        # Computing the standard error
+        std_err <- batchmeans::bmmat(est_liabs)[,2]
+        # Adding one to the counter
+        n_gibbs <- n_gibbs +1
+      }
+      
+      # If all standard errors are below the tolerance, 
+      # the estimated liabilities as well as the corresponding 
+      # standard error can be returned
+      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
+      
+      
+    }, future.seed = TRUE)
+    
+    
+  }else{
+    
+    # As all families have the same structure (each family solely includes
+    # the individual itself), we can use the same covariance matrix for 
+    # all families
+    # Constructing the covariance matrix
+    cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
+                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                            sq.herit = sq.herits, phen_names = pheno_names)
+    
+    gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
+      
+      
+      cur_config <- status[i,]
+      
+      # Setting the variables needed for Gibbs sampler
+      lower <- rep(-Inf, 2*n_pheno)
+      upper <- rep(Inf, 2*n_pheno)
+      fixed <- rep(FALSE, 2*n_pheno)
+      std_err <- rep(Inf, length(out))
+      names(std_err) <- c("genetic", "full")[out]
+      n_gibbs <- 1
+      
+      # Running Gibbs sampler
+      while(any(std_err > tol)){
+        
+        if(n_gibbs == 1){
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = lower, upper = upper,
+                                      fixed = fixed, out = out, burn_in = 1000) %>% 
+            `colnames<-`(c("genetic", "full")[out]) %>% 
+            tibble::as_tibble()
+          
+        }else{
+          
+          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower =lower, upper = upper,
+                                      fixed = fixed, out = out, burn_in = 1000) %>%
+            `colnames<-`(c("genetic", "full")[out]) %>%
+            tibble::as_tibble() %>% 
+            bind_rows(est_liabs)
+        }
+        
+        # Computing the standard error
+        std_err <- batchmeans::bmmat(est_liabs)[,2]
+        # Adding one to the counter
+        n_gibbs <- n_gibbs +1
+      }
+      # If all standard errors are below the tolerance, 
+      # the estimated liabilities as well as the corresponding 
+      # standard error can be returned
+      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
+      
+      # If progress = TRUE, a progress bar will be displayed
+      if(progress){
+        utils::setTxtProgressBar(pb, i)
+      }
+    })
+  }
+  
+  if(progress){
+    close(pb) # Close the connection
+  }
+  
+  # Finally, we can add all estimated liabilities as well
+  # as their estimated standard errors to the tibble holding
+  # the family information
+  family <- bind_cols(status, tibble::as_tibble(t(gibbs_res)))
+  
+  return(family)
 }

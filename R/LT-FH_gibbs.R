@@ -1,6 +1,6 @@
 utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab", 
                          "post_gen_liab_se", "grp_est", "grp_se", "est_per_sib",
-                         "cases", "child_gen"))
+                         "cases", "child_gen", "cur_string", "string"))
 
 #' Estimate genetic liability similar to LT-FH
 #'
@@ -13,7 +13,7 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' @param status_col_mother Column name of status for the mother
 #' @param status_col_siblings Column name of status for the siblings
 #' @param number_of_siblings_col Column name for the number of siblings for a given individual
-#' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
+#' @param tol Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
 #'
@@ -21,8 +21,6 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' # See R/Example/example_nosib.R for an example of use and input.
 #' @importFrom dplyr %>%
 #' @export
-
-
 estimate_gen_liability_ltfh = function(h2,
                                        phen, 
                                        child_threshold,
@@ -88,7 +86,7 @@ estimate_gen_liability_ltfh = function(h2,
                      }
                    )
       
-      cov = get_cov(h2 = h2, n_sib = ifelse(is.na(cur_nsib), 0, cur_nsib))
+      cov = construct_covmat()
       
       cov_size = nrow(cov)
       
@@ -114,9 +112,9 @@ estimate_gen_liability_ltfh = function(h2,
       vals = list() #store simulated values
       vals.ctr = 1
       while (is.null(se) || se > tol) {
-        gen_liabs = rtmvnorm.gibbs(50e3, 
+        gen_liabs = rtmvnorm.gibbs(n_sim = 50e3, 
                                    burn_in = 1000,
-                                   sigma = cov,
+                                   covmat = cov,
                                    lower = lower, 
                                    upper = upper,
                                    fixed = fixed)
@@ -155,13 +153,13 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
-      cov <- get_cov(h2, n_sib = cur_nsib)
-      tmp <- rtmvnorm.gibbs(100e3,
-                            sigma = cov,
+      cov <- construct_covmat()
+      tmp <- rtmvnorm.gibbs(n_sim = 100e3,
+                            covmat = cov,
                             lower = lower,
                             upper = upper,
                             fixed = rep(FALSE, nrow(cov)),
-                            ind = 1:nrow(cov)) 
+                            out = 1:nrow(cov)) 
       colnames(tmp) = c("child_gen", paste0(c("child", "father", "mother", paste0("sib", 1:cur_nsib)), "_full"))
       tmp = dplyr::as_tibble(tmp)
       
@@ -241,11 +239,11 @@ estimate_gen_liability_ltfh = function(h2,
         vals.ctr = 1
         while (is.null(se) || se > tol) {
           gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
-                                               sigma = get_cov(h2, n_sib = cur_nsib),
+                                               covmat = construct_covmat(),
                                                lower = lower,
                                                upper = upper,
                                                fixed = fixed,
-                                               ind = 1,
+                                               out = 1,
                                                burn_in = 1000)
           vals[[vals.ctr]] = gen_liabs
           se = batchmeans::bm(unlist(vals))$se

@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // rtmvnorm_gibbs_cpp
 NumericMatrix rtmvnorm_gibbs_cpp(const NumericMatrix& P, const NumericVector& sd, const NumericVector& lower, const NumericVector& upper, const LogicalVector& fixed, const IntegerVector& to_return, NumericVector& x, int n_sim, int burn_in);
 RcppExport SEXP _LTFHPlus_rtmvnorm_gibbs_cpp(SEXP PSEXP, SEXP sdSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP fixedSEXP, SEXP to_returnSEXP, SEXP xSEXP, SEXP n_simSEXP, SEXP burn_inSEXP) {
