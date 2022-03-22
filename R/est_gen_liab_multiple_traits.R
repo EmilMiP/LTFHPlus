@@ -102,15 +102,10 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
-  if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
-  if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
-  if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
+  if(check_proportion(sq.herits)){invisible()}
   # Checking that all correlations are valid
-  if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
-  if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
-  # In addition, corrmat must be symmetric
-  if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
+  if(check_correlation_matrix(genetic_corrmat)){invisible()}
+  if(check_correlation_matrix(full_corrmat)){invisible()}
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
   if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
@@ -153,9 +148,9 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   threshs <- select(threshs, !!as.symbol(pid), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
   
   # Now we can extract the number of phenotypes
-  n_pheno <- nrow(corrmat)
+  n_pheno <- length(sq.herits)
   if(ncol(threshs) != (2*n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in corrmat...\
+The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in sq.herits...\
 Does all columns have the required names?")
   
   # As well as the phenotype names

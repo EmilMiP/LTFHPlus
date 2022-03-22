@@ -82,21 +82,13 @@ estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, ful
   # Turning threshs into a 
   if(!("tbl_df" %in% class(status))) status <- tibble::as_tibble(status)
   
-  # Checking that the heritability is valid
-  if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
-  if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
-  if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
+  # Checking that the heritabilities are valid
+  if(check_proportion(sq.herits)){invisible()}
   # Checking that all correlations are valid
-  if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
-  if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
-  # In addition, corrmat must be symmetric
-  if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
+  if(check_correlation_matrix(genetic_corrmat)){invisible()}
+  if(check_correlation_matrix(full_corrmat)){invisible()}
   # Checking that all prevalences are valid
-  if(is.null(prevalences)) stop("The prevalences must be specified!")
-  if(class(prevalences)!= "numeric" && class(prevalences)!= "integer")stop("The prevalences must be numeric!")
-  if(any(prevalences<0))stop("The prevalences must be non-negative!")
-  if(any(prevalences>1))stop("The prevalences must be smaller than or equal to 1!")
+  if(check_proportion(prevalences)){invisible()}
 
   # And that pid is also present in the tibble threshs
   if(!(pid %in% colnames(status))) stop(paste0("The column ", pid," does not exist in the tibble status"))
@@ -132,9 +124,9 @@ estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, ful
 
   
   # Now we can extract the number of phenotypes
-  n_pheno <- nrow(corrmat)
+  n_pheno <- nrow(sq.herits)
   if(ncol(status) != (n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of columns in status is not equal to the number of phenotypes specified in corrmat...\
+The number of columns in status is not equal to the number of phenotypes specified in sq.herits...\
 Does all columns have the required names?")
   
   # As well as the phenotype names
