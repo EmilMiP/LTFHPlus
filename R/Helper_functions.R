@@ -82,13 +82,13 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
   # Checking that age is valid
   if(class(age) != "numeric" && class(age) != "integer") stop("The age must be numeric!")
-  if(age<0) stop("The age must be non-negative!")
-  if(age >=150) warning("At this point, it is unrealistic to be of age 150 or older!")
+  if(any(age<0)) stop("The age must be non-negative!")
+  if(any(age >=150)) warning("At this point, it is unrealistic to be of age 150 or older!")
   
   # Checking that pop_prev is valid
   if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
-  if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
-  if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
+  if(any(pop_prev<=0))stop("The population prevalence pop_prev must be positive!")
+  if(any(pop_prev>1))stop("The population prevalence pop_prev must be smaller or equal to 1!")
   
   # Checking that mid_point is valid
   if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
@@ -155,7 +155,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   
   # Checking that age is valid
   if(class(age) != "numeric" && class(age) != "integer") stop("The age must be numeric!")
-  if(age<0) stop("The age must be non-negative!")
+  if(any(age<0)) stop("The age must be non-negative!")
   
   # Checking that dist is either logistic or normal.
   if(class(dist) == "character"){
@@ -182,12 +182,12 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
     
     # Checking that pop_prev is valid
     if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
-    if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
-    if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
+    if(any(pop_prev<=0))stop("The population prevalence pop_prev must be positive!")
+    if(any(pop_prev>1))stop("The population prevalence pop_prev must be smaller or equal to 1!")
     
     # Checking that mid_point is valid
     if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
-    if(mid_point<=0)stop("The mid point mid_point must be positive!")
+    if(any(mid_point<=0))stop("The mid point mid_point must be positive!")
     
     # Checking that slope is valid
     if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
@@ -204,8 +204,8 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
     # Checking that min_age and max_age are valid.
     if(class(min_age) != "numeric" && class(min_age) != "integer") stop("The earliest age min_age must be numeric!")
     if(class(max_age) != "numeric" && class(max_age) != "integer") stop("The latest age max_age must be numeric!")
-    if(min_age <= 0) stop("The earliest age min_age must be positive!")
-    if(max_age <= 0) stop("The latest age max_age must be positive!")
+    if(any(min_age <= 0)) stop("The earliest age min_age must be positive!")
+    if(any(max_age <= 0)) stop("The latest age max_age must be positive!")
     if(min_age > max_age){
       cat("The latest age max_age is below the earliest age min_age! \n 
 The earliest and latest age will be swapped...")
@@ -271,12 +271,12 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
   # Checking that pop_prev is valid
   if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
-  if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
-  if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
+  if(any(pop_prev<=0))stop("The population prevalence pop_prev must be positive!")
+  if(any(pop_prev>1))stop("The population prevalence pop_prev must be smaller or equal to 1!")
   
   # Checking that mid_point is valid
   if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
-  if(mid_point<=0)stop("The mid point mid_point must be positive!")
+  if(any(mid_point<=0))stop("The mid point mid_point must be positive!")
   
   # Checking that slope is valid
   if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
@@ -372,8 +372,8 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
     
     # Checking that pop_prev is valid
     if(class(pop_prev) != "numeric" && class(pop_prev) != "integer") stop("The population prevalence pop_prev must be numeric!")
-    if(pop_prev<=0)stop("The population prevalence pop_prev must be positive!")
-    if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
+    if(any(pop_prev<=0))stop("The population prevalence pop_prev must be positive!")
+    if(any(pop_prev>1))stop("The population prevalence pop_prev must be smaller or equal to 1!")
     
     # Checking that mid_point is valid
     if(class(mid_point) != "numeric" && class(mid_point) != "integer") stop("The mid point mid_point must be numeric!")
@@ -383,7 +383,7 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
     if(class(slope) != "numeric" && class(slope) != "integer") stop("The slope must be numeric!")
     
     # Computing the age of onset
-    if(stats::pnorm(liability, lower.tail = F) >= pop_prev){
+    if(any(stats::pnorm(liability, lower.tail = F) >= pop_prev)){
       return(NA)
     }else{
       return(mid_point - log(pop_prev/stats::pnorm(liability, lower.tail = F) - 1)* 1/slope)
@@ -396,9 +396,9 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
     # Checking that min_aoo and max_aoo are valid.
     if(class(min_aoo) != "numeric" && class(min_aoo) != "integer") stop("The earliest age of onset min_aoo must be numeric!")
     if(class(max_aoo) != "numeric" && class(max_aoo) != "integer") stop("The latest age of onset max_aoo must be numeric!")
-    if(min_aoo <= 0) stop("The earliest age of onset min_aoo must be positive!")
-    if(max_aoo <= 0) stop("The latest age of onset max_aoo must be positive!")
-    if(min_aoo > max_aoo){
+    if(any(min_aoo <= 0)) stop("The earliest age of onset min_aoo must be positive!")
+    if(any(max_aoo <= 0)) stop("The latest age of onset max_aoo must be positive!")
+    if(any(min_aoo > max_aoo)){
       cat("The latest age of onset max_aoo is below the earliest age of onset min_aoo! \n 
 The earliest and latest age of onset will be swapped...")
       
