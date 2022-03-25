@@ -15,7 +15,7 @@ test_that("Gibbs sampler works", {
   true <- tmvtnorm::rtmvnorm(100e3, mean = rep(0, 2), H = solve(cov),
                              lower = lower, upper = upper)
   
-  test <- rtmvnorm.gibbs(100e3, sigma = cov, lower = lower, upper = upper, ind = 1:2)
+  test <- rtmvnorm.gibbs(100e3, covmat = cov, lower = lower, upper = upper, out = 1:2)
   
   expect_true(all(test[, 1] <= 0))
   expect_true(all(test[, 2] >= 0))
@@ -34,7 +34,7 @@ test_that("Gibbs sampler works with any cov", {
   true <- tmvtnorm::rtmvnorm(100e3, mean = rep(0, 2), H = solve(cov),
                              lower = lower, upper = upper, algorithm = "gibbs")
   
-  test <- rtmvnorm.gibbs(100e3, sigma = cov, lower = lower, upper = upper, ind = 1:2)
+  test <- rtmvnorm.gibbs(100e3, covmat = cov, lower = lower, upper = upper, out = 1:2)
   
   expect_true(all(test[, 1] <= 0))
   expect_true(all(test[, 2] >= 10))
@@ -54,7 +54,7 @@ test_that("Gibbs sampler with fixed values works", {
   true <- tmvtnorm::rtmvnorm(100e3, mean = rep(0, 2), H = solve(cov),
                              lower = lower, upper = upper, algorithm = "gibbs")
   
-  test <- rtmvnorm.gibbs(100e3, sigma = cov, ind = 1:2, 
+  test <- rtmvnorm.gibbs(100e3, covmat = cov, out = 1:2, 
                          lower = lower, upper = upper, fixed = c(FALSE, TRUE))
   
   expect_true(all(test[, 1] <= 0))

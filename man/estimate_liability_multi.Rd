@@ -2,7 +2,11 @@
 % Please edit documentation in R/est_gen_liab_multiple_traits.R
 \name{estimate_liability_multi}
 \alias{estimate_liability_multi}
-\title{Estimating the genetic or full liability for multiple phenotypes}
+\title{Estimating the genetic or full liability for multiple phenotypes
+FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
+\code{estimate_liability_multi} estimates the genetic component of the full
+liability and/or the full liability for a number of individuals based
+on their family history for a variable number of phenotypes.}
 \usage{
 estimate_liability_multi(
   family,
@@ -101,11 +105,6 @@ The remaining columns hold the estimated genetic liabilities and/or the estimate
 as well as the corresponding standard errors for the remaining phenotypes.
 }
 \description{
-\code{estimate_liability_multi} estimates the genetic component of the full
-liability and/or the full liability for a number of individuals based
-on their family history for a variable number of phenotypes.
-}
-\details{
 This function can be used to estimate either the genetic component of the
 full liability, the full liability or both for a variable number of traits.
 }
