@@ -241,7 +241,6 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   # and the full liability for the individual.
   if(is.null(fam_vec) && is.null(n_fam)){
     
-    warning("Neither fam_vec nor n_fam is specified...")
     # Constructing the simple 2x2 matrix
     covmat <- matrix(c(sq.herit,sq.herit,sq.herit,1), nrow = 2)
     # Naming the columns and rows
@@ -459,7 +458,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' The number of rows and columns corresponds to the number of phenotypes times 
 #' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
 #' If both fam_vec and n_fam are equal to c() or NULL, the function returns
-#' a \eqn{(2 \times number of phenotypes) \times (2\times number of phenotypes)} 
+#' a \eqn{(2 \times number of phenotypes) \times (2\times number of phenotypes)}{ (2 X number of phenotypes) X (2 X number of phenotypes)} 
 #' matrix holding only the correlation between the genetic component of the full
 #' liability and the full liability for the underlying individual for all
 #' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
@@ -785,7 +784,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' The number of rows and columns corresponds to the number of phenotypes times 
 #' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
 #' If both fam_vec and n_fam are equal to c() or NULL, the function returns
-#' a \eqn{(2 \times number of phenotypes) \times (2\times number of phenotypes)} 
+#' a \eqn{(2 \times number of phenotypes) \times (2 \times number of phenotypes)} 
 #' matrix holding only the correlation between the genetic component of the full
 #' liability and the full liability for the underlying individual for all
 #' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
