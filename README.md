@@ -36,5 +36,4 @@ status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](ht
 # Documentation
 
 Documentation for the different functions, as well as examples of how to
-use them, can be found on [this](https://emilmip.github.io/LTFHPlus/)
-pkgdown website.
+use them, can be found on [this pkgdown website](https://emilmip.github.io/LTFHPlus/).

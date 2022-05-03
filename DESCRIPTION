@@ -17,7 +17,8 @@ License: GPL (>= 2)
 Imports: 
     batchmeans,
     dplyr,
-    future.apply,
+    future.apply, 
+    future,
     progressr,
     purrr,
     Rcpp,
@@ -29,7 +30,6 @@ Imports:
     tmvtnorm,
     utils
 Suggests:
-    future,
     knitr,
     MASS,
     rmarkdown,

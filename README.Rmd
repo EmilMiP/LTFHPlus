@@ -38,4 +38,4 @@ devtools::install_github("EmilMiP/LTFHPlus")
 
 # Documentation
 
-Documentation for the different functions, as well as examples of how to use them, can be found on [this](https://emilmip.github.io/LTFHPlus/) pkgdown website.
+Documentation for the different functions, as well as examples of how to use them, can be found on [this pkgdown website](https://emilmip.github.io/LTFHPlus/).
