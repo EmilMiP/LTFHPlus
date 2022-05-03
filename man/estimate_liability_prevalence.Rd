@@ -7,7 +7,7 @@ using prevalence information}
 \usage{
 estimate_liability_prevalence(
   status,
-  sq.herits,
+  h2s,
   corrmat,
   prevalences,
   pid = "PID",
@@ -25,8 +25,8 @@ phenotype, respectively. It must be possible to tie each status variable
 to a specific phenotype uniquely. The function will use the column names to create
 phenotype names.}
 
-\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
+\item{h2s}{A numeric vector representing the heritability on liability scale
+for all phenotypes. All entries in h2 must be non-negative and at most 1.}
 
 \item{corrmat}{A numeric matrix holding the genetic correlation between the desired
 number of phenotypes as well as the full correlation.
@@ -60,7 +60,7 @@ Defaults to FALSE.}
 }
 \value{
 If \code{status} is a matrix, list or data frame that can be converted into a
-tibble and that has a column named \code{PID} and if the squared heritabilities, corrmat,
+tibble and that has a column named \code{PID} and if the heritabilities, corrmat,
 out and tol are of the required form, then the function returns a tibble with at least
 five columns (depending on the length of out).
 The first column corresponds to the columns pid.

@@ -26,24 +26,24 @@ With version 2.0, updates have been made to the input and the functions availabl
 
 ## Family Input 
 
-The function used to estimate the genetic (or full liability) of an individual is <tt>estimate_liability()</tt>. The first input needed for this function is <tt>family</tt>. This should be an object that can be coerced into a tibble with list entries. In short, <tt>family</tt> consists of two columns. The first is <tt>pid</tt> and is the personal identifier, i.e. the ID used to identifier your individuals, usually some anonymized value. The second is <tt>fam_id</tt>, which should be a list entry, and contains the IDs of all family members (including the one in <tt>pid</tt>). However, <tt>fam_id</tt> must contain the all the family member's ID and end in the shorthand notation for their familial relationship, e.g. mother must be "motherID_m", father must be "fatherID_f", and siblings must be "siblingID_s[0-9]", in order for them to get properly read by the covariance function.  
+The function used to estimate the genetic (or full liability) of an individual is <tt>estimate_liability()</tt>. The first input needed for this function is <tt>family</tt>. This should be an object that can be coerced into a tibble with list entries. In short, <tt>family</tt> consists of two columns. The first is <tt>pid</tt> and is the personal identifier, i.e. the ID used to identifier your individuals, usually some anonymized value. The second is <tt>fam_id</tt>, which should be a list entry, and contains the IDs of all family members (including the one in <tt>pid</tt>). However, <tt>fam_id</tt> must contain all family member's ID and end in the shorthand notation for their familial relationship, e.g. mother must be "motherID_m", father must be "fatherID_f", and siblings must be "siblingID_s[0-9]", in order for them to get properly read by the covariance function. Default values for <tt>pid</tt> is *indiv_ID* and <tt>fam_id</tt> is *fam_ID*. 
 
 From <tt>simulate_under_LTM()</tt> an example of the full input data can be seen:
 ```{r}
  sims <- simulate_under_LTM(fam_vec = c("m","f","s1"),
                             n_fam = NULL, 
                             add_ind = TRUE, 
-                            sq.herit = 0.5, 
-                            n_sim=500, 
+                            h2 = 0.5, 
+                            n_sim=100, 
                             pop_prev = .05)
 str(sims, max.level = 3)
 
 sims$fam_ID
-sims$fam_ID$fam_id[[1]]
+sims$fam_ID$fam_ID[[1]]
 
 ```
 
-In the above example, <tt>fam_ID</tt> from <tt>sims</tt> correspond to the family input, with the first entry, <tt>indiv_ID</tt> containing the ID for the proband, and <tt>fam_id</tt> contains list entries with the family member's ID and familial relationship.
+In the above example, <tt>sims$fam_ID</tt> correspond to the family input, with the first entry, <tt>indiv_ID</tt> containing the ID for the proband. The <tt>indiv_ID</tt> column is primarily there to make it easier to keep track of who each row refers to. The <tt>fam_ID</tt> column contains list entries with the family member's ID and familial relationship, in the form of *id_familyRole*, where family role refers to the short hand notation used to generate the covariance matrix. See documentation for details.
 
 
 ### Covariance Function
@@ -57,11 +57,11 @@ We construct the covariance matrix for each family being analysed. The covarianc
 construct_covmat()
 
 # only with parents
-construct_covmat(fam_vec = c("m", "f"), sq.herit = .5)
+construct_covmat(fam_vec = c("m", "f"), h2 = .5)
 construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1), c("m", "f")))
 
 # no family members
-construct_covmat(fam_vec = NULL, n_fam = NULL, sq.herit = .5)
+construct_covmat(fam_vec = NULL, n_fam = NULL, h2 = .5)
 ```
 
 

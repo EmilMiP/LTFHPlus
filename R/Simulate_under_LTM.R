@@ -5,6 +5,7 @@ utils::globalVariables("upper")
 utils::globalVariables("max_age")
 utils::globalVariables("m_max_age")
 utils::globalVariables("p_max_age")
+utils::globalVariables("indiv_ID")
 #' Simulate under the liability threshold model.
 #'
 #' \code{simulate_under_LTM} simulates thresholds under
@@ -179,10 +180,10 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
     dplyr::select(., -c(max_age, m_max_age, p_max_age))
   
   # Adding age of onset for all individuals having the disease
-  liabs <- liabs %>% mutate(., LTFHPlus:::construct_aoo(fam_mem = colnames(covmat), .tbl = ., pop_prev = pop_prev))
+  liabs <- liabs %>% mutate(., construct_aoo(fam_mem = colnames(covmat), .tbl = ., pop_prev = pop_prev))
   
   # Constructing thresholds
-  threshs <- LTFHPlus:::construct_thresholds(fam_mem = colnames(covmat), .tbl = liabs, pop_prev = pop_prev)
+  threshs <- construct_thresholds(fam_mem = colnames(covmat), .tbl = liabs, pop_prev = pop_prev)
   
   # Constructing the personal identifiers for all
   # family members in each family.

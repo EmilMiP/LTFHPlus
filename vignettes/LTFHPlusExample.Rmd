@@ -51,7 +51,7 @@ With the global parameters set, we will simulate the liabilities for each family
 #simulate liabilities
 liabs = MASS::mvrnorm(n = N, mu = rep(0, 4 + nsib),
                       Sigma = construct_covmat(fam_vec = c("m", "f", if (nsib > 0) paste0("s", 1:nsib)),
-                                               sq.herit = h2)
+                                               h2 = h2)
                       )
 
 #Age of children, parents, and siblings

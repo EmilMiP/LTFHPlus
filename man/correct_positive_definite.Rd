@@ -14,13 +14,13 @@ correct_positive_definite(
 \item{covmat}{A symmetric and numeric matrix. If the covariance matrix
 should be corrected, it must have a number of attributes, such as
 attr(covmat,"fam_vec"), attr(covmat,"n_fam"), attr(covmat,"add_ind"),
-attr(covmat,"sq.herit") and attr(covmat,"phenotype_names"). Any covariance
+attr(covmat,"h2") and attr(covmat,"phenotype_names"). Any covariance
 matrix obtained by \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}}
 or \code{\link{construct_covmat_multi}} will have these attributes by default.}
 
 \item{correction_val}{A positive number representing the amount by which
-sq.herit will be changed, if not all eigenvalues are positive. That is, correction_val
-is the number that will be multiplied to all off_diagonal entries in sq.herit.
+h2 will be changed, if not all eigenvalues are positive. That is, correction_val
+is the number that will be multiplied to all off_diagonal entries in h2.
 Defaults to 0.99.}
 
 \item{correction_limit}{A positive integer representing the upper limit for the correction
@@ -31,9 +31,9 @@ If covmat is a symmetric and numeric matrix and all eigenvalues are
 positive, \code{correct_positive_definite} simply returns covmat. If some
 eigenvalues are not positive and correction_val is a positive number,
 \code{correct_positive_definite} tries to convert covmat into a positive definite
-matrix. If covmat has attributes "add_ind" and "sq.herit", with sq.herit being
+matrix. If covmat has attributes "add_ind" and "h2", with h2 being
 a matrix with at least two rows and columns, \code{correct_positive_definite}
-computes a new covariance matrix using a slightly modified sq.herit. If the
+computes a new covariance matrix using a slightly modified h2. If the
 correction is performed successfully, i.e. if the new covmat is positive definite,
 the new covariance matrix is returned. Otherwise, \code{correct_positive_definite}
 returns the original covariance matrix.
@@ -43,7 +43,7 @@ returns the original covariance matrix.
 is indeed positive definite by checking that all eigenvalues are positive.
 If the given covariance matrix is not positive definite,
 \code{correct_positive_definite} tries to modify the underlying correlation matrix
-sq.herit in order to obtain a positive definite covariance matrix
+h2 in order to obtain a positive definite covariance matrix
 }
 \details{
 This function can be used to verify that a given covariance matrix
@@ -53,7 +53,7 @@ if the covariance matrix should be used as a Gaussian covariance matrix.
 It is especially useful to check whether any covariance matrix obtained
 by \code{\link{construct_covmat_multi}} is positive definite.
 If the given covariance matrix is not positive definite, \code{correct_positive_definite}
-tries to modify the underlying correlation matrix (called \code{sq.herit} in
+tries to modify the underlying correlation matrix (called \code{h2} in
 \code{\link{construct_covmat}} or \code{\link{construct_covmat_multi}}) by
 multiplying all off-diagonal entries in the correlation matrix by a given number.
 }

@@ -9,7 +9,7 @@ construct_covmat_multi(
   n_fam = NULL,
   add_ind = TRUE,
   corrmat,
-  sq.herits,
+  h2s,
   phen_names = NULL
 )
 }
@@ -46,8 +46,8 @@ The full correlations must be given on the diagonal,
 while the off-diagonal entries must hold the genetic correlations between phenotypes.
 All correlations must be between -1 and 1.}
 
-\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
+\item{h2s}{A numeric vector representing the heritability on liability scale
+for all phenotypes. All entries in h2s must be non-negative and at most 1.}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
@@ -56,7 +56,7 @@ Defaults to NULL.}
 }
 \value{
 If either fam_vec or n_fam is used as the argument, if it is of the
-required format and sq.herit is a numeric matrix satisfying that all
+required format and h2 is a numeric matrix satisfying that all
 diagonal entries are non-negative and that all off-diagonal
 entries are between -1 and 1, then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the number of phenotypes times
@@ -68,7 +68,7 @@ liability and the full liability for the underlying individual for all
 phenotypes. If both fam_vec and n_fam are specified, the user is asked to
 decide on which of the two vectors to use.
 Note that the returned object has different attributes, such as
-fam_vec, n_fam, add_ind, sq.herit and phenotype_names.
+fam_vec, n_fam, add_ind, h2 and phenotype_names.
 }
 \description{
 \code{construct_covmat_multi} returns the covariance matrix for an
@@ -79,7 +79,7 @@ for multiple phenotypes.
 This function can be used to construct a covariance matrix for
 a given number of family members. Each entry in this covariance
 matrix equals either the percentage of shared DNA between the corresponding
-individuals times the squared heritability \eqn{h^2} or the
+individuals times the heritability \eqn{h^2} or the
 percentage of shared DNA between the corresponding individuals times
 the correlation between the corresponding phenotypes. The family members
 can be specified using one of two possible formats.
@@ -87,18 +87,18 @@ can be specified using one of two possible formats.
 \examples{
 construct_covmat_multi(fam_vec = NULL, 
                        corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2), 
-                       sq.herits = c(0.37,0.44),
+                       h2s = c(0.37,0.44),
                        phen_names = c("p1","p2"))
 construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
                        n_fam = NULL, 
                        add_ind = TRUE,
                        corrmat = diag(3),
-                       sq.herits = c(0.8, 0.65))
+                       h2s = c(0.8, 0.65))
 construct_covmat_multi(fam_vec = NULL, 
                        n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
                        add_ind = FALSE,
                        corrmat = diag(2),
-                       sq.herits = c(0.75,0.85))
+                       h2s = c(0.75,0.85))
 
 }
 \seealso{

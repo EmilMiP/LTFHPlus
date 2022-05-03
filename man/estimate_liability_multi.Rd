@@ -11,7 +11,7 @@ on their family history for a variable number of phenotypes.}
 estimate_liability_multi(
   family,
   threshs,
-  sq.herits,
+  h2s,
   corrmat,
   pid = "PID",
   fam_id = "fam_ID",
@@ -53,8 +53,8 @@ to a specific phenotype uniquely. This is done easily by adding _{name_of_phenot
 the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 thresholds corresponding to the first phenotype.}
 
-\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
+\item{h2s}{A numeric vector representing the heritability on liability scale
+for all phenotypes. All entries in h2s must be non-negative and at most 1.}
 
 \item{corrmat}{A numeric matrix holding the genetic correlation between the desired
 number of phenotypes as well as the full correlation.
@@ -90,7 +90,7 @@ Defaults to FALSE.}
 If family and threshs are two matrices, lists or data frames that can be converted into
 tibbles, if family has two columns named like the strings represented in pid and fam_id, if
 threshs has a column named like the string given in pid as well as a column named "lower" and
-a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
+a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
 then the function returns a tibble with at least six columns (depending on the length of out).
 The first two columns correspond to the columns fam_id and pid from family.
 If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic
