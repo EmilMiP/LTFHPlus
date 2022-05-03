@@ -32,16 +32,16 @@ utils::globalVariables("p_max_age")
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit A number representing the squared heritability on liability scale
+#' @param h2 A number representing the heritability on liability scale
 #' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-#' the squared heritability must also be at most 1.
+#' the heritability must also be at most 1.
 #' Defaults to 0.5.
 #' @param n_sim A positive number representing the number of simulations. Defaults to 1000.
 #' @param pop_prev A positive number representing the population prevalence, i.e. the 
 #' overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.
 #' 
 #' @return If either fam_vec or n_fam is used as the argument, if it is of the required format,
-#' if sq.herit is a number satisfying 0 <= sq.herit, n_sim is a strictly positive number,
+#' if h2 is a number satisfying 0 <= h2, n_sim is a strictly positive number,
 #' and pop_prev is a positive number that is at most one, 
 #' then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
 #' holds the disease status and the current age/age of onset for all family members in each
@@ -61,8 +61,8 @@ utils::globalVariables("p_max_age")
 #' simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
 #' c("m","mgm","mgf","s","mhs")))
 #' simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
-#' sq.herit = 0.5, n_sim = 500, pop_prev = .05)
-#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, 
+#' h2 = 0.5, n_sim = 500, pop_prev = .05)
+#' simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, h2 = 0.5, 
 #' n_sim = 200, pop_prev = 0.05)
 #' 
 #' @seealso \code{\link{construct_covmat}}
@@ -74,16 +74,16 @@ utils::globalVariables("p_max_age")
 simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
                                n_fam = NULL, 
                                add_ind = TRUE, 
-                               sq.herit = 0.5, 
+                               h2 = 0.5, 
                                n_sim=1000, 
                                pop_prev = .1){
   
   # Turning add_ind into class logical
   add_ind <- as.logical(add_ind)
   # Checking that the heritability is valid
-  if(class(sq.herit) != "numeric" && class(sq.herit) != "integer")stop("The squared heritability must be numeric!")
-  if(sq.herit<0)stop("The squared heritability must be non-negative!")
-  if(sq.herit>1)stop("Under the liability threshold model, the squared heritability must be smaller than or equal to 1!")
+  if(class(h2) != "numeric" && class(h2) != "integer")stop("The heritability must be numeric!")
+  if(h2<0)stop("The heritability must be non-negative!")
+  if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
   # Checking that n_sim is a number
   if(class(n_sim) != "numeric") stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive
@@ -97,9 +97,9 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # would usually return a warning. We supress this warning here.
   if(is.null(fam_vec) && is.null(n_fam)){
     
-    covmat <- suppressWarnings(construct_covmat_single(fam_vec = NULL, n_fam = NULL, add_ind = add_ind, sq.herit = sq.herit))
+    covmat <- suppressWarnings(construct_covmat_single(fam_vec = NULL, n_fam = NULL, add_ind = add_ind, h2 = h2))
   }else{
-    covmat <- construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, sq.herit = sq.herit)
+    covmat <- construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, h2 = h2)
   }
   
   # Simulating n_sim liabilities for the each family member

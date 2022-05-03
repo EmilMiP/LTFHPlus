@@ -19,8 +19,8 @@
 #' phenotype, respectively. It must be possible to tie each status variable
 #' to a specific phenotype uniquely. The function will use the column names to create
 #' phenotype names. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param h2s A numeric vector representing the heritability on liability scale
+#' for all phenotypes. All entries in h2 must be non-negative and at most 1.
 #' @param corrmat A numeric matrix holding the genetic correlation between the desired 
 #' number of phenotypes as well as the full correlation. 
 #' The full correlations must be given on the diagonal,
@@ -46,7 +46,7 @@
 #' Defaults to FALSE.
 #' 
 #' @return If \code{status} is a matrix, list or data frame that can be converted into a
-#' tibble and that has a column named \code{PID} and if the squared heritabilities, corrmat, 
+#' tibble and that has a column named \code{PID} and if the heritabilities, corrmat, 
 #' out and tol are of the required form, then the function returns a tibble with at least
 #' five columns (depending on the length of out). 
 #' The first column corresponds to the columns pid. 
@@ -67,7 +67,7 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_prevalence = function(status, sq.herits, corrmat, prevalences, pid = "PID", out = c(1), tol = 0.01, 
+estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid = "PID", out = c(1), tol = 0.01, 
                                          parallel = FALSE, progress = FALSE){
   
   # Turning parallel and progress into class logical
@@ -81,10 +81,10 @@ estimate_liability_prevalence = function(status, sq.herits, corrmat, prevalences
   if(!("tbl_df" %in% class(status))) status <- tibble::as_tibble(status)
   
   # Checking that the heritability is valid
-  if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
-  if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
-  if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
+  if(is.null(h2s)) stop("The heritabilities must be specified!")
+  if(class(h2s)!= "numeric" && class(h2s)!= "integer")stop("The heritabilities must be numeric!")
+  if(any(h2s<0))stop("The heritabilities must be non-negative!")
+  if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
   if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
   if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
@@ -183,7 +183,7 @@ Does all columns have the required names?")
     # all families
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-                            corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                            corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(status), FUN = function(i){
       
@@ -238,7 +238,7 @@ Does all columns have the required names?")
     # all families
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-                            corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                            corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
     
     gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
       

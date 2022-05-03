@@ -34,8 +34,8 @@
 #' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
 #' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 #' thresholds corresponding to the first phenotype. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param h2s A numeric vector representing the heritability on liability scale
+#' for all phenotypes. All entries in h2s must be non-negative and at most 1.
 #' @param corrmat A numeric matrix holding the genetic correlation between the desired 
 #' number of phenotypes as well as the full correlation. 
 #' The full correlations must be given on the diagonal,
@@ -63,7 +63,7 @@
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
 #' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
+#' a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
 #' then the function returns a tibble with at least six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 
 #' If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic 
@@ -83,7 +83,7 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
+estimate_liability_multi <- function(family, threshs, h2s, corrmat, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
                                      parallel = FALSE, progress = FALSE){
   # Turning parallel and progress into class logical
   parallel <- as.logical(parallel)
@@ -98,10 +98,10 @@ estimate_liability_multi <- function(family, threshs, sq.herits, corrmat, pid = 
   if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
-  if(is.null(sq.herits)) stop("The squared heritabilities must be specified!")
-  if(class(sq.herits)!= "numeric" && class(sq.herits)!= "integer")stop("The squared heritabilities must be numeric!")
-  if(any(sq.herits<0))stop("The squared heritabilities must be non-negative!")
-  if(any(sq.herits>1))stop("Under the liability threshold model, the squared heritabilities must be smaller than or equal to 1!")
+  if(is.null(h2s)) stop("The heritabilities must be specified!")
+  if(class(h2s)!= "numeric" && class(h2s)!= "integer")stop("The heritabilities must be numeric!")
+  if(any(h2s<0))stop("The heritabilities must be non-negative!")
+  if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
   if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
   if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
@@ -224,7 +224,7 @@ The lower and upper thresholds will be swapped...")
 
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                              corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
@@ -305,7 +305,7 @@ The lower and upper thresholds will be swapped...")
       
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              corrmat = corrmat, sq.herit = sq.herits, phen_names = pheno_names)
+                              corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         

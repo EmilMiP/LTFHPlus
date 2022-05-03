@@ -33,9 +33,9 @@ utils::globalVariables("upper")
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
 #' and the remaining two holding the lower and upper thresholds, respectively.
-#' @param sq.herit A number representing the squared heritability on liability scale
+#' @param h2 A number representing the heritability on liability scale
 #' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-#' the squared heritability must also be at most 1.
+#' the heritability must also be at most 1.
 #' Defaults to 0.5.
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
@@ -59,7 +59,7 @@ utils::globalVariables("upper")
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
 #' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the squared heritability, out, tol and always_add are of the required form,
+#' a column named "upper" and if the heritability, out, tol and always_add are of the required form,
 #' then the function returns a tibble with either four or six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 
 #' If out is equal to c(1) or c("genetic"), the third and fourth column hold the estimated genetic 
@@ -72,16 +72,16 @@ utils::globalVariables("upper")
 #' 
 #' @examples
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
-#' add_ind = TRUE, sq.herit = 0.5, n_sim=100, pop_prev = .05)
+#' add_ind = TRUE, h2 = 0.5, n_sim=100, pop_prev = .05)
 #' 
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-#' sq.herit = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
+#' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
 #' always_add = c("g","o"))
 #' # 
 #' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-#' sq.herit = 0.5, n_sim=100, pop_prev = .05)
+#' h2 = 0.5, n_sim=100, pop_prev = .05)
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-#' sq.herit = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
+#' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
 #' tol = 0.01, always_add = c("g","o"))
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
@@ -90,7 +90,7 @@ utils::globalVariables("upper")
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
+estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
                                tol = 0.01, always_add = c("g","o")){
   
 
@@ -107,9 +107,9 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
   
   
   # Checking that the heritability is valid
-  if(class(sq.herit)!= "numeric" && class(sq.herit)!= "integer")stop("The squared heritability must be numeric!")
-  if(sq.herit<0)stop("The squared heritability must be non-negative!")
-  if(sq.herit>1)stop("Under the liability threshold model, the squared heritability must be smaller than or equal to 1!")
+  if(class(h2)!= "numeric" && class(h2)!= "integer")stop("The heritability must be numeric!")
+  if(h2<0)stop("The heritability must be non-negative!")
+  if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
   
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
@@ -185,7 +185,7 @@ estimate_liability <- function(family, threshs, sq.herit = 0.5, pid = "PID", fam
     full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
     # Constructing the covariance matrix
     # If always_add holds "g" or "o", add_ind must be TRUE
-    cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), sq.herit = sq.herit)
+    cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), h2 = h2)
     
     # Extracting the thresholds for all family members 
     fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(fam_id))), ]
