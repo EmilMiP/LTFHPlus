@@ -4,3 +4,4 @@
 .Ruserdata
 docs
 src-i386
+.src-i386/*
