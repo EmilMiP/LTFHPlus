@@ -12,9 +12,7 @@ estimate_liability(
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
-  always_add = c("g", "o"),
-  parallel = FALSE,
-  progress = FALSE
+  always_add = c("g", "o")
 )
 }
 \arguments{
@@ -72,13 +70,6 @@ of the full liability as well as the full liability will be added to the list of
 If always_add equals "g" or "o", the genetic component of the full liability or the full liability
 will be added, respectively. If always_add = NULL, no component will be added.
 Defaults to c("g","o").}
-
-\item{parallel}{A logical scalar indicating whether computations should be performed parallel.
-In order for this to be possible, the user must install the library "future.apply" and create a plan
-(see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
-
-\item{progress}{A logical scalar indicating whether the function should display a progress bar.
-Defaults to FALSE.}
 }
 \value{
 If family and threshs are two matrices, lists or data frames that can be converted into
@@ -106,17 +97,17 @@ full liability, the full liability or both.
 }
 \examples{
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
-add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+add_ind = TRUE, sq.herit = 0.5, n_sim=100, pop_prev = .05)
 
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
-parallel = FALSE, always_add = c("g","o"))
+sq.herit = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
+always_add = c("g","o"))
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-sq.herit = 0.5, n_sim=200, pop_prev = .05)
+sq.herit = 0.5, n_sim=100, pop_prev = .05)
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), 
-tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+sq.herit = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
+tol = 0.01, always_add = c("g","o"))
 
 }
 \seealso{

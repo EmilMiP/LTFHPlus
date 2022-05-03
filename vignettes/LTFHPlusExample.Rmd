@@ -30,7 +30,7 @@ library(tidyr)
 The strategy from here is to generate the necessary information for each individual in the example. We will start out by setting some global parameters:
 
 ```{r}
-N = 1000 #number of individuals
+N = 100 #number of individuals
 h2 = .5 #heritability
 nsib = 2 #number of siblings
 
