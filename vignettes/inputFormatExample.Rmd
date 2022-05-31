@@ -1,11 +1,11 @@
 ---
-title: "Input format"
+title: "Input Format"
 author: "Emil M. Pedersen"
 date: '2022-04-05'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Input Format Example}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Input Format}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
