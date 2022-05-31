@@ -1,7 +1,7 @@
 url: EmilMiP.github.io/LTFHPlus
 
 reference:
-  - title: "Estimating Genetic Liability"
+  - title: "Estimating (Genetic) Liability"
     desc: >
       Functions used to estimate the genetic liability in a range of different setups with and without family history and prevalence information.
     contents:
