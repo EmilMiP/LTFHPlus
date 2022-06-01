@@ -184,12 +184,12 @@
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 100 × 5</span></span>
 <span class="co">##    ids       sex       status    age       aoo      </span>
 <span class="co">##    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 2</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 3</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 4</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 5</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 7</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 8</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;"> 9</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
@@ -201,13 +201,13 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
   <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">phen</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span>
-<span class="co">##   ids     sex status   age   aoo</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span> 1         2      0  35.6  <span style="color: #BB0000;">NA</span>  </span>
-<span class="co">## <span style="color: #BCBCBC;">2</span> 1_f       1      1  57.2  57.2</span>
-<span class="co">## <span style="color: #BCBCBC;">3</span> 1_m       2      0  60.6  <span style="color: #BB0000;">NA</span>  </span>
-<span class="co">## <span style="color: #BCBCBC;">4</span> 1_s1      2      0  29.3  <span style="color: #BB0000;">NA</span>  </span>
-<span class="co">## <span style="color: #BCBCBC;">5</span> 1_s2      2      0  47.2  <span style="color: #BB0000;">NA</span></span></code></pre>
+<span class="co">##   ids     sex status   age aoo  </span>
+<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;">1</span> 1         1      0 19.7  <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">## <span style="color: #BCBCBC;">2</span> 1_f       1      0 51.9  <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">## <span style="color: #BCBCBC;">3</span> 1_m       2      0 41.0  <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">## <span style="color: #BCBCBC;">4</span> 1_s1      2      0  6.51 <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">## <span style="color: #BCBCBC;">5</span> 1_s2      1      0 27.1  <span style="color: #BB0000;">NA</span></span></code></pre>
 <p>Since we expect the family sizes to vary between families and we wanted to accomodate this, we found it simplest to work with lists or tibbles with list entries. This means the <strong>phen</strong> input, which is the first input, is simply the <em>ids</em> column from <em>phen</em>.</p>
 </div>
 <div class="section level4">
@@ -239,18 +239,18 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 500 × 3</span></span>
-<span class="co">##    ids     lower upper</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1     -<span style="color: #BB0000;">Inf</span>     3.12</span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> 1_f      1.84  1.84</span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> 1_m   -<span style="color: #BB0000;">Inf</span>     2.31</span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> 1_s1  -<span style="color: #BB0000;">Inf</span>     3.34</span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> 1_s2  -<span style="color: #BB0000;">Inf</span>     2.71</span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> 2     -<span style="color: #BB0000;">Inf</span>     2.48</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> 2_f   -<span style="color: #BB0000;">Inf</span>     1.42</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> 2_m   -<span style="color: #BB0000;">Inf</span>     2.08</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> 2_s1  -<span style="color: #BB0000;">Inf</span>     2.20</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> 2_s2  -<span style="color: #BB0000;">Inf</span>     1.69</span>
+<span class="co">##    ids   lower upper</span>
+<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1      -<span style="color: #BB0000;">Inf</span>  3.28</span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span> 1_f    -<span style="color: #BB0000;">Inf</span>  2.03</span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span> 1_m    -<span style="color: #BB0000;">Inf</span>  2.93</span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span> 1_s1   -<span style="color: #BB0000;">Inf</span>  4.06</span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span> 1_s2   -<span style="color: #BB0000;">Inf</span>  3.02</span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span> 2      -<span style="color: #BB0000;">Inf</span>  2.29</span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span> 2_f    -<span style="color: #BB0000;">Inf</span>  1.45</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span> 2_m    -<span style="color: #BB0000;">Inf</span>  2.14</span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span> 2_s1   -<span style="color: #BB0000;">Inf</span>  2.93</span>
+<span class="co">## <span style="color: #BCBCBC;">10</span> 2_s2   -<span style="color: #BB0000;">Inf</span>  3.22</span>
 <span class="co">## <span style="color: #949494;"># … with 490 more rows</span></span></code></pre>
 </div>
 </div>
@@ -272,16 +272,16 @@
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 100 × 3</span></span>
 <span class="co">##    ids   post_gen_liab post_gen_liab_se</span>
 <span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1            0.443           0.003<span style="text-decoration: underline;">84</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> 2           -<span style="color: #BB0000;">0.080</span><span style="color: #BB0000; text-decoration: underline;">4</span>          0.004<span style="text-decoration: underline;">33</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> 3           -<span style="color: #BB0000;">0.010</span><span style="color: #BB0000; text-decoration: underline;">1</span>          0.004<span style="text-decoration: underline;">78</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> 4           -<span style="color: #BB0000;">0.037</span><span style="color: #BB0000; text-decoration: underline;">0</span>          0.004<span style="text-decoration: underline;">14</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> 5           -<span style="color: #BB0000;">0.014</span><span style="color: #BB0000; text-decoration: underline;">9</span>          0.004<span style="text-decoration: underline;">43</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> 6            1.03            0.001<span style="text-decoration: underline;">83</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> 7            0.610           0.003<span style="text-decoration: underline;">09</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> 8           -<span style="color: #BB0000;">0.056</span><span style="color: #BB0000; text-decoration: underline;">8</span>          0.004<span style="text-decoration: underline;">00</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> 9           -<span style="color: #BB0000;">0.022</span><span style="color: #BB0000; text-decoration: underline;">6</span>          0.004<span style="text-decoration: underline;">45</span></span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> 10          -<span style="color: #BB0000;">0.041</span><span style="color: #BB0000; text-decoration: underline;">6</span>          0.004<span style="text-decoration: underline;">24</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1           -<span style="color: #BB0000;">0.018</span><span style="color: #BB0000; text-decoration: underline;">0</span>          0.004<span style="text-decoration: underline;">89</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span> 2           -<span style="color: #BB0000;">0.058</span><span style="color: #BB0000; text-decoration: underline;">7</span>          0.004<span style="text-decoration: underline;">07</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span> 3           -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">4</span>          0.004<span style="text-decoration: underline;">03</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span> 4           -<span style="color: #BB0000;">0.022</span><span style="color: #BB0000; text-decoration: underline;">2</span>          0.004<span style="text-decoration: underline;">40</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span> 5           -<span style="color: #BB0000;">0.091</span><span style="color: #BB0000; text-decoration: underline;">4</span>          0.004<span style="text-decoration: underline;">07</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span> 6           -<span style="color: #BB0000;">0.046</span><span style="color: #BB0000; text-decoration: underline;">5</span>          0.004<span style="text-decoration: underline;">39</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span> 7            0.553           0.003<span style="text-decoration: underline;">10</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span> 8           -<span style="color: #BB0000;">0.063</span><span style="color: #BB0000; text-decoration: underline;">5</span>          0.003<span style="text-decoration: underline;">83</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span> 9           -<span style="color: #BB0000;">0.054</span><span style="color: #BB0000; text-decoration: underline;">7</span>          0.004<span style="text-decoration: underline;">33</span></span>
+<span class="co">## <span style="color: #BCBCBC;">10</span> 10          -<span style="color: #BB0000;">0.039</span><span style="color: #BB0000; text-decoration: underline;">0</span>          0.004<span style="text-decoration: underline;">24</span></span>
 <span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></code></pre>
 <p>From here the object simu_liab can be saved and used in your GWAS method of choice.</p>
 </div>
