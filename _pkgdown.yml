@@ -30,3 +30,5 @@ reference:
 template:
   params:
     bootswatch: darkly
+development:
+  mode: auto
