@@ -49,8 +49,8 @@
 get_relatedness <- function(s1,s2, h2=0.5){
   
   # Checking that s1 and s2 are strings
-  if(class(s1) != "character") stop("s1 must be a string!")
-  if(class(s2) != "character") stop("s2 must be a string!")
+  if(!is.character(s1)) stop("s1 must be a string!")
+  if(!is.character(s2)) stop("s2 must be a string!")
   # Checking that s1 and s2 are valid strings
   if(!(str_detect(s1, "^[gomf]$") | str_detect(s1, "^[mp]g[mf]$") | 
        str_detect(s1, "^s[0-9]*") | str_detect(s1, "^[mp]hs[0-9]*")| 
@@ -494,9 +494,9 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   
   # Checking that the heritabilities are valid
   if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(class(h2s)!= "numeric" & class(h2s)!= "integer")stop("The heritabilities must be numeric!")
-  if(any(h2s<0))stop("The heritabilities must be non-negative!")
-  if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
+  if(!is.numeric(h2s) & !is.integer(h2s))stop("The heritabilities must be numeric!")
+  if(any(h2s<0)) stop("The heritabilities must be non-negative!")
+  if(any(h2s>1)) stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   
   # Checking that all correlations are valid
   if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
@@ -512,7 +512,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   if(is.null(phen_names)){
     phen_names <- paste0("phenotype", 1:num_phen)
   }else{
-    if(class(phen_names) != "character") phen_names <- as.character(phen_names)
+    if(!is.character(phen_names)) phen_names <- as.character(phen_names)
     if(length(phen_names) != num_phen) stop("The number of names in phen_num and the number of phenotypes differ...")
   }
 
@@ -886,7 +886,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   
   # If some eigenvalues are negative, correction_val must be specified,
   # it must be numeric and positive in order to correct the covariance matrix.
-  if(class(correction_val) != "numeric") stop("correction_val must be numeric!")
+  if(!is.numeric(correction_val)) stop("correction_val must be numeric!")
   if(correction_val <= 0) stop("correction_val must be positive!")
   
   # In addition, covmat must have several attributes holding the 
@@ -907,7 +907,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   }
   
   # Furthermore, correction_limit must be a positive integer
-  if(class(correction_limit) != "numeric") stop("correction_limit must be numeric!")
+  if(!is.numeric(correction_limit)) stop("correction_limit must be numeric!")
   if(correction_limit <= 0) stop("Correction limit must be positive!")
   
   cat("Trying to correct the covariance matrix...\n")

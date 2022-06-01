@@ -102,12 +102,12 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   
   #Turning family and threshs into tibbles
   # if they are not of class tbl
-  if(!("tbl_df" %in% class(family))) family <- tibble::as_tibble(family)
-  if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
+  if(!tibble::is_tibble(family))  family <- tibble::as_tibble(family)
+  if(!tibble::is_tibble(threshs)) threshs <- tibble::as_tibble(threshs)
   
   
   # Checking that the heritability is valid
-  if(class(h2)!= "numeric" && class(h2)!= "integer")stop("The heritability must be numeric!")
+  if(!is.numeric(h2) && !is.integer(h2) )stop("The heritability must be numeric!")
   if(h2<0)stop("The heritability must be non-negative!")
   if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
   
@@ -122,11 +122,11 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   if(any(!c("lower","upper") %in% colnames(threshs))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   
   # Checking that tol is valid
-  if(class(tol) != "numeric") stop("The tolerance must be numeric!")
+  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   
   # Checking that always_add is a vector of strings
-  if(class(always_add) != "character" & class(always_add) != "NULL" ) stop("always_add must be of class character!") 
+  if(!is.character(always_add) & !is.null(always_add)) stop("always_add must be of class character!") 
   always_add <- intersect(always_add, c("g","o"))
   # Checking that out is either a character vector or a
   # numeric vector 

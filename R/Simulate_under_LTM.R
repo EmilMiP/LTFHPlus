@@ -82,15 +82,15 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # Turning add_ind into class logical
   add_ind <- as.logical(add_ind)
   # Checking that the heritability is valid
-  if(class(h2) != "numeric" && class(h2) != "integer")stop("The heritability must be numeric!")
+  if(!is.numeric(h2))stop("The heritability must be numeric!")
   if(h2<0)stop("The heritability must be non-negative!")
   if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
   # Checking that n_sim is a number
-  if(class(n_sim) != "numeric") stop("The number of simulations n_sim must be numeric!")
+  if(!is.numeric(n_sim)) stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive
   if(n_sim <=0)stop("n_sim must be a positive number!")
   # Checking that pop_prev is valid
-  if(class(pop_prev) != "numeric") stop("The population prevalence pop_prev must be numeric!")
+  if(!is.numeric(pop_prev)) stop("The population prevalence pop_prev must be numeric!")
   if(pop_prev <=0 || pop_prev >=1) stop("The population prevalence pop_prev must be positive and at most 1!")
 
   # Computing the covariance matrix.

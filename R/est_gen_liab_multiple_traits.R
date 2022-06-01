@@ -91,12 +91,12 @@ estimate_liability_multi <- function(family, threshs, h2s, corrmat, pid = "PID",
   fam_id <- as.character(fam_id)
   
   #Turning family and threshs into tibbles
-  if(!("tbl_df" %in% class(family))) family <- tibble::as_tibble(family)
-  if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
+  if(!tibble::is_tibble(family)) family <- tibble::as_tibble(family)
+  if(!tibble::is_tibble(threshs)) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
   if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(class(h2s)!= "numeric" && class(h2s)!= "integer")stop("The heritabilities must be numeric!")
+  if(!is.numeric(h2) && !is.integer(h2) )stop("The heritability must be numeric!")
   if(any(h2s<0))stop("The heritabilities must be non-negative!")
   if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
@@ -112,7 +112,7 @@ estimate_liability_multi <- function(family, threshs, h2s, corrmat, pid = "PID",
   # In addition, we check that threshs has columns named lower and upper
   if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   # Checking that tol is valid
-  if(class(tol) != "numeric" && class(tol) != "integer") stop("The tolerance must be numeric!")
+  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   # Checking that out is either a character vector or a
   # numeric vector 

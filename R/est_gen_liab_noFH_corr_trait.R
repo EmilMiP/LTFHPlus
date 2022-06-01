@@ -75,11 +75,11 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
   pid <- as.character(pid)
   
   # Turning threshs into a 
-  if(!("tbl_df" %in% class(status))) status <- tibble::as_tibble(status)
+  if(!tibble::is_tibble(status)) status <- tibble::as_tibble(status)
   
   # Checking that the heritability is valid
   if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(class(h2s)!= "numeric" && class(h2s)!= "integer")stop("The heritabilities must be numeric!")
+  if(!is.numeric(h2) && !is.integer(h2) )stop("The heritability must be numeric!")
   if(any(h2s<0))stop("The heritabilities must be non-negative!")
   if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
@@ -89,7 +89,7 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
   if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
   # Checking that all prevalences are valid
   if(is.null(prevalences)) stop("The prevalences must be specified!")
-  if(class(prevalences)!= "numeric" && class(prevalences)!= "integer")stop("The prevalences must be numeric!")
+  if(!is.numeric(prevalences)) stop("The tolerance must be numeric!")
   if(any(prevalences<0))stop("The prevalences must be non-negative!")
   if(any(prevalences>1))stop("The prevalences must be smaller than or equal to 1!")
 
@@ -97,7 +97,7 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
   if(!(pid %in% colnames(status))) stop(paste0("The column ", pid," does not exist in the tibble status"))
   
   # Checking that tol is valid
-  if(class(tol) != "numeric" && class(tol) != "integer") stop("The tolerance must be numeric!")
+  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   # Checking that out is either a character vector or a
   # numeric vector 
