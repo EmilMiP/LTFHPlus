@@ -58,7 +58,7 @@
 rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (lower == upper), out = c(1), burn_in = 1000) {
   
   # Checking that n_sim is a number
-  if(class(n_sim) != "numeric" && class(n_sim) != "integer") stop("The number of simulations n_sim must be numeric!")
+  if(!is.numeric(n_sim)) stop("The number of simulations n_sim must be numeric!")
   # Checking that n_sim is strictly positive
   if(n_sim <=0)stop("n_sim must be a positive number!")
   # Checking that covmat is symmetric
@@ -66,8 +66,8 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   # and numeric
   if(!is.numeric(covmat)) stop("The covariance matrix covmat must be numeric!")
   # Checking that the lower and upper cutoff points are valid
-  if(class(lower) != "numeric") stop("The lower cutoff point(s) must be numeric!")
-  if(class(upper) != "numeric") stop("The upper cutoff point(s) must be numeric!")
+  if(!is.numeric(lower)) stop("The lower cutoff point(s) must be numeric!")
+  if(!is.numeric(upper)) stop("The upper cutoff point(s) must be numeric!")
   if(length(lower)!= length(upper)) stop("The lower and upper cutoff point(s) differ in length!")
   if(length(lower)!= 1 && length(lower)!= ncol(covmat)) stop("The length of the lower and upper cutoff point(s) must be 1 or equal to the dimension of the mutlivariable normal distribution!")
   if(any(upper < lower)){
@@ -85,7 +85,7 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   fixed <- as.logical(fixed)
   if(length(fixed) != 1 && length(fixed) != length(lower)) stop("fixed must be of length 1 or length(lower)!")
   # Checking whether out is valid
-  if(class(out) == "numeric" || class(out) == "integer"){
+  if(is.numeric(out)){
     
     out <- intersect(out, c(1:ncol(covmat)))
     
@@ -102,7 +102,7 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (
   # Sorting out
   out <- sort(out)
   # Checking that burn_in is valid
-  if(class(burn_in) != "numeric" && class(burn_in) != "integer") stop("burn_in must be numeric!")
+  if(!is.numeric(burn_in)) stop("burn_in must be numeric!")
   if(burn_in < 0) stop("burn_in must be non-negative!")
   if(burn_in == Inf) stop("burn_in must be finite!")
   
