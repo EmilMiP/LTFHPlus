@@ -29,8 +29,6 @@ devtools::install_github("EmilMiP/LTFHPlus")
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions)
 [![R-CMD-check](https://github.com/EmilMiP/LTFHPlus/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@
         <td><p>Estimating the genetic or full liability</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="helper-functions">Helper functions <a href="#helper-functions" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Collection of functions used as examples of how to include additional information</p>
+          <p class="section-desc"></p><p>Collection of functions used as examples of how to include additional information.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="convert_age_to_cir.html">convert_age_to_cir()</a></code> </p>
@@ -128,6 +128,55 @@ phenotypes</p></td>
           <p><code><a href="correct_positive_definite.html">correct_positive_definite()</a></code> </p>
         </td>
         <td><p>Positive definite matrices</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="legacy-internal-functions">Legacy &amp; internal functions <a href="#legacy-internal-functions" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="construct_aoo.html">construct_aoo()</a></code> </p>
+        </td>
+        <td><p>Constructing age of onset (aoo)</p></td>
+      </tr><tr><td>
+          <p><code><a href="construct_thresholds.html">construct_thresholds()</a></code> </p>
+        </td>
+        <td><p>Computing thresholds</p></td>
+      </tr><tr><td>
+          <p><code><a href="estimate_gen_liability.html">estimate_gen_liability()</a></code> </p>
+        </td>
+        <td><p>Estimate genetic liability based off of family history and prevalence information.</p></td>
+      </tr><tr><td>
+          <p><code><a href="estimate_gen_liability_ltfh.html">estimate_gen_liability_ltfh()</a></code> </p>
+        </td>
+        <td><p>Estimate genetic liability similar to LT-FH</p></td>
+      </tr><tr><td>
+          <p><code><a href="estimate_liability_multi.html">estimate_liability_multi()</a></code> </p>
+        </td>
+        <td><p>Estimating the genetic or full liability for multiple phenotypes
+FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
+<code>estimate_liability_multi</code> estimates the genetic component of the full
+liability and/or the full liability for a number of individuals based
+on their family history for a variable number of phenotypes.</p></td>
+      </tr><tr><td>
+          <p><code><a href="estimate_liability_prevalence.html">estimate_liability_prevalence()</a></code> </p>
+        </td>
+        <td><p>Estimating the genetic or full liability for multiple phenotypes
+using prevalence information</p></td>
+      </tr><tr><td>
+          <p><code><a href="generate_cov_matrix_noFH.html">generate_cov_matrix_noFH()</a></code> </p>
+        </td>
+        <td><p>Constructs the covariance matrix for LT-FH without Family History, and correlated traits</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_between_trait_cov.html">get_between_trait_cov()</a></code> </p>
+        </td>
+        <td><p>Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_cov.html">get_cov()</a></code> </p>
+        </td>
+        <td><p>Creates the covariance matrix needed for LT-FH++</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_full_cov.html">get_full_cov()</a></code> </p>
+        </td>
+        <td><p>Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

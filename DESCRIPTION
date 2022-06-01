@@ -26,15 +26,14 @@ Imports:
     tibble,
     tidyselect,
     tmvtnorm,
-    knitr,
     utils
 Suggests:
     tidyr,
     MASS,
+    knitr,
     rmarkdown,
     testthat
 LinkingTo: Rcpp
-VignetteBuilder: knitr, rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
