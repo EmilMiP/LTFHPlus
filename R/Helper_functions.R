@@ -512,7 +512,7 @@ convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, p
   }else{
     
     # Checking that the proportions of cases are valid
-    if(is.numeric(prop_cases)) stop("The proportion(s) of cases must be numeric!")
+    if(!is.numeric(prop_cases)) stop("The proportion(s) of cases must be numeric!")
     if(any(prop_cases<0))stop("The proportion(s) of cases must be non-negative!")
     if(any(prop_cases>1))stop("The proportion(s) of cases must be smaller than or equal to one!")
     
