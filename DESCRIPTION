@@ -29,6 +29,7 @@ Imports:
     utils
 Suggests:
     knitr,
+    tidyr,
     MASS,
     rmarkdown,
     testthat
