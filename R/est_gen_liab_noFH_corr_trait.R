@@ -79,7 +79,7 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
   
   # Checking that the heritability is valid
   if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(!is.numeric(h2) && !is.integer(h2) )stop("The heritability must be numeric!")
+  if(!is.numeric(h2s) && !is.integer(h2s) )stop("The heritability must be numeric!")
   if(any(h2s<0))stop("The heritabilities must be non-negative!")
   if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
   # Checking that all correlations are valid
