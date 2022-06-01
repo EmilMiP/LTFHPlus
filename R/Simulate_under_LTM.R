@@ -254,7 +254,7 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
 #' 
 #' @return A tibble holding the personal identifier (PID) as well as 
 #' the lower and the upper threshold for all individuals
-#' present in fem_mem.
+#' present in fam_mem.
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_rows ungroup
 construct_thresholds <- function(fam_mem, .tbl, pop_prev){
