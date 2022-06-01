@@ -30,7 +30,7 @@ estimate_gen_liability = function(h2,
   phen$post_gen_liab_se <- NA
   
   
-  # p <- progressr::progressor(along = 1:nrow(phen))
+
   
   
   ph = future.apply::future_lapply(X = 1:nrow(phen), FUN = function(i){
@@ -61,9 +61,7 @@ estimate_gen_liability = function(h2,
       se = batchmeans::bm(unlist(vals))$se
       vals.ctr =  vals.ctr + 1
     }
-    #calculate the final values
-    # p(sprintf("%g", i))
-    
+
     batchmeans::bm(unlist(vals))
   }, future.seed = TRUE)
   

@@ -42,8 +42,6 @@
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
-#' @param progress  A logical scalar indicating whether the function should display a progress bar.
-#' Defaults to FALSE.
 #' 
 #' @return If \code{status} is a matrix, list or data frame that can be converted into a
 #' tibble and that has a column named \code{PID} and if the heritabilities, corrmat, 
@@ -68,12 +66,11 @@
 #' 
 #' @export
 estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid = "PID", out = c(1), tol = 0.01, 
-                                         parallel = FALSE, progress = FALSE){
+                                         parallel = FALSE){
   
-  # Turning parallel and progress into class logical
+  # Turning parallel into class logical
   parallel <- as.logical(parallel)
-  progress <- as.logical(progress)
-  
+
   # Turning pid into a string
   pid <- as.character(pid)
   
@@ -168,11 +165,7 @@ Does all columns have the required names?")
     }
   }
 
-  # If progress = TRUE, a progress bar will be displayed
-  if(progress){
-    
-    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-  }
+
   
   if(parallel){
     
@@ -282,17 +275,10 @@ Does all columns have the required names?")
       # standard error can be returned
       return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
       
-      # If progress = TRUE, a progress bar will be displayed
-      if(progress){
-        utils::setTxtProgressBar(pb, i)
-      }
     })
   }
   
-  if(progress){
-    close(pb) # Close the connection
-  }
-  
+
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information

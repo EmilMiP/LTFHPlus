@@ -57,8 +57,6 @@
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
-#' @param progress  A logical scalar indicating whether the function should display a progress bar.
-#' Defaults to FALSE.
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
@@ -84,11 +82,10 @@
 #' 
 #' @export
 estimate_liability_multi <- function(family, threshs, h2s, corrmat, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
-                                     parallel = FALSE, progress = FALSE){
-  # Turning parallel and progress into class logical
+                                     parallel = FALSE){
+  # Turning parallel into class logical
   parallel <- as.logical(parallel)
-  progress <- as.logical(progress)
-  
+
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
   fam_id <- as.character(fam_id)
@@ -206,12 +203,7 @@ The lower and upper thresholds will be swapped...")
   # Extracting the families
   fam_list <- pull(family, !!as.symbol(pid))
   
-  # If progress = TRUE, a progress bar will be displayed
-  if(progress){
-    
-    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-  }
-  
+
   
   if(parallel){
     
@@ -372,17 +364,10 @@ The lower and upper thresholds will be swapped...")
       # standard error can be returned
       return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
       
-      # If progress = TRUE, a progress bar will be displayed
-      if(progress){
-        utils::setTxtProgressBar(pb, i)
-      }
     })
   }
   
-  if(progress){
-    close(pb) # Close the connection
-  }
-  
+
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information

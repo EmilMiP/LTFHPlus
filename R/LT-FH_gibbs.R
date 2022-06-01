@@ -52,11 +52,7 @@ estimate_gen_liability_ltfh = function(h2,
     dplyr::slice_head() %>%
     dplyr::ungroup() #extract each unique configuration present in the data.
   
-  progress_bar_n = 1:nrow(reduced)
-  pbn = 1
-  p <- progressr::progressor(along = progress_bar_n)
-  
-  
+
   reduced$post_gen_liab <- NA
   reduced$post_gen_liab_se <- NA
   

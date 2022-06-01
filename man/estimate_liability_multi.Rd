@@ -17,8 +17,7 @@ estimate_liability_multi(
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
-  parallel = FALSE,
-  progress = FALSE
+  parallel = FALSE
 )
 }
 \arguments{
@@ -82,9 +81,6 @@ standard error of the mean is below 0.2. Defaults to 0.01.}
 \item{parallel}{A logical scalar indicating whether computations should be performed parallel.
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
-
-\item{progress}{A logical scalar indicating whether the function should display a progress bar.
-Defaults to FALSE.}
 }
 \value{
 If family and threshs are two matrices, lists or data frames that can be converted into
