@@ -1,0 +1,12 @@
+pandoc: 2.14.2
+pkgdown: 2.0.3
+pkgdown_sha: ~
+articles:
+  LTFHPlus: LTFHPlus.html
+  LTFHPlusExample: LTFHPlusExample.html
+  inputFormatExample: inputFormatExample.html
+last_built: 2022-06-01T11:38Z
+urls:
+  reference: EmilMiP.github.io/LTFHPlus/reference
+  article: EmilMiP.github.io/LTFHPlus/articles
+
