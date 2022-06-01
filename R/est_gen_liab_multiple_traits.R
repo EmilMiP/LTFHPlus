@@ -116,11 +116,11 @@ estimate_liability_multi <- function(family, threshs, h2s, corrmat, pid = "PID",
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   # Checking that out is either a character vector or a
   # numeric vector 
-  if(class(out) == "numeric"){
+  if(is.numeric(out)){
     
     out <- intersect(out, c(1,2))
     
-  }else if(class(out) == "character"){
+  }else if(is.character(out)){
     
     out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
     out[out == "genetic"] <- 1

@@ -130,11 +130,11 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   always_add <- intersect(always_add, c("g","o"))
   # Checking that out is either a character vector or a
   # numeric vector 
-  if(class(out) == "numeric"){
+  if(is.numeric(out)){
     
     out <- intersect(out, c(1,2))
     
-  }else if(class(out) == "character"){
+  }else if(is.character(out)){
     
     out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
     out[out == "genetic"] <- 1

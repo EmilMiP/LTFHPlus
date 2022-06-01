@@ -1,8 +1,8 @@
 Package: LTFHPlus
 Type: Package
 Title: Implementation of 'LT-FH++'
-Version: 2.0
-Date: 2022-03-10
+Version: 2.0.1
+Date: 2022-06-1
 Authors@R: c(
     person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
     person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
@@ -24,7 +24,6 @@ Imports:
     rlang,
     stringr,
     tibble,
-    tidyr,
     tidyselect,
     tmvtnorm,
     utils
