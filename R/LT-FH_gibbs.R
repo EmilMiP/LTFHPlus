@@ -123,8 +123,6 @@ estimate_gen_liability_ltfh = function(h2,
       reduced_max_1_sibling$post_gen_liab[i]    = est$est
       reduced_max_1_sibling$post_gen_liab_se[i] = est$se
       
-      p(sprintf("%g", pbn))
-      pbn = pbn + 1
     }
   }
 
@@ -264,8 +262,6 @@ estimate_gen_liability_ltfh = function(h2,
         dplyr::summarise(grp_se  = mean(post_gen_liab_se), .groups = "drop") %>%
         dplyr::pull(grp_se)
       
-      p(sprintf("%g", pbn))
-      pbn = pbn + 1
     }
     #Final estimate is genetic liability times probability.
     reduced_atleast_2_siblings = reduced_atleast_2_siblings %>% 
