@@ -25,10 +25,10 @@ Imports:
     stringr,
     tibble,
     tidyselect,
-    tmvtnorm,
     utils
 Suggests:
     tidyr,
+    tmvtnorm,
     MASS,
     knitr,
     rmarkdown,
