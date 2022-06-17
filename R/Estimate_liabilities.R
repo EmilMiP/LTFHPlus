@@ -22,9 +22,12 @@ utils::globalVariables("upper")
 #' - f (Father)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
+#' - mgp\[1-2\]* (Maternal grandparent)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
+#' - pgp\[1-2\]* (Paternal grandparent)
 #' - s\[0-9\]* (Full siblings)
+#' - c\[0-9\]* (children)
 #' - mhs\[0-9\]* (Half-siblings - maternal side)
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
@@ -86,7 +89,8 @@ utils::globalVariables("upper")
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols select
+#' @importFrom dplyr %>% pull bind_rows bind_cols select filter
+#' @importFrom stringr str_ends str_split str_subset
 #' @importFrom rlang :=
 #' 
 #' @export
@@ -178,32 +182,37 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
-  gibbs_res <- future.apply::future_lapply(X= 1:nrow(family), FUN = function(i){
+  gibbs_res <- future.apply::future_lapply(X = 1:nrow(family), FUN = function(i){
     # Extract family members
-    fam <- unlist(fam_list[i])
+    fam <- fam_list[[i]]
     # Remove individual o and/or g from the set (if present)
-    full_fam <- setdiff(gsub(paste0("^.*_"), "", fam), c("g","o"))
+    full_fam <- setdiff(gsub("^.*_", "", fam), c("g","o"))
+    # split on last occurrence of "_" and extract ID of family member
+    tmp_split <- str_split(fam, "_\\s*(?=[^_]+$)")
+    family_ids <- sapply(tmp_split, function(x) x[1])
+    always_add_inds <- sapply(tmp_split, function(x) str_ends(x[2], "o") | str_ends(x[2], "g")) 
     # Constructing the covariance matrix
     # If always_add holds "g" or "o", add_ind must be TRUE
     cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), h2 = h2)
     
-    # Extracting the thresholds for all family members 
-    fam_threshs = threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(fam_id))), ]
-    # Adding the individuals present in always_add
-    thr <- threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(fam_id))), ]
     
-    if(nrow(thr) == 2){
-      
+    # Extracting the thresholds for all family members 
+    fam_threshs = threshs %>% filter(!!as.symbol(fam_id) %in% family_ids[!always_add_inds])
+    #threshs[match(fam[!(str_detect(fam, "^.*_g$") | str_detect(fam, "^.*_o$"))], pull(threshs,!!as.symbol(fam_id))), ]
+    # Adding the individuals present in always_add
+    thr <- threshs %>% filter(!!as.symbol(fam_id) %in% family_ids[always_add_inds])
+    #threshs[match(fam[str_detect(fam, paste0("^.*_[", paste(always_add, collapse = "") , "]"))], pull(threshs,!!as.symbol(fam_id))), ]
+    
+    if (nrow(thr) == 2) {
       fam_threshs <- bind_rows(thr, fam_threshs)
-    }else if(nrow(thr) == 0){
-      
+    } else if (nrow(thr) == 0) {
       fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(fam_id) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
                                fam_threshs)
-    }else if(str_detect(pull(thr,!!as.symbol(fam_id)),"^.*_g$")){
+    } else if (any(str_ends(pull(thr,!!as.symbol(fam_id)) %>% str_subset(fam, .),"_g"))) {
       
-      fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(fam_id) := "o", lower = -Inf, upper =Inf),
+      fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(fam_id) := "o", lower = -Inf, upper = Inf),
                                fam_threshs)
-    }else if(str_detect(pull(thr,!!as.symbol(fam_id)),"^.*_o$")){
+    } else if (any(str_ends(pull(thr,!!as.symbol(fam_id)) %>% str_subset(fam, .),"_o"))){
       
       fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(fam_id) := "g", lower = -Inf, upper = Inf, .before = 1),
                                fam_threshs)
