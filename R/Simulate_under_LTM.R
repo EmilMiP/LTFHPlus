@@ -6,6 +6,8 @@ utils::globalVariables("max_age")
 utils::globalVariables("m_max_age")
 utils::globalVariables("p_max_age")
 utils::globalVariables("indiv_ID")
+utils::globalVariables("tmp_names")
+
 #' Simulate under the liability threshold model.
 #'
 #' \code{simulate_under_LTM} simulates thresholds under
@@ -19,9 +21,12 @@ utils::globalVariables("indiv_ID")
 #' - f (Father)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
+#' - mgp\[1-2\]* (Maternal grandparent)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
+#' - pgp\[1-2\]* (Paternal grandparent)
 #' - s\[0-9\]* (Full siblings)
+#' - c\[0-9\]* (children)
 #' - mhs\[0-9\]* (Half-siblings - maternal side)
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
@@ -129,6 +134,11 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
                                 .fns = ~sample(10:40, size = n(), replace = TRUE),
                                 .names = "{.col}_age"))
   
+  liabs <- mutate(liabs, across(.cols = c(tidyselect::matches("^c[0-9]*$")), 
+                                .fns = ~ pmax(o_age - sample(10:20, size = n(), replace = TRUE), 0), # pmax to avoid negative ages.
+                                .names = "{.col}_age"))
+  
+  
   # In order for the parents to have a reasonable age,
   # their age depends on the age of their oldest child,
   # if children are available.
@@ -171,12 +181,12 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   }
    
   liabs <- liabs %>%
-    dplyr::mutate(., across(.cols = c(tidyselect::matches("^mg[mf]$")), 
+    dplyr::mutate(., across(.cols = c(tidyselect::matches("^[pm]g[mf]$")), 
                      .fns = ~sample(15:30, size = n(), replace = TRUE) + m_max_age,
                      .names = "{.col}_age")) %>%
-    dplyr::mutate(., across(.cols = c(tidyselect::matches("^pg[mf]$")), 
-                     .fns = ~sample(15:30, size = n(), replace = TRUE) + p_max_age,
-                     .names = "{.col}_age")) %>%
+    dplyr::mutate(., across(.cols = c(tidyselect::matches("^[pm]gp[0-9]*")), 
+                            .fns = ~sample(15:30, size = n(), replace = TRUE) + p_max_age,
+                            .names = "{.col}_age")) %>%
     dplyr::select(., -c(max_age, m_max_age, p_max_age))
   
   # Adding age of onset for all individuals having the disease
@@ -189,7 +199,8 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   # family members in each family.
   fam_ID <- dplyr::select(liabs, indiv_ID) %>% 
     mutate(., fam_ID = lapply(indiv_ID, function(i){
-      paste0(i,"_", setdiff(colnames(covmat),c("g")))
+      tmp_names = setdiff(colnames(covmat),c("g"))
+      paste0(i,"_member", seq_along(tmp_names),"_", tmp_names)
     }))
   
   return(list(sim_obs = liabs, 
@@ -264,13 +275,14 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev){
   i_ind <- setdiff(fam_mem, c("g"))
   
   # Looping over all family members ind i_ind
-  lapply(i_ind, function(i){
-    
+  lapply(seq_along(i_ind), function(nbr){
+    i = i_ind[nbr]
+
     # Selecting the family ID, disease status and age/aoo for 
     # individual i, in order to compute the thresholds.
     select(.tbl, c(tidyselect::matches(paste0("^indiv_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
       rowwise() %>% 
-      mutate(., fam_ID = paste0(indiv_ID,"_",i), 
+      mutate(., fam_ID = paste0(indiv_ID,"_member", nbr), 
              upper = convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
              lower = ifelse(!!as.symbol(paste0(i,"_status")), 
                             convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
