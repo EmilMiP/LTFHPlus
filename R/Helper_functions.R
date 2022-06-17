@@ -487,7 +487,6 @@ The upper and lower cutoff points will be swapped...")
 #' 
 #' @export
 convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, prop_cases = 0.5){
-  
   # Checking that the observed heritabilities are valid
   if(!is.numeric(obs_h2)) stop("The observed heritability(ies) must be numeric!")
   if(any(obs_h2<0))stop("The observed heritability(ies) must be non-negative!")
@@ -496,6 +495,11 @@ convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, p
   if(!is.numeric(pop_prev))stop("The population prevalence(s) must be numeric!")
   if(any(pop_prev<0))stop("The population prevalence(s) must be non-negative!")
   if(any(pop_prev>1))stop("The population prevalence(s) must be smaller than or equal to one!")
+  
+  # # allowing pop_prev and prop_cases to be NA too, and converting them to NULL
+  # pop_prev   = if(is.na(pop_prev))   pop_prev   = NULL
+  # prop_cases = if(is.na(prop_cases)) prop_cases = NULL
+  
   
   # Defining the variable z, which is the height of the truncated
   # normal curve at the point t, and where t is the truncated point,
