@@ -41,6 +41,7 @@ reference:
     - get_between_trait_cov
     - get_cov
     - get_full_cov
+    - check_family_role
 template:
   params:
     bootswatch: darkly
