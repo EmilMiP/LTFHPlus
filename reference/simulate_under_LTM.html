@@ -19,7 +19,7 @@ structure."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -89,37 +89,53 @@ following list:</p><ul><li><p>m (Mother)</p></li>
 <li><p>f (Father)</p></li>
 <li><p>mgm (Maternal grandmother)</p></li>
 <li><p>mgf (Maternal grandfather)</p></li>
+<li><p>mgp[1-2]* (Maternal grandparent)</p></li>
 <li><p>pgm (Paternal grandmother)</p></li>
 <li><p>pgf (Paternal grandfather)</p></li>
+<li><p>pgp[1-2]* (Paternal grandparent)</p></li>
 <li><p>s[0-9]* (Full siblings)</p></li>
+<li><p>c[0-9]* (children)</p></li>
 <li><p>mhs[0-9]* (Half-siblings - maternal side)</p></li>
 <li><p>phs[0-9]* (Half-siblings - paternal side)</p></li>
 <li><p>mau[0-9]* (Aunts/Uncles - maternal side)</p></li>
 <li><p>pau[0-9]* (Aunts/Uncles - paternal side).
 Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").</p></li>
 </ul></dd>
+
+
 <dt>n_fam</dt>
 <dd><p>A named vector holding the desired number of family members.
 All names must be picked from the list mentioned above. Defaults to NULL.</p></dd>
+
+
 <dt>add_ind</dt>
 <dd><p>A logical scalar indicating whether the genetic
 component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.</p></dd>
+
+
 <dt>h2</dt>
 <dd><p>A number representing the heritability on liability scale
 for a single phenotype. Must be non-negative. Note that under the liability threshold model,
 the heritability must also be at most 1.
 Defaults to 0.5.</p></dd>
+
+
 <dt>n_sim</dt>
 <dd><p>A positive number representing the number of simulations. Defaults to 1000.</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>A positive number representing the population prevalence, i.e. the
 overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If either fam_vec or n_fam is used as the argument, if it is of the required format,
+    
+
+<p>If either fam_vec or n_fam is used as the argument, if it is of the required format,
 if h2 is a number satisfying 0 &lt;= h2, n_sim is a strictly positive number,
 and pop_prev is a positive number that is at most one,
 then the output will be a list containing three tibbles. The first tibble, <code>sim_obs</code>,
@@ -145,39 +161,39 @@ of the two vectors to use.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">simulate_under_LTM</span><span class="op">(</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $sim_obs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,000 × 34</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID      g       o       m       f     s1     mgm     mgf     pgm    pgf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1       0.639  0.280  -<span style="color: #BB0000;">0.360</span>   0.170  -<span style="color: #BB0000;">0.771</span> -<span style="color: #BB0000;">0.351</span>  -<span style="color: #BB0000;">1.10</span>    0.071<span style="text-decoration: underline;">3</span>  0.521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2      -<span style="color: #BB0000;">0.642</span> -<span style="color: #BB0000;">1.39</span>   -<span style="color: #BB0000;">0.910</span>  -<span style="color: #BB0000;">1.24</span>    1.51   1.04   -<span style="color: #BB0000;">1.26</span>   -<span style="color: #BB0000;">0.367</span>  -<span style="color: #BB0000;">0.581</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3      -<span style="color: #BB0000;">0.839</span> -<span style="color: #BB0000;">0.809</span>  -<span style="color: #BB0000;">0.497</span>  -<span style="color: #BB0000;">0.698</span>  -<span style="color: #BB0000;">0.137</span> -<span style="color: #BB0000;">0.234</span>  -<span style="color: #BB0000;">0.080</span><span style="color: #BB0000; text-decoration: underline;">5</span>  0.036<span style="text-decoration: underline;">9</span> -<span style="color: #BB0000;">1.33</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       1.40   1.07    0.507   0.219  -<span style="color: #BB0000;">1.30</span>   0.188   1.63    2.79   -<span style="color: #BB0000;">0.552</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5       0.143 -<span style="color: #BB0000;">0.063</span><span style="color: #BB0000; text-decoration: underline;">8</span>  0.179  -<span style="color: #BB0000;">0.015</span><span style="color: #BB0000; text-decoration: underline;">4</span> -<span style="color: #BB0000;">0.613</span>  0.210   0.527   0.308  -<span style="color: #BB0000;">1.73</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6       0.517  0.619   0.030<span style="text-decoration: underline;">8</span> -<span style="color: #BB0000;">0.333</span>   0.388  0.397   0.809   1.20    0.530</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      -<span style="color: #BB0000;">0.626</span>  0.010<span style="text-decoration: underline;">1</span> -<span style="color: #BB0000;">1.75</span>   -<span style="color: #BB0000;">0.808</span>  -<span style="color: #BB0000;">3.02</span>   0.069<span style="text-decoration: underline;">2</span>  0.180   1.58    0.236</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      -<span style="color: #BB0000;">1.75</span>  -<span style="color: #BB0000;">1.01</span>   -<span style="color: #BB0000;">1.33</span>   -<span style="color: #BB0000;">1.69</span>   -<span style="color: #BB0000;">1.06</span>  -<span style="color: #BB0000;">0.885</span>   0.365   0.161   0.390</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      -<span style="color: #BB0000;">1.30</span>  -<span style="color: #BB0000;">1.82</span>    0.193   2.26   -<span style="color: #BB0000;">0.526</span> -<span style="color: #BB0000;">0.976</span>  -<span style="color: #BB0000;">1.58</span>    2.72    0.492</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     -<span style="color: #BB0000;">0.157</span>  0.248   1.19   -<span style="color: #BB0000;">0.100</span>  -<span style="color: #BB0000;">0.336</span>  0.993  -<span style="color: #BB0000;">0.812</span>  -<span style="color: #BB0000;">0.303</span>   0.346</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 990 more rows, and 24 more variables: o_status &lt;lgl&gt;, m_status &lt;lgl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   f_status &lt;lgl&gt;, s1_status &lt;lgl&gt;, mgm_status &lt;lgl&gt;, mgf_status &lt;lgl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   pgm_status &lt;lgl&gt;, pgf_status &lt;lgl&gt;, o_age &lt;int&gt;, s1_age &lt;int&gt;, m_age &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   f_age &lt;int&gt;, mgm_age &lt;int&gt;, mgf_age &lt;int&gt;, pgm_age &lt;dbl&gt;, pgf_age &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;, s1_aoo &lt;dbl&gt;, mgm_aoo &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   mgf_aoo &lt;dbl&gt;, pgm_aoo &lt;dbl&gt;, pgf_aoo &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID      g       o       m       f     s1     mgm      mgf    pgm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1      -<span style="color: #BB0000;">0.358</span> -<span style="color: #BB0000;">0.784</span>  -<span style="color: #BB0000;">0.603</span>  -<span style="color: #BB0000;">0.121</span>  -<span style="color: #BB0000;">1.79</span>  -<span style="color: #BB0000;">1.48</span>   -<span style="color: #BB0000;">0.629</span>    0.845</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2       0.289 -<span style="color: #BB0000;">0.193</span>  -<span style="color: #BB0000;">0.134</span>   1.05    1.12   0.169  -<span style="color: #BB0000;">0.137</span>    1.90 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3      -<span style="color: #BB0000;">0.647</span>  0.039<span style="text-decoration: underline;">1</span> -<span style="color: #BB0000;">0.094</span><span style="color: #BB0000; text-decoration: underline;">0</span> -<span style="color: #BB0000;">0.349</span>  -<span style="color: #BB0000;">0.314</span>  0.764   0.176   -<span style="color: #BB0000;">1.70</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       0.480  1.04    0.974   0.603  -<span style="color: #BB0000;">1.52</span>  -<span style="color: #BB0000;">0.031</span><span style="color: #BB0000; text-decoration: underline;">4</span> -<span style="color: #BB0000;">1.55</span>     1.15 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      -<span style="color: #BB0000;">0.658</span> -<span style="color: #BB0000;">0.343</span>  -<span style="color: #BB0000;">0.576</span>  -<span style="color: #BB0000;">1.95</span>   -<span style="color: #BB0000;">1.18</span>  -<span style="color: #BB0000;">0.559</span>  -<span style="color: #BB0000;">0.613</span>   -<span style="color: #BB0000;">1.91</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6      -<span style="color: #BB0000;">0.937</span> -<span style="color: #BB0000;">1.28</span>    0.139  -<span style="color: #BB0000;">0.185</span>  -<span style="color: #BB0000;">0.535</span> -<span style="color: #BB0000;">1.86</span>   -<span style="color: #BB0000;">0.199</span>   -<span style="color: #BB0000;">0.195</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7       0.555  1.31    0.300  -<span style="color: #BB0000;">0.974</span>  -<span style="color: #BB0000;">0.546</span> -<span style="color: #BB0000;">1.19</span>    0.018<span style="text-decoration: underline;">0</span>   0.351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      -<span style="color: #BB0000;">0.255</span> -<span style="color: #BB0000;">0.615</span>  -<span style="color: #BB0000;">2.37</span>    1.08   -<span style="color: #BB0000;">0.484</span>  1.06   -<span style="color: #BB0000;">1.07</span>    -<span style="color: #BB0000;">1.02</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      -<span style="color: #BB0000;">0.608</span> -<span style="color: #BB0000;">0.524</span>   0.980  -<span style="color: #BB0000;">0.045</span><span style="color: #BB0000; text-decoration: underline;">0</span>  0.992  1.38    0.597   -<span style="color: #BB0000;">0.393</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     -<span style="color: #BB0000;">0.407</span>  0.179  -<span style="color: #BB0000;">0.373</span>  -<span style="color: #BB0000;">0.307</span>  -<span style="color: #BB0000;">1.96</span>  -<span style="color: #BB0000;">0.511</span>   0.001<span style="text-decoration: underline;">60</span>  0.314</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 990 more rows, and 25 more variables: pgf &lt;dbl&gt;, o_status &lt;lgl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   m_status &lt;lgl&gt;, f_status &lt;lgl&gt;, s1_status &lt;lgl&gt;, mgm_status &lt;lgl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   mgf_status &lt;lgl&gt;, pgm_status &lt;lgl&gt;, pgf_status &lt;lgl&gt;, o_age &lt;int&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   s1_age &lt;int&gt;, m_age &lt;int&gt;, f_age &lt;int&gt;, mgm_age &lt;int&gt;, mgf_age &lt;int&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   pgm_age &lt;int&gt;, pgf_age &lt;int&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   s1_aoo &lt;dbl&gt;, mgm_aoo &lt;dbl&gt;, mgf_aoo &lt;dbl&gt;, pgm_aoo &lt;dbl&gt;, pgf_aoo &lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $thresholds</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8,000 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID lower upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_o   -<span style="color: #BB0000;">Inf</span>  2.87</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_o   -<span style="color: #BB0000;">Inf</span>  2.76</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_o   -<span style="color: #BB0000;">Inf</span>  3.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_o   -<span style="color: #BB0000;">Inf</span>  2.72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_o   -<span style="color: #BB0000;">Inf</span>  3.42</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_o   -<span style="color: #BB0000;">Inf</span>  2.99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_o   -<span style="color: #BB0000;">Inf</span>  3.48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_o   -<span style="color: #BB0000;">Inf</span>  2.79</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_o   -<span style="color: #BB0000;">Inf</span>  2.99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_o  -<span style="color: #BB0000;">Inf</span>  2.91</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID         lower upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_member1  -<span style="color: #BB0000;">Inf</span>     2.68</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_member1  -<span style="color: #BB0000;">Inf</span>     2.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_member1  -<span style="color: #BB0000;">Inf</span>     2.91</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_member1  -<span style="color: #BB0000;">Inf</span>     3.45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_member1  -<span style="color: #BB0000;">Inf</span>     2.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_member1  -<span style="color: #BB0000;">Inf</span>     2.91</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_member1     1.31  1.31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_member1  -<span style="color: #BB0000;">Inf</span>     2.79</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_member1  -<span style="color: #BB0000;">Inf</span>     3.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_member1 -<span style="color: #BB0000;">Inf</span>     3.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 7,990 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fam_ID</span>
@@ -198,97 +214,93 @@ of the two vectors to use.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span class="fu">simulate_under_LTM</span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="cn">NULL</span>, n_fam <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"mgm"</span>,<span class="st">"mgf"</span>,<span class="st">"s"</span>,<span class="st">"mhs"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $sim_obs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,000 × 34</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID        g        o       m      mgm     mgf     s1      s2   mhs1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1       0.251   -<span style="color: #BB0000;">0.208</span>   -<span style="color: #BB0000;">0.046</span><span style="color: #BB0000; text-decoration: underline;">6</span>  1.58    -<span style="color: #BB0000;">0.758</span>  -<span style="color: #BB0000;">0.752</span> -<span style="color: #BB0000;">0.450</span>  -<span style="color: #BB0000;">1.66</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2      -<span style="color: #BB0000;">0.292</span>    0.025<span style="text-decoration: underline;">3</span>   0.514  -<span style="color: #BB0000;">0.754</span>    0.632   2.76  -<span style="color: #BB0000;">0.949</span>   0.793</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3       0.002<span style="text-decoration: underline;">51</span>  0.009<span style="text-decoration: underline;">20</span>  0.473   0.141    0.992   0.517  1.19   -<span style="color: #BB0000;">0.492</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       0.108   -<span style="color: #BB0000;">0.681</span>   -<span style="color: #BB0000;">1.01</span>   -<span style="color: #BB0000;">0.073</span><span style="color: #BB0000; text-decoration: underline;">1</span>  -<span style="color: #BB0000;">2.96</span>   -<span style="color: #BB0000;">1.53</span>  -<span style="color: #BB0000;">0.037</span><span style="color: #BB0000; text-decoration: underline;">0</span>  0.992</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      -<span style="color: #BB0000;">0.221</span>   -<span style="color: #BB0000;">0.124</span>    1.09    0.188   -<span style="color: #BB0000;">0.326</span>   0.474  1.41    0.212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6      -<span style="color: #BB0000;">0.032</span><span style="color: #BB0000; text-decoration: underline;">9</span>  -<span style="color: #BB0000;">0.046</span><span style="color: #BB0000; text-decoration: underline;">1</span>   0.990  -<span style="color: #BB0000;">2.55</span>     0.678   0.851 -<span style="color: #BB0000;">1.50</span>   -<span style="color: #BB0000;">0.642</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      -<span style="color: #BB0000;">0.078</span><span style="color: #BB0000; text-decoration: underline;">2</span>   0.791   -<span style="color: #BB0000;">2.32</span>    0.004<span style="text-decoration: underline;">66</span> -<span style="color: #BB0000;">1.97</span>    0.532  0.223  -<span style="color: #BB0000;">2.09</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      -<span style="color: #BB0000;">0.297</span>    0.026<span style="text-decoration: underline;">6</span>   0.588   0.218   -<span style="color: #BB0000;">0.102</span>   0.419  1.56    1.08 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9       0.334    1.07     1.05    2.89     0.098<span style="text-decoration: underline;">6</span>  1.38   0.690  -<span style="color: #BB0000;">0.114</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10      0.093<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">0.236</span>   -<span style="color: #BB0000;">0.499</span>   0.035<span style="text-decoration: underline;">4</span>  -<span style="color: #BB0000;">0.877</span>  -<span style="color: #BB0000;">0.832</span> -<span style="color: #BB0000;">1.53</span>   -<span style="color: #BB0000;">1.04</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 990 more rows, and 25 more variables: mhs2 &lt;dbl&gt;, o_status &lt;lgl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   m_status &lt;lgl&gt;, mgm_status &lt;lgl&gt;, mgf_status &lt;lgl&gt;, s1_status &lt;lgl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   s2_status &lt;lgl&gt;, mhs1_status &lt;lgl&gt;, mhs2_status &lt;lgl&gt;, o_age &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   s1_age &lt;int&gt;, s2_age &lt;int&gt;, mhs1_age &lt;int&gt;, mhs2_age &lt;int&gt;, m_age &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   mgm_age &lt;int&gt;, mgf_age &lt;int&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, mgm_aoo &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   mgf_aoo &lt;dbl&gt;, s1_aoo &lt;dbl&gt;, s2_aoo &lt;dbl&gt;, mhs1_aoo &lt;dbl&gt;, mhs2_aoo &lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $thresholds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8,000 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID lower upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_o   -<span style="color: #BB0000;">Inf</span>  2.91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_o   -<span style="color: #BB0000;">Inf</span>  2.59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_o   -<span style="color: #BB0000;">Inf</span>  2.72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_o   -<span style="color: #BB0000;">Inf</span>  2.72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_o   -<span style="color: #BB0000;">Inf</span>  3.17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_o   -<span style="color: #BB0000;">Inf</span>  3.28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_o   -<span style="color: #BB0000;">Inf</span>  3.35</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_o   -<span style="color: #BB0000;">Inf</span>  2.59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_o   -<span style="color: #BB0000;">Inf</span>  3.52</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_o  -<span style="color: #BB0000;">Inf</span>  3.14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 7,990 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $fam_ID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,000 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID fam_ID   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     <span style="color: #949494;">&lt;chr [8]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 990 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">simulate_under_LTM</span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span>,<span class="st">"s1"</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">FALSE</span>, </span>
-<span class="r-in">h2 <span class="op">=</span> <span class="fl">0.5</span>, n_sim <span class="op">=</span> <span class="fl">500</span>, pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mutate(., fam_ID = paste0(indiv_ID, "_", i), upper = convert_age_to_thresh(!!as.symbol(paste0(i,     "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60,     slope = 1/8), lower = ifelse(!!as.symbol(paste0(i, "_status")),     convert_age_to_thresh(!!as.symbol(paste0(i, "_aoo")), dist = "logistic",         pop_prev = pop_prev, mid_point = 60, slope = 1/8), -Inf)):</span> Problem while computing `upper = convert_age_to_thresh(...)`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The error occurred in row 294.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mutate(., fam_ID = paste0(indiv_ID, "_member", nbr), upper = convert_age_to_thresh(!!as.symbol(paste0(i,     "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60,     slope = 1/8), lower = ifelse(!!as.symbol(paste0(i, "_status")),     convert_age_to_thresh(!!as.symbol(paste0(i, "_aoo")), dist = "logistic",         pop_prev = pop_prev, mid_point = 60, slope = 1/8), -Inf)):</span> Problem while computing `upper = convert_age_to_thresh(...)`.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The error occurred in row 23.</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `convert_age_to_thresh()`:</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> The age must be non-negative!</span>
+<span class="r-in"><span class="fu">simulate_under_LTM</span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span>,<span class="st">"s1"</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span class="r-in">h2 <span class="op">=</span> <span class="fl">0.5</span>, n_sim <span class="op">=</span> <span class="fl">500</span>, pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $sim_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 500 × 13</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID      m       f      s1 m_status f_status s1_status s1_age m_age</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1      -<span style="color: #BB0000;">0.759</span>  0.878  -<span style="color: #BB0000;">0.095</span><span style="color: #BB0000; text-decoration: underline;">5</span> FALSE    FALSE    FALSE         33    51</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2       0.744 -<span style="color: #BB0000;">0.167</span>   0.013<span style="text-decoration: underline;">9</span> FALSE    FALSE    FALSE         17    44</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3       0.248 -<span style="color: #BB0000;">1.61</span>    0.073<span style="text-decoration: underline;">5</span> FALSE    FALSE    FALSE         25    54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       1.25  -<span style="color: #BB0000;">1.46</span>    0.035<span style="text-decoration: underline;">2</span> FALSE    FALSE    FALSE         31    49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5       2.00  -<span style="color: #BB0000;">0.051</span><span style="color: #BB0000; text-decoration: underline;">2</span>  0.078<span style="text-decoration: underline;">2</span> TRUE     FALSE    FALSE         33    62</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6      -<span style="color: #BB0000;">1.17</span>  -<span style="color: #BB0000;">1.52</span>   -<span style="color: #BB0000;">0.223</span>  FALSE    FALSE    FALSE         11    35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      -<span style="color: #BB0000;">0.928</span>  0.219  -<span style="color: #BB0000;">1.42</span>   FALSE    FALSE    FALSE         30    53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8       1.20  -<span style="color: #BB0000;">0.594</span>  -<span style="color: #BB0000;">0.704</span>  FALSE    FALSE    FALSE         38    64</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      -<span style="color: #BB0000;">1.36</span>   0.919  -<span style="color: #BB0000;">0.736</span>  FALSE    FALSE    FALSE         13    37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10      0.499 -<span style="color: #BB0000;">0.824</span>   0.041<span style="text-decoration: underline;">1</span> FALSE    FALSE    FALSE         27    48</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 490 more rows, and 4 more variables: f_age &lt;int&gt;, m_aoo &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   f_aoo &lt;dbl&gt;, s1_aoo &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $thresholds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,500 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID         lower upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_member1  -<span style="color: #BB0000;">Inf</span>     2.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_member1  -<span style="color: #BB0000;">Inf</span>     2.51</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_member1  -<span style="color: #BB0000;">Inf</span>     2.14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_member1  -<span style="color: #BB0000;">Inf</span>     2.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_member1     1.99  1.99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_member1  -<span style="color: #BB0000;">Inf</span>     2.86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_member1  -<span style="color: #BB0000;">Inf</span>     2.18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_member1  -<span style="color: #BB0000;">Inf</span>     1.86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_member1  -<span style="color: #BB0000;">Inf</span>     2.79</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_member1 -<span style="color: #BB0000;">Inf</span>     2.36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 1,490 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fam_ID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 500 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID fam_ID   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     <span style="color: #949494;">&lt;chr [3]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 490 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span class="fu">simulate_under_LTM</span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, h2 <span class="op">=</span> <span class="fl">0.5</span>, </span>
 <span class="r-in">n_sim <span class="op">=</span> <span class="fl">200</span>, pop_prev <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $sim_obs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 200 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID      g      o o_status o_age o_aoo</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1      -<span style="color: #BB0000;">0.910</span> -<span style="color: #BB0000;">0.580</span> FALSE       38    38</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2      -<span style="color: #BB0000;">0.704</span> -<span style="color: #BB0000;">0.418</span> FALSE       12    12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3       1.18   2.44  TRUE        29    46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       0.274  1.03  FALSE       21    21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      -<span style="color: #BB0000;">0.908</span> -<span style="color: #BB0000;">0.796</span> FALSE       28    28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6       0.232  0.510 FALSE       16    16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7      -<span style="color: #BB0000;">0.106</span> -<span style="color: #BB0000;">0.645</span> FALSE       13    13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8       0.279  1.22  FALSE       19    19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9       0.607  1.09  FALSE       40    40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     -<span style="color: #BB0000;">0.155</span> -<span style="color: #BB0000;">0.555</span> FALSE       15    15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    indiv_ID       g       o o_status o_age o_aoo</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1       0.723   1.00   FALSE       32    32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2       0.069<span style="text-decoration: underline;">6</span> -<span style="color: #BB0000;">0.908</span>  FALSE       16    16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3       1.08    0.926  FALSE       32    32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4       0.103  -<span style="color: #BB0000;">0.042</span><span style="color: #BB0000; text-decoration: underline;">4</span> FALSE       25    25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5      -<span style="color: #BB0000;">0.085</span><span style="color: #BB0000; text-decoration: underline;">8</span>  0.370  FALSE       29    29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6       0.843   1.52   FALSE       35    35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7       0.084<span style="text-decoration: underline;">7</span>  0.534  FALSE       25    25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8      -<span style="color: #BB0000;">1.37</span>   -<span style="color: #BB0000;">1.96</span>   FALSE       31    31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9      -<span style="color: #BB0000;">0.059</span><span style="color: #BB0000; text-decoration: underline;">7</span>  0.236  FALSE       24    24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10     -<span style="color: #BB0000;">0.842</span>  -<span style="color: #BB0000;">2.39</span>   FALSE       28    28</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 190 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $thresholds</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 200 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID   lower upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_o  -<span style="color: #BB0000;">Inf</span>     2.75</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_o  -<span style="color: #BB0000;">Inf</span>     3.67</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_o     2.44  2.44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_o  -<span style="color: #BB0000;">Inf</span>     3.37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_o  -<span style="color: #BB0000;">Inf</span>     3.12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_o  -<span style="color: #BB0000;">Inf</span>     3.54</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_o  -<span style="color: #BB0000;">Inf</span>     3.63</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_o  -<span style="color: #BB0000;">Inf</span>     3.44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_o  -<span style="color: #BB0000;">Inf</span>     2.67</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_o -<span style="color: #BB0000;">Inf</span>     3.57</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID       lower upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ID1_member1   -<span style="color: #BB0000;">Inf</span>  2.97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ID2_member1   -<span style="color: #BB0000;">Inf</span>  3.54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ID3_member1   -<span style="color: #BB0000;">Inf</span>  2.97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ID4_member1   -<span style="color: #BB0000;">Inf</span>  3.23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ID5_member1   -<span style="color: #BB0000;">Inf</span>  3.09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ID6_member1   -<span style="color: #BB0000;">Inf</span>  2.86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ID7_member1   -<span style="color: #BB0000;">Inf</span>  3.23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ID8_member1   -<span style="color: #BB0000;">Inf</span>  3.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ID9_member1   -<span style="color: #BB0000;">Inf</span>  3.26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ID10_member1  -<span style="color: #BB0000;">Inf</span>  3.12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 190 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fam_ID</span>
@@ -322,7 +334,7 @@ of the two vectors to use.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

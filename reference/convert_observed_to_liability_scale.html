@@ -18,7 +18,7 @@ observed scale to the heritability on the liability scale."><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -80,10 +80,14 @@ observed scale to the heritability on the liability scale.</p>
     <dl><dt>obs_h2</dt>
 <dd><p>A number or numeric vector representing the heritability(ies)
 on the observed scale. Must be non-negative and at most 1. Defaults to 0.5</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>A number or numeric vector representing the population prevalence(s). All
 entries must be non-negative and at most one.
 If it is a vector, it must have the same length as obs_h2. Defaults to 0.05.</p></dd>
+
+
 <dt>prop_cases</dt>
 <dd><p>Either NULL or a number or a numeric vector representing the proportion
 of cases in the sample. All entries must be non-negative and at most one.
@@ -113,6 +117,7 @@ all entries are at most one, while <code>prop_cases</code> is <code>NULL</code>,
 <code>convert_observed_to_liability_scale</code> returns a vector of the same
 length as obq_h2. Each entry holds to the heritability on the liability
 scale which was obtained from the corresponding entry in obs_h2 using Equation 17.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -161,7 +166,7 @@ of Human Genetics (Vol. 88, Issue 3, pp. 294-305). <a href="https://doi.org/10.1
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

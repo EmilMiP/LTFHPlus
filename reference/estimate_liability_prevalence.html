@@ -19,7 +19,7 @@ using prevalence information — estimate_liability_prevalence"><meta property="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -90,21 +90,31 @@ and the remaining holding the phenotype status for the first and second
 phenotype, respectively. It must be possible to tie each status variable
 to a specific phenotype uniquely. The function will use the column names to create
 phenotype names.</p></dd>
+
+
 <dt>h2s</dt>
 <dd><p>A numeric vector representing the heritability on liability scale
 for all phenotypes. All entries in h2 must be non-negative and at most 1.</p></dd>
+
+
 <dt>corrmat</dt>
 <dd><p>A numeric matrix holding the genetic correlation between the desired
 number of phenotypes as well as the full correlation.
 The full correlations must be given on the diagonal,
 while the off-diagonal entries must hold the correlation between phenotypes.
 All correlations must be between -1 and 1.</p></dd>
+
+
 <dt>prevalences</dt>
 <dd><p>A numeric, non-negative vector holding the prevalences.
 All prevalences must be at most one.</p></dd>
+
+
 <dt>pid</dt>
 <dd><p>A string holding the name of the column in <code>status</code> that hold
 the personal identifier. Defaults to "PID".</p></dd>
+
+
 <dt>out</dt>
 <dd><p>A character or numeric vector indicating whether the genetic component
 of the full liability, the full liability or both should be returned. If out = c(1) or
@@ -112,18 +122,25 @@ out = c("genetic"), the genetic liability is estimated and returned. If out = c(
 out = c("full"), the full liability is estimated and returned. If out = c(1,2) or
 out = c("genetic", "full"), both components are estimated and returned.
 Defaults to c(1).</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A number that is used as the convergence criterion for the Gibbs sampler.
 Equals the standard error of the mean. That is, a tolerance of 0.2 means that the
 standard error of the mean is below 0.2. Defaults to 0.01.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>A logical scalar indicating whether computations should be performed parallel.
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see <code><a href="https://future.apply.futureverse.org/reference/future_apply.html" class="external-link">future_apply</a></code>). Defaults to FALSE.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>status</code> is a matrix, list or data frame that can be converted into a
+    
+
+<p>If <code>status</code> is a matrix, list or data frame that can be converted into a
 tibble and that has a column named <code>PID</code> and if the heritabilities, corrmat,
 out and tol are of the required form, then the function returns a tibble with at least
 five columns (depending on the length of out).
@@ -167,7 +184,7 @@ phenotype can be obtained.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

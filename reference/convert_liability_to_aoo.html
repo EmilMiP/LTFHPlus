@@ -19,7 +19,7 @@ either the logistic function or the truncated normal distribution."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -88,39 +88,58 @@ either the logistic function or the truncated normal distribution.</p>
     <dl><dt>liability</dt>
 <dd><p>A number representing the individual's
 true underlying liability.</p></dd>
+
+
 <dt>dist</dt>
 <dd><p>A string indicating which distribution to use.
 If dist = "logistic", the logistic function will be used to
 compute the age of onset.
 If dist = "normal", the truncated normal distribution will be used instead.
 Defaults to "logistic".</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>Only necessary if dist = "logistic". A positive number representing the overall
 population prevalence. Must be at most 1. Defaults to 0.1.</p></dd>
+
+
 <dt>mid_point</dt>
 <dd><p>Only necessary if dist = "logistic". A positive number representing the mid point
 logistic function. Defaults to 60.</p></dd>
+
+
 <dt>slope</dt>
 <dd><p>Only necessary if dist = "logistic". A number holding the rate of increase.
 Defaults to 1/8.</p></dd>
+
+
 <dt>min_aoo</dt>
 <dd><p>Only necessary if dist = "normal". A positive number representing the individual's earliest age of onset.
 Defaults to 10.</p></dd>
+
+
 <dt>max_aoo</dt>
 <dd><p>Only necessary if dist = "normal". A positive number representing the individual's latest age of onset.
 Must be greater than min_aoo. Defaults to 90.</p></dd>
+
+
 <dt>lower</dt>
 <dd><p>Only necessary if dist = "normal". A number representing the lower cutoff point for the
 truncated normal distribution. Defaults to 1.645
 (stats::qnorm(0.05, lower.tail = F)).</p></dd>
+
+
 <dt>upper</dt>
 <dd><p>Only necessary if dist = "normal". A number representing the upper cutoff point of the
 truncated normal distribution. Must be greater or equal to lower.
 Defaults to Inf.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If liability is a number and all other necessary arguments are valid,
+    
+
+<p>If liability is a number and all other necessary arguments are valid,
 then <code>convert_liability_to_aoo</code> returns a positive number, which is equal to
 the age of onset.</p>
     </div>
@@ -157,7 +176,7 @@ under the truncated normal distribution.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

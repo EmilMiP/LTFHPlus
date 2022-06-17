@@ -26,7 +26,7 @@ full liability, the full liability or both for a variable number of traits."><!-
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -116,6 +116,8 @@ with _?, where ? is one of the following abbreviations</p><ul><li><p>g (Genetic 
 <li><p>pau[0-9]* (Aunts/Uncles - paternal side).
 See also <code><a href="construct_covmat.html">construct_covmat</a></code>.</p></li>
 </ul></dd>
+
+
 <dt>threshs</dt>
 <dd><p>A matrix, list or data frame that can be converted into a tibble.
 Must have at least five columns; one holding the personal identifier for all individuals,
@@ -124,21 +126,31 @@ phenotype, respectively. It must be possible to tie each pair of lower and upper
 to a specific phenotype uniquely. This is done easily by adding _name_of_phenotype to
 the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 thresholds corresponding to the first phenotype.</p></dd>
+
+
 <dt>h2s</dt>
 <dd><p>A numeric vector representing the heritability on liability scale
 for all phenotypes. All entries in h2s must be non-negative and at most 1.</p></dd>
+
+
 <dt>corrmat</dt>
 <dd><p>A numeric matrix holding the genetic correlation between the desired
 number of phenotypes as well as the full correlation.
 The full correlations must be given on the diagonal,
 while the off-diagonal entries must hold the correlation between phenotypes.
 All correlations must be between -1 and 1.</p></dd>
+
+
 <dt>pid</dt>
 <dd><p>A string holding the name of the column in <code>family</code> and
 <code>threshs</code> that hold the personal identifier(s). Defaults to "PID".</p></dd>
+
+
 <dt>fam_id</dt>
 <dd><p>A string holding the name of the column in <code>family</code> that
 holds the family identifier. Defaults to "fam_ID".</p></dd>
+
+
 <dt>out</dt>
 <dd><p>A character or numeric vector indicating whether the genetic component
 of the full liability, the full liability or both should be returned. If out = c(1) or
@@ -146,18 +158,25 @@ out = c("genetic"), the genetic liability is estimated and returned. If out = c(
 out = c("full"), the full liability is estimated and returned. If out = c(1,2) or
 out = c("genetic", "full"), both components are estimated and returned.
 Defaults to c(1).</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A number that is used as the convergence criterion for the Gibbs sampler.
 Equals the standard error of the mean. That is, a tolerance of 0.2 means that the
 standard error of the mean is below 0.2. Defaults to 0.01.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>A logical scalar indicating whether computations should be performed parallel.
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see <code><a href="https://future.apply.futureverse.org/reference/future_apply.html" class="external-link">future_apply</a></code>). Defaults to FALSE.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If family and threshs are two matrices, lists or data frames that can be converted into
+    
+
+<p>If family and threshs are two matrices, lists or data frames that can be converted into
 tibbles, if family has two columns named like the strings represented in pid and fam_id, if
 threshs has a column named like the string given in pid as well as a column named "lower" and
 a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
@@ -191,7 +210,7 @@ as well as the corresponding standard errors for the remaining phenotypes.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

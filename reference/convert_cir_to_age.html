@@ -18,7 +18,7 @@ from a person's cumulative incidence rate."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -76,20 +76,29 @@ from a person's cumulative incidence rate.</p>
     <dl><dt>cir</dt>
 <dd><p>A positive number representing the individual's cumulative
 incidence rate.</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>A positive number representing the overall
 population prevalence. Must be at most 1 and must be larger than
 cir. Defaults to 0.1.</p></dd>
+
+
 <dt>mid_point</dt>
 <dd><p>A positive number representing the mid point
 logistic function. Defaults to 60.</p></dd>
+
+
 <dt>slope</dt>
 <dd><p>A number holding the rate of increase.
 Defaults to 1/8.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If cir and mid_point are positive numbers, if pop_prev
+    
+
+<p>If cir and mid_point are positive numbers, if pop_prev
 is a positive number between 0 and 1 and if slope is a valid number,
 then <code>convert_cir_to_age</code> returns a number, which is equal to
 the current age.</p>
@@ -120,7 +129,7 @@ $$mid_point - log(pop_prev/cir - 1) * 1/slope$$</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -73,20 +73,33 @@
     <h2>Arguments</h2>
     <dl><dt>h2</dt>
 <dd><p>Liability scale heritability of the trait being analysed.</p></dd>
+
+
 <dt>phen</dt>
 <dd><p>tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.</p></dd>
+
+
 <dt>thr</dt>
 <dd><p>tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.</p></dd>
+
+
 <dt>ind</dt>
 <dd><p>Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.</p></dd>
+
+
 <dt>id_col</dt>
 <dd><p>Column name for IDs of family members.</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns the estimated genetic liabilities.</p>
+    
+
+<p>Returns the estimated genetic liabilities.</p>
     </div>
 
     <div id="ref-examples">
@@ -109,7 +122,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

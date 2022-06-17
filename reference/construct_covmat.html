@@ -22,7 +22,7 @@ construct_covmat_single and construct_covmat_multi."><!-- mathjax --><script src
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -94,28 +94,39 @@ following list:</p><ul><li><p>m (Mother)</p></li>
 <li><p>f (Father)</p></li>
 <li><p>mgm (Maternal grandmother)</p></li>
 <li><p>mgf (Maternal grandfather)</p></li>
+<li><p>mgp[1-2]* (Maternal grandparent)</p></li>
 <li><p>pgm (Paternal grandmother)</p></li>
 <li><p>pgf (Paternal grandfather)</p></li>
+<li><p>pgp[1-2]* (Paternal grandparent)</p></li>
 <li><p>s[0-9]* (Full siblings)</p></li>
+<li><p>c[0-9]* (children)</p></li>
 <li><p>mhs[0-9]* (Half-siblings - maternal side)</p></li>
 <li><p>phs[0-9]* (Half-siblings - paternal side)</p></li>
 <li><p>mau[0-9]* (Aunts/Uncles - maternal side)</p></li>
 <li><p>pau[0-9]* (Aunts/Uncles - paternal side).
 Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").</p></li>
 </ul></dd>
+
+
 <dt>n_fam</dt>
 <dd><p>A named vector holding the desired number of family members.
 All names must be picked from the list mentioned above. Defaults to NULL.</p></dd>
+
+
 <dt>add_ind</dt>
 <dd><p>A logical scalar indicating whether the genetic
 component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.</p></dd>
+
+
 <dt>h2</dt>
 <dd><p>Either a number representing the heritability
 on liability scale for one single phenotype or a numeric vector representing
 the heritabilities on liability scale for a positive number of phenotypes.
 All entries in h2 must be non-negative and at most 1.</p></dd>
+
+
 <dt>corrmat</dt>
 <dd><p>Either NULL or a numeric matrix holding the genetic correlation between the desired
 number of phenotypes as well as the full correlation.
@@ -123,22 +134,30 @@ The full correlations must be given on the diagonal,
 while the off-diagonal entries must hold the genetic correlations between phenotypes.
 All correlations must be between -1 and 1.
 Defaults to NULL.</p></dd>
+
+
 <dt>phen_names</dt>
 <dd><p>A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
 If it is not specified, the names will default to phenotype1, phenotype2, etc.
 Defaults to NULL.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If either fam_vec or n_fam is used as the argument, if it is of
+    
+
+<p>If either fam_vec or n_fam is used as the argument, if it is of
 the required format, if h2 is either a number or a numeric vector satisfying
 that all entries are non-negative and corrmat is a numeric matrix satisfying that all
 entries are between -1 and 1, then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the number of phenotypes times
 the length of fam_vec or n_fam (+ 2 if add_ind=T).
 If both fam_vec and n_fam are equal to c() or NULL, the function returns
-a \((2 \times number of phenotypes) \times (2 \times number of phenotypes)\)matrix holding only the correlation between the genetic component of the full
+a \((2 \times number of phenotypes) \times (2 \times number of phenotypes)\)</p>
+
+
+<p>matrix holding only the correlation between the genetic component of the full
 liability and the full liability for the underlying individual for all
 phenotypes. If both fam_vec and n_fam are specified, the user is asked to
 decide on which of the two vectors to use.
@@ -343,7 +362,7 @@ can be specified using one of two possible formats.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

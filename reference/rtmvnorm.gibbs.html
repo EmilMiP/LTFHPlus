@@ -18,7 +18,7 @@ multivariate normal distribution with covariance matrix covmat."><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -84,25 +84,35 @@ multivariate normal distribution with covariance matrix <code>covmat</code>.</p>
     <dl><dt>n_sim</dt>
 <dd><p>A positive number representing the number of draws from the
 Gibbs sampler after burn-in.. Defaults to 1e+05.</p></dd>
+
+
 <dt>covmat</dt>
 <dd><p>A symmetric and numeric matrix representing the covariance
 matrix for the multivariate normal distribution.</p></dd>
+
+
 <dt>lower</dt>
 <dd><p>A number or numeric vector representing the lower cutoff point(s) for the
 truncated normal distribution. The length of lower must be 1 or equal
 to the dimension of the multivariable normal distribution.
 Defaults to <code>-Inf</code>.</p></dd>
+
+
 <dt>upper</dt>
 <dd><p>A number or numeric vector representing the upper cutoff point(s) for the
 truncated normal distribution. Must be greater or equal to lower.
 In addition the length of upper must be 1 or equal to the dimension
 of the multivariable normal distribution.
 Defaults to <code>Inf</code>.</p></dd>
+
+
 <dt>fixed</dt>
 <dd><p>A logical scalar or a logical vector indicating which
 variables to fix. If <code>fixed</code> is a vector, it must have the same length as
 lower and upper. Defaults to <code>TRUE</code> when <code>lowert</code> is equal to
 <code>upper</code> and <code>FALSE</code> otherwise.</p></dd>
+
+
 <dt>out</dt>
 <dd><p>An integer or numeric vector indicating which variables should be returned
 from the Gibbs sampler. If out = c(1), the first variable (usually the genetic
@@ -110,13 +120,18 @@ component of the full liability of the first phenotype) is estimated and returne
 If out = c(2), the second variable (usually full liability) is estimated and returned.
 If out = c(1,2), both the first and the second variable are estimated and returned.
 Defaults to c(1).</p></dd>
+
+
 <dt>burn_in</dt>
 <dd><p>A number of iterations that count as burn in for the Gibbs sampler.
 Must be non-negative. Defaults to 1000.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>covmat</code> is a symmetric and numeric matrix, if <code>n_sim</code> and
+    
+
+<p>If <code>covmat</code> is a symmetric and numeric matrix, if <code>n_sim</code> and
 <code>burn_in</code> are positive/non-negative numbers, if <code>out</code> is a numeric vector and
 <code>lower</code>, <code>upper</code> and <code>fixed</code> are numbers or vectors of the same length
 and the required format, <code>rtmvnorm.gibbs</code> returns the sampling values
@@ -159,7 +174,7 @@ multivariate normal distribution. The R Journal. <a href="https://doi.org/10.326
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
