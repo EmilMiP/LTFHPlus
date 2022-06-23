@@ -407,8 +407,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' 
 #' @examples
 #' construct_covmat_multi(fam_vec = NULL, 
-#'                        genetic_corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2),
-#'                        full_corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2),
+#'                        genetic_corrmat = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+#'                        full_corrmat = matrix(c(1, 0.55, 0.55, 1), nrow = 2),
 #'                        sq.herits = c(0.37,0.44),
 #'                        phen_names = c("p1","p2"))
 #' construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
@@ -701,8 +701,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' construct_covmat(fam_vec = NULL, 
 #'                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
 #'                  add_ind = FALSE, sq.herit = 0.3)
-#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.6,0.4,1), nrow = 2),
-#' full_corrmat = matrix(c(1,0.7,0.6,1), nrow = 2))
+#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
+#' full_corrmat = matrix(c(1,0.6,0.6,1), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
 #' \code{\link{construct_covmat_multi}}

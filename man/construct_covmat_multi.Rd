@@ -92,8 +92,8 @@ can be specified using one of two possible formats.
 }
 \examples{
 construct_covmat_multi(fam_vec = NULL, 
-                       genetic_corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2),
-                       full_corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2),
+                       genetic_corrmat = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+                       full_corrmat = matrix(c(1, 0.55, 0.55, 1), nrow = 2),
                        sq.herits = c(0.37,0.44),
                        phen_names = c("p1","p2"))
 construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
