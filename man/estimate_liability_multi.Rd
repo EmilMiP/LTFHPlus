@@ -2,7 +2,11 @@
 % Please edit documentation in R/est_gen_liab_multiple_traits.R
 \name{estimate_liability_multi}
 \alias{estimate_liability_multi}
-\title{Estimating the genetic or full liability for multiple phenotypes}
+\title{Estimating the genetic or full liability for multiple phenotypes
+FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
+\code{estimate_liability_multi} estimates the genetic component of the full
+liability and/or the full liability for a number of individuals based
+on their family history for a variable number of phenotypes.}
 \usage{
 estimate_liability_multi(
   family,
@@ -14,8 +18,7 @@ estimate_liability_multi(
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
-  parallel = FALSE,
-  progress = FALSE
+  parallel = FALSE
 )
 }
 \arguments{
@@ -50,8 +53,8 @@ to a specific phenotype uniquely. This is done easily by adding _{name_of_phenot
 the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 thresholds corresponding to the first phenotype.}
 
-\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
+\item{h2s}{A numeric vector representing the heritability on liability scale
+for all phenotypes. All entries in h2s must be non-negative and at most 1.}
 
 \item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
 phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
@@ -83,9 +86,6 @@ standard error of the mean is below 0.2. Defaults to 0.01.}
 \item{parallel}{A logical scalar indicating whether computations should be performed parallel.
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
-
-\item{progress}{A logical scalar indicating whether the function should display a progress bar.
-Defaults to FALSE.}
 }
 \value{
 If family and threshs are two matrices, lists or data frames that can be converted into

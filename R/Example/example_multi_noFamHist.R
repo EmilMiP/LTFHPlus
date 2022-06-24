@@ -3,8 +3,6 @@ library(dplyr)
 library(stringr)
 library(ggplot2) 
 library(gridExtra)
-library(doSNOW)
-library(progress)
 
 N = 10000 
 h2 = .5 

@@ -1,8 +1,8 @@
 Package: LTFHPlus
 Type: Package
 Title: Implementation of 'LT-FH++'
-Version: 2.0
-Date: 2022-03-10
+Version: 2.0.3
+Date: 2022-06-1
 Authors@R: c(
     person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
     person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
@@ -17,27 +17,25 @@ License: GPL (>= 2)
 Imports: 
     batchmeans,
     dplyr,
-    future.apply,
-    progressr,
+    future.apply, 
+    future,
     purrr,
     Rcpp,
     rlang,
     stringr,
     tibble,
-    tidyr,
-    tidyselect,
     tmvtnorm,
+    tidyselect,
     utils
 Suggests:
-    future,
-    knitr,
+    tidyr,
     MASS,
+    knitr,
     rmarkdown,
     testthat
 LinkingTo: Rcpp
-VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Language: "en-GB"
 URL: https://github.com/EmilMiP/LTFHPlus

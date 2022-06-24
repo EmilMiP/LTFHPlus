@@ -4,7 +4,7 @@
 \alias{get_relatedness}
 \title{Relatedness between a pair of family members}
 \usage{
-get_relatedness(s1, s2, sq.herit = 0.5)
+get_relatedness(s1, s2, h2 = 0.5)
 }
 \arguments{
 \item{s1, s2}{Strings representing the two family members.
@@ -16,9 +16,12 @@ The strings must be chosen from the following list of strings:
 \item f (Father)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
+\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
+\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
+\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -35,19 +38,19 @@ DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.heri
 }
 \description{
 \code{get_relatedness} returns the relatedness times the
-squared heritability for a pair of family members
+heritability for a pair of family members
 }
 \details{
 This function can be used to get the percentage of shared
-DNA times the squared heritability \eqn{h^2} for two family members.
+DNA times the heritability \eqn{h^2} for two family members.
 }
 \note{
-If you are only interested in the percentage of shared DNA, set \code{sq.herit = 1}.
+If you are only interested in the percentage of shared DNA, set \code{h2 = 1}.
 }
 \examples{
 get_relatedness("g","o")
-get_relatedness("g","f",sq.herit = 1)
-get_relatedness("o","s",sq.herit = 0.3)
+get_relatedness("g","f",h2 = 1)
+get_relatedness("o","s",h2 = 0.3)
 
 
 \dontrun{

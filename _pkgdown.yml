@@ -1,14 +1,14 @@
 url: EmilMiP.github.io/LTFHPlus
 
 reference:
-  - title: "Estimating Genetic Liability"
+  - title: "Estimating (Genetic) Liability"
     desc: >
       Functions used to estimate the genetic liability in a range of different setups with and without family history and prevalence information.
     contents:
     - estimate_liability
   - title: "Helper functions"
     desc: >
-      Collection of functions used as examples of how to include additional information
+      Collection of functions used as examples of how to include additional information.
     contents:
     - convert_age_to_cir
     - convert_age_to_thresh
@@ -27,6 +27,23 @@ reference:
     - construct_covmat_multi
     - construct_covmat
     - correct_positive_definite
+  - title: "Legacy & internal functions"
+    desc: >
+      functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.
+    contents:
+    - construct_aoo
+    - construct_thresholds
+    - estimate_gen_liability
+    - estimate_gen_liability_ltfh
+    - estimate_liability_multi
+    - estimate_liability_prevalence
+    - generate_cov_matrix_noFH
+    - get_between_trait_cov
+    - get_cov
+    - get_full_cov
+    - check_family_role
 template:
   params:
     bootswatch: darkly
+development:
+  mode: auto

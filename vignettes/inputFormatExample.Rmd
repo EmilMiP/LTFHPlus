@@ -1,0 +1,72 @@
+---
+title: "Input Format"
+author: "Emil M. Pedersen"
+date: '2022-04-05'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Input Format}
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(LTFHPlus)
+library(dplyr)
+library(stringr)
+library(future.apply)
+```
+
+
+# What is the input format for LTFHPlus functions?
+
+With version 2.0, updates have been made to the input and the functions available to estimate the (genetic) liability. Previously, a set order was expected, where the proband was first, then followed by father, mother, and any siblings. This limited analysis to only the immediate family, but if information on, e.g. half-siblings, grandparents etc, was available, it could not be readily used. Now the input does not require a set ordering, but instead the user is expected to provide information on the familial relation to the proband, e.g. mother, paternal half-sibling, etc. This allows for far more flexibility for the user to include the familial information that is available. 
+
+## Family Input 
+
+The function used to estimate the genetic (or full liability) of an individual is <tt>estimate_liability()</tt>. The first input needed for this function is <tt>family</tt>. This should be an object that can be coerced into a tibble with list entries. In short, <tt>family</tt> consists of two columns. The first is <tt>pid</tt> and is the personal identifier, i.e. the ID used to identifier your individuals, usually some anonymized value. The second is <tt>fam_id</tt>, which should be a list entry, and contains the IDs of all family members (including the one in <tt>pid</tt>). However, <tt>fam_id</tt> must contain all family member's ID and end in the shorthand notation for their familial relationship, e.g. mother must be "motherID_m", father must be "fatherID_f", and siblings must be "siblingID_s[0-9]", in order for them to get properly read by the covariance function. Default values for <tt>pid</tt> is *indiv_ID* and <tt>fam_id</tt> is *fam_ID*. 
+
+From <tt>simulate_under_LTM()</tt> an example of the full input data can be seen:
+```{r}
+ sims <- simulate_under_LTM(fam_vec = c("m","f","s1"),
+                            n_fam = NULL, 
+                            add_ind = TRUE, 
+                            h2 = 0.5, 
+                            n_sim=100, 
+                            pop_prev = .05)
+str(sims, max.level = 3)
+
+sims$fam_ID
+sims$fam_ID$fam_ID[[1]]
+
+```
+
+In the above example, <tt>sims$fam_ID</tt> correspond to the family input, with the first entry, <tt>indiv_ID</tt> containing the ID for the proband. The <tt>indiv_ID</tt> column is primarily there to make it easier to keep track of who each row refers to. The <tt>fam_ID</tt> column contains list entries with the family member's ID and familial relationship, in the form of *id_familyRole*, where family role refers to the short hand notation used to generate the covariance matrix. See documentation for details.
+
+
+### Covariance Function
+
+We construct the covariance matrix for each family being analysed. The covariance function that is used internally in <tt>estimate_liability()</tt> has been updated to allow for a higher degree of flexibility. This means it is up to the user to provide the familial relationship, and <tt>construct_covmat()</tt> creates the corresponding variances and covariances based on the heritability and expected genetic overlap between two individuals. 
+
+<tt>construct_covmat()</tt> defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format can be specified in two different ways, either <tt>fam_vec</tt> or <tt>n_fam</tt>. For <tt>fam_vec</tt> a vector of strings from the list of possible familial relationships. Family members will then appear in the covariance matrix in the same order as they appear in <tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, with the *names* of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears. We encourage users to look at the documentation for <tt>construct_covmat()</tt> for further details.
+
+```{r}
+# default settings:
+construct_covmat()
+
+# only with parents
+construct_covmat(fam_vec = c("m", "f"), h2 = .5)
+construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1), c("m", "f")))
+
+# no family members
+construct_covmat(fam_vec = NULL, n_fam = NULL, h2 = .5)
+```
+
+
+
+## Threshholds
+
+Thresholds also need to be provided on a per individual basis. The thresholds must be an object that can be coerced into a tibble with three columns. The columns will be <tt>PID</tt>, <tt>lower</tt>, and <tt>upper</tt>. the IDs for each family member
+

@@ -24,9 +24,12 @@ following list:
 \item f (Father)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
+\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
+\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
+\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -42,10 +45,10 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{sq.herit}{Either a number representing the squared heritability
+\item{h2}{Either a number representing the heritability
 on liability scale for one single phenotype or a numeric vector representing
-the squared heritabilities on liability scale for a positive number of phenotypes.
-All entries in sq.herit must be non-negative and at most 1.}
+the heritabilities on liability scale for a positive number of phenotypes.
+All entries in h2 must be non-negative and at most 1.}
 
 \item{genetic_corrmat}{Either \code{NULL} or a numeric matrix holding the genetic correlations between the desired
 phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
@@ -95,7 +98,7 @@ for a variable number of phenotypes. It is a wrapper around
 }
 \details{
 This function can be used to construct a covariance matrix for
-a given number of family members. If sq.herit is a number,
+a given number of family members. If h2 is a number,
 each entry in this covariance matrix equals the percentage
 of shared DNA between the corresponding individuals times
 the squared heritability \deqn{h^2}. However, if sq.herit is a numeric vector,
@@ -111,7 +114,7 @@ construct_covmat()
 construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
                  n_fam = NULL, 
                  add_ind = TRUE, 
-                 sq.herit = 0.5)
+                 h2 = 0.5)
 construct_covmat(fam_vec = NULL, 
                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
                  add_ind = FALSE, sq.herit = 0.3)

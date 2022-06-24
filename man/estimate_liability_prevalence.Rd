@@ -81,16 +81,13 @@ The remaining columns hold the estimated genetic liabilities and/or the estimate
 as well as the corresponding standard errors for the remaining phenotypes.
 }
 \description{
+FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
+}
+\details{
 \code{estimate_liability_prevalence} estimates the genetic component of
 the full liability and/or the full liability for a number of individuals
 based solely on prevalence information for a variable number of
 phenotypes.
-}
-\details{
-This function can be used to estimate either the genetic component of the
-full liability, the full liability or both for a variable number of traits,
-when no family history is available, but prevalence information for each
-phenotype can be obtained.
 }
 \seealso{
 \code{\link[future.apply]{future_apply}}

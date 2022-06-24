@@ -19,7 +19,7 @@ overall prevalence in the population.}
 \value{
 A tibble holding the personal identifier (PID) as well as
 the lower and the upper threshold for all individuals
-present in fem_mem.
+present in fam_mem.
 }
 \description{
 \code{construct_thresholds} computes the upper and lower

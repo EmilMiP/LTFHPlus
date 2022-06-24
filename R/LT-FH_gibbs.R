@@ -52,11 +52,7 @@ estimate_gen_liability_ltfh = function(h2,
     dplyr::slice_head() %>%
     dplyr::ungroup() #extract each unique configuration present in the data.
   
-  progress_bar_n = 1:nrow(reduced)
-  pbn = 1
-  p <- progressr::progressor(along = progress_bar_n)
-  
-  
+
   reduced$post_gen_liab <- NA
   reduced$post_gen_liab_se <- NA
   
@@ -66,7 +62,7 @@ estimate_gen_liability_ltfh = function(h2,
                                                      !!as.symbol(number_of_siblings_col) <= 1 |
                                                      is.na(!!as.symbol(number_of_siblings_col)) |
                                                      is.na(!!as.symbol(status_col_siblings)))
- 
+
   if(nrow(reduced_max_1_sibling) > 0) { #only do this if we actually have configurations in the data.
     for (i in 1:nrow(reduced_max_1_sibling)) {
       #extract number of siblings and construct the thresholds and covariance matrix
@@ -87,7 +83,7 @@ estimate_gen_liability_ltfh = function(h2,
                    )
       
       cov = construct_covmat()
-      
+
       cov_size = nrow(cov)
       
       lower = rep(-Inf, cov_size)
@@ -127,8 +123,6 @@ estimate_gen_liability_ltfh = function(h2,
       reduced_max_1_sibling$post_gen_liab[i]    = est$est
       reduced_max_1_sibling$post_gen_liab_se[i] = est$se
       
-      p(sprintf("%g", pbn))
-      pbn = pbn + 1
     }
   }
 
@@ -153,6 +147,7 @@ estimate_gen_liability_ltfh = function(h2,
       #assigning thresholds for children:
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
+
       cov <- construct_covmat()
       tmp <- rtmvnorm.gibbs(n_sim = 100e3,
                             covmat = cov,
@@ -267,8 +262,6 @@ estimate_gen_liability_ltfh = function(h2,
         dplyr::summarise(grp_se  = mean(post_gen_liab_se), .groups = "drop") %>%
         dplyr::pull(grp_se)
       
-      p(sprintf("%g", pbn))
-      pbn = pbn + 1
     }
     #Final estimate is genetic liability times probability.
     reduced_atleast_2_siblings = reduced_atleast_2_siblings %>% 

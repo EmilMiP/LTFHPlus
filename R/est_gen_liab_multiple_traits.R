@@ -1,5 +1,5 @@
 #' Estimating the genetic or full liability for multiple phenotypes
-#'
+#' FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
 #' \code{estimate_liability_multi} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history for a variable number of phenotypes.
@@ -60,13 +60,11 @@
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
-#' @param progress  A logical scalar indicating whether the function should display a progress bar.
-#' Defaults to FALSE.
 #' 
 #' @return If family and threshs are two matrices, lists or data frames that can be converted into
 #' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
 #' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
+#' a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
 #' then the function returns a tibble with at least six columns (depending on the length of out).
 #' The first two columns correspond to the columns fam_id and pid from family. 
 #' If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic 
@@ -91,18 +89,18 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
                                      parallel = FALSE, progress = FALSE){
   # Turning parallel and progress into class logical
   parallel <- as.logical(parallel)
-  progress <- as.logical(progress)
-  
+
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
   fam_id <- as.character(fam_id)
   
   #Turning family and threshs into tibbles
-  if(!("tbl_df" %in% class(family))) family <- tibble::as_tibble(family)
-  if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
+  if(!tibble::is_tibble(family)) family <- tibble::as_tibble(family)
+  if(!tibble::is_tibble(threshs)) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
   if(check_proportion(sq.herits)){invisible()}
+  
   # Checking that all correlations are valid
   if(check_correlation_matrix(genetic_corrmat)){invisible()}
   if(check_correlation_matrix(full_corrmat)){invisible()}
@@ -114,15 +112,15 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   # In addition, we check that threshs has columns named lower and upper
   if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   # Checking that tol is valid
-  if(class(tol) != "numeric" && class(tol) != "integer") stop("The tolerance must be numeric!")
+  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   # Checking that out is either a character vector or a
   # numeric vector 
-  if(class(out) == "numeric"){
+  if(is.numeric(out)){
     
     out <- intersect(out, c(1,2))
     
-  }else if(class(out) == "character"){
+  }else if(is.character(out)){
     
     out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
     out[out == "genetic"] <- 1
@@ -205,12 +203,7 @@ The lower and upper thresholds will be swapped...")
   # Extracting the families
   fam_list <- pull(family, !!as.symbol(pid))
   
-  # If progress = TRUE, a progress bar will be displayed
-  if(progress){
-    
-    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-  }
-  
+
   
   if(parallel){
     
@@ -225,7 +218,7 @@ The lower and upper thresholds will be swapped...")
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
                               genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
                               sq.herit = sq.herits, phen_names = pheno_names)
-      
+
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
         cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
@@ -307,6 +300,7 @@ The lower and upper thresholds will be swapped...")
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
                               genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
                               sq.herit = sq.herits, phen_names = pheno_names)
+
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
@@ -373,17 +367,10 @@ The lower and upper thresholds will be swapped...")
       # standard error can be returned
       return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
       
-      # If progress = TRUE, a progress bar will be displayed
-      if(progress){
-        utils::setTxtProgressBar(pb, i)
-      }
     })
   }
   
-  if(progress){
-    close(pb) # Close the connection
-  }
-  
+
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information

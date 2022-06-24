@@ -8,7 +8,7 @@ simulate_under_LTM(
   fam_vec = c("m", "f", "s1", "mgm", "mgf", "pgm", "pgf"),
   n_fam = NULL,
   add_ind = TRUE,
-  sq.herit = 0.5,
+  h2 = 0.5,
   n_sim = 1000,
   pop_prev = 0.1
 )
@@ -22,9 +22,12 @@ following list:
 \item f (Father)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
+\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
+\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
+\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -40,9 +43,9 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{sq.herit}{A number representing the squared heritability on liability scale
+\item{h2}{A number representing the heritability on liability scale
 for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-the squared heritability must also be at most 1.
+the heritability must also be at most 1.
 Defaults to 0.5.}
 
 \item{n_sim}{A positive number representing the number of simulations. Defaults to 1000.}
@@ -52,7 +55,7 @@ overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.}
 }
 \value{
 If either fam_vec or n_fam is used as the argument, if it is of the required format,
-if sq.herit is a number satisfying 0 <= sq.herit, n_sim is a strictly positive number,
+if h2 is a number satisfying 0 <= h2, n_sim is a strictly positive number,
 and pop_prev is a positive number that is at most one,
 then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
 holds the disease status and the current age/age of onset for all family members in each
@@ -77,8 +80,8 @@ simulate_under_LTM()
 simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
 c("m","mgm","mgf","s","mhs")))
 simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
-sq.herit = 0.5, n_sim = 500, pop_prev = .05)
-simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, sq.herit = 0.5, 
+h2 = 0.5, n_sim = 500, pop_prev = .05)
+simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, h2 = 0.5, 
 n_sim = 200, pop_prev = 0.05)
 
 }

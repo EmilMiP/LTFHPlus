@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+src-i386/
+.src-i386/*
+/doc/
+/Meta/

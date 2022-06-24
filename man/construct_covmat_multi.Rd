@@ -23,9 +23,12 @@ following list:
 \item f (Father)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
+\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
+\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
+\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -85,7 +88,7 @@ for multiple phenotypes.
 This function can be used to construct a covariance matrix for
 a given number of family members. Each entry in this covariance
 matrix equals either the percentage of shared DNA between the corresponding
-individuals times the squared heritability \eqn{h^2} or the
+individuals times the heritability \eqn{h^2} or the
 percentage of shared DNA between the corresponding individuals times
 the correlation between the corresponding phenotypes. The family members
 can be specified using one of two possible formats.

@@ -7,14 +7,12 @@
 estimate_liability(
   family,
   threshs,
-  sq.herit = 0.5,
+  h2 = 0.5,
   pid = "PID",
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
-  always_add = c("g", "o"),
-  parallel = FALSE,
-  progress = FALSE
+  always_add = c("g", "o")
 )
 }
 \arguments{
@@ -31,9 +29,12 @@ with _?, where ? is one of the following abbreviations
 \item f (Father)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
+\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
+\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
+\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -45,9 +46,9 @@ See also \code{\link{construct_covmat}}.
 Must have at least three columns, one holding the personal identifier for all individuals,
 and the remaining two holding the lower and upper thresholds, respectively.}
 
-\item{sq.herit}{A number representing the squared heritability on liability scale
+\item{h2}{A number representing the heritability on liability scale
 for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-the squared heritability must also be at most 1.
+the heritability must also be at most 1.
 Defaults to 0.5.}
 
 \item{pid}{A string holding the name of the column in \code{family} and
@@ -72,19 +73,12 @@ of the full liability as well as the full liability will be added to the list of
 If always_add equals "g" or "o", the genetic component of the full liability or the full liability
 will be added, respectively. If always_add = NULL, no component will be added.
 Defaults to c("g","o").}
-
-\item{parallel}{A logical scalar indicating whether computations should be performed parallel.
-In order for this to be possible, the user must install the library "future.apply" and create a plan
-(see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
-
-\item{progress}{A logical scalar indicating whether the function should display a progress bar.
-Defaults to FALSE.}
 }
 \value{
 If family and threshs are two matrices, lists or data frames that can be converted into
 tibbles, if family has two columns named like the strings represented in pid and fam_id, if
 threshs has a column named like the string given in pid as well as a column named "lower" and
-a column named "upper" and if the squared heritability, out, tol and always_add are of the required form,
+a column named "upper" and if the heritability, out, tol and always_add are of the required form,
 then the function returns a tibble with either four or six columns (depending on the length of out).
 The first two columns correspond to the columns fam_id and pid from family.
 If out is equal to c(1) or c("genetic"), the third and fourth column hold the estimated genetic
@@ -106,17 +100,17 @@ full liability, the full liability or both.
 }
 \examples{
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
-add_ind = TRUE, sq.herit = 0.5, n_sim=500, pop_prev = .05)
+add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
-parallel = FALSE, always_add = c("g","o"))
+h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
+always_add = c("g","o"))
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-sq.herit = 0.5, n_sim=200, pop_prev = .05)
+h2 = 0.5, n_sim=10, pop_prev = .05)
 estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
-sq.herit = 0.5, pid = "PID", fam_id = "fam_ID", out = c("genetic"), 
-tol = 0.01, parallel = FALSE, always_add = c("g","o"))
+h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
+tol = 0.01, always_add = c("g","o"))
 
 }
 \seealso{

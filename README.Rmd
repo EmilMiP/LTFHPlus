@@ -32,10 +32,14 @@ devtools::install_github("EmilMiP/LTFHPlus")
 ```
 
 <!-- badges: start -->
-[![R build status](https://github.com/EmilMiP/LTFHPlus/workflows/R-CMD-check/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions)
+[![R-CMD-check](https://github.com/EmilMiP/LTFHPlus/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EmilMiP/LTFHPlus/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 
 # Documentation
 
-Documentation for the different functions, as well as examples of how to use them, can be found on [this](https://emilmip.github.io/LTFHPlus/) pkgdown website.
+Documentation for the different functions, as well as examples of how to use them, can be found on [this pkgdown website](https://emilmip.github.io/LTFHPlus/).
+
+# Changes to 2.0
+
+The most important change to version 2.0 is a more flexible covariance matrix construction, and the corresponding update to the input. The change to the covariance matrix allows users to include family members with far more flexibility, allowing users to completely exclude parents, use paternal/maternal half-siblings, grandparents, and more.
