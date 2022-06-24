@@ -1,3 +1,4 @@
+utils::globalVariables("sq.herit")
 #' Relatedness between a pair of family members
 #'
 #' \code{get_relatedness} returns the relatedness times the
@@ -7,7 +8,7 @@
 #' DNA times the heritability \eqn{h^2} for two family members.
 #'
 #' @param s1,s2 Strings representing the two family members.
-#' The string must be one of the following:
+#' The strings must be chosen from the following list of strings:
 #' - g (Genetic component of full liability)
 #' - o (Full liability)
 #' - m (Mother)
@@ -24,13 +25,12 @@
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
-#' @param h2 A number representing the heritability on liability scale.
-#' Must be non-negative. Note that under the liability threshold model,
-#' the heritability must also be at most 1.
+#' @param sq.herit A number representing the squared heritability on liability scale.
+#' Must be non-negative and at most 1. Defaults to 0.5
 #' 
-#' @return If both s1 and s2 are strings chosen from the mentioned list of strings and h2 is a number
-#' satisfying 0 <= h2, then the output will be a number that equals the percentage of shared 
-#' DNA between \code{s1} and \code{s2} times the heritability \code{h2}.
+#' @return If both \code{s1} and \code{s2} are strings chosen from the mentioned list of strings and \code{sq.herit} is a number
+#' satisfying \eqn{0 \leq sq.herit \leq 1}, then the output will be a number that equals the percentage of shared 
+#' DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
 #' 
 #' @note If you are only interested in the percentage of shared DNA, set \code{h2 = 1}.
 #' 
@@ -52,11 +52,19 @@
 get_relatedness <- function(s1,s2, h2=0.5){
 
   # Checking that s1 and s2 are strings
-  if (!is.character(s1)) stop("s1 must be a string!")
-  if (!is.character(s2)) stop("s2 must be a string!")
+  if(class(s1) != "character") stop("s1 must be a string!")
+  if(class(s2) != "character") stop("s2 must be a string!")
+  
+  # Convert s1 and s2 to lowercase strings
+  s1 <- tolower(s1)
+  s2 <- tolower(s2)
+  
   # Checking that s1 and s2 are valid strings
-  check_family_role(s1)
-  check_family_role(s2)
+  if(check_valid_relatives(s1)){invisible()}
+  if(check_valid_relatives(s2)){invisible()}
+
+  # Checking that the heritability is valid
+  if(check_proportion(sq.herit)){invisible()}
   # Checking that the heritability is valid
   if (h2 < 0) stop("The heritability must be non-negative!")
   if (h2 > 1) cat("Warning message: \n Under the liability threshold model, the heritability must be smaller than or equal to 1.")
@@ -175,7 +183,6 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }
 }
 
-
 #' Constructing a covariance matrix for a single phenotype
 #'
 #' \code{construct_covmatc_single} returns the covariance matrix for an
@@ -190,6 +197,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' @param fam_vec A vector of strings holding the different 
 #' family members. All family members must be represented by strings from the 
 #' following list:
+#' 
 #' - m (Mother)
 #' - f (Father)
 #' - mgm (Maternal grandmother)
@@ -211,22 +219,23 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param h2 A number representing the heritability on liability scale
-#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-#' the heritability must also be at most 1.
+#' @param sq.herit A number representing the squared heritability on liability scale
+#' for a single phenotype. Must be non-negative and at most 1.
 #' Defaults to 0.5.
 #' 
-#' @return If either fam_vec or n_fam is used as the argument, if it is of the required format and h2 is a number
-#' satisfying 0 <= h2, then the output will be a named covariance matrix. The number of rows and columns
-#' correspond to the length of fam_vec or n_fam (+ 2 if add_ind=T). 
-#' If both fam_vec = c()/NULL and n_fam = c()/NULL, the 
+#' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, if it 
+#' is of the required format and \code{sq.herit} is a number satisfying 
+#' \eqn{0 \leq sq.herit \leq 1}, then the output will be a named covariance matrix. 
+#' The number of rows and columns corresponds to the length of \code{fam_vec}
+#' or \code{n_fam} (+ 2 if \code{add_ind=TRUE}). 
+#' If both \code{fam_vec = c()/NULL} and \code{n_fam = c()/NULL}, the 
 #' function returns a \eqn{2 \times 2} matrix holding only the correlation
 #' between the genetic component of the full liability and 
-#' the full liability for the individual. If both fam_vec and 
-#' n_fam are given, the user is asked to decide on which 
+#' the full liability for the individual. If both \code{fam_vec} and 
+#' \code{n_fam} are given, the user is asked to decide on which 
 #' of the two vectors to use.
 #' Note that the returned object has different attributes, such as 
-#' fam_vec, n_fam, add_ind, h2 and phenotype_names.
+#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
 #' 
 #' @examples
 #' construct_covmat_single()
@@ -238,17 +247,17 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_multi}},
 #' \code{\link{construct_covmat}}
 #' @export
-construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, h2 = 0.5){
+construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, 
+                                    add_ind = TRUE, sq.herit = 0.5){
+
   # forcing fam_vec to be null if a vector of length 0 is provided. 
   if (length(fam_vec) == 0) fam_vec = NULL
-  
+
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
-  # Checking that the heritability is valid
-  if(is.null(h2)) stop("The heritability must be specified!")
-  if(h2<0) stop("The heritability must be non-negative")
-  if(h2>1)cat("Warning message: \n Under the liability threshold model, the heritability must be smaller than or equal to 1.")
+  # Checking that the squared heritability is valid
+  if(check_proportion(sq.herit)){invisible()}
   
   # If neither fam_vec nor n_fam are specified, the
   # covariance matrix will simply include the 
@@ -265,8 +274,9 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$h2 <- h2
+    attributes(covmat)$sq.herit <- sq.herit
     attributes(covmat)$phenotype_names <- NULL
+
     
     return(covmat)
     
@@ -299,12 +309,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     # Checking that n_fam is named
     if(is.null(names(n_fam))) stop("n_fam must be a named vector")
-    # Extracting the names of n_fam, which are equal to the family 
-    # members
-    fam <- names(n_fam)
     # Checking that all family members are valid strings
-    check_family_role(fam)
-
+    if(check_valid_relatives(names(n_fam))){invisible()}
     # Checking that all entries in n_fam are non-negative
     if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
     
@@ -313,6 +319,9 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
+    if(any(names(n_fam) %in% c("g","o"))){
+      n_fam <- n_fam[-which(names(n_fam) %in% c("g","o"))]
+    }
     if(add_ind){
       n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
@@ -325,19 +334,19 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # Getting the names for all family members that
     # occur only once
     if(length(single_indx)==0){
-      fam <- c()
+      fam_vec <- c()
     }else{
-      fam <- names(n_fam)[single_indx]
+      fam_vec <- names(n_fam)[single_indx]
     }
     # And the names for those family members that occur
     # several times
     if(length(multiple_indx)>0){
       for(indx in multiple_indx){
         
-        fam <- c(fam, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
+        fam_vec <- c(fam_vec, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
       }
     }
-    
+
     # Now that we have a vector holding all desired family members,
     # we can create the covariance matrix
     covmat <- matrix(NA, nrow = length(fam), ncol = length(fam))
@@ -363,34 +372,38 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    check_family_role(fam_vec)
-
+    if(check_valid_relatives(fam_vec)){invisible()}
+    
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
+    if(any(fam_vec %in% c("g","o"))){
+      fam_vec <- fam_vec[-which(fam_vec %in% c("g","o"))]
+    }
     if(add_ind){
       fam_vec <- c(c("g", "o"), fam_vec)
     }
-      
-    # Now that we have a vector holding the desired family members,
-    # we can build the covariance matrix.
-    covmat <- matrix(NA, nrow = length(fam_vec), ncol = length(fam_vec))
-    # Changing the row and column names
-    rownames(covmat) <- colnames(covmat) <- fam_vec
-    
-    # Filling in all entries 
-    for(mem in fam_vec) {
-      covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2)
-    }
-    
-    # Adding attributes to covmat
-    attributes(covmat)$fam_vec <- fam_vec
-    attributes(covmat)$n_fam <- NULL
-    attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$h2 <- h2
-    attributes(covmat)$phenotype_names <- NULL
-    
-    return(covmat)
+    n_fam <- table(sub("[0-9]*$", "", fam_vec))
   }
+    
+  # Now that we have a vector holding all desired family members,
+  # we can create the covariance matrix
+  covmat <- matrix(NA, nrow = length(fam_vec), ncol = length(fam_vec))
+  # Changing the row and column names
+  rownames(covmat) <- colnames(covmat) <- fam_vec
+
+  # Filling in all entries 
+  for(mem in fam_vec) {
+    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herit)
+  }
+  
+  # Adding attributes to covmat
+  attributes(covmat)$fam_vec <- fam_vec
+  attributes(covmat)$n_fam <- n_fam
+  attributes(covmat)$add_ind <- add_ind
+  attributes(covmat)$sq.herit <- sq.herit
+  attributes(covmat)$phenotype_names <- NULL
+  
+  return(covmat)
 }
 
 #' Constructing a covariance matrix for multiple phenotypes
@@ -431,55 +444,63 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param corrmat A numeric matrix holding the genetic correlation between the desired 
-#' number of phenotypes as well as the full correlation. 
-#' The full correlations must be given on the diagonal,
-#' while the off-diagonal entries must hold the genetic correlations between phenotypes.
-#' All correlations must be between -1 and 1.
-#' @param h2s A numeric vector representing the heritability on liability scale
-#' for all phenotypes. All entries in h2s must be non-negative and at most 1.
+#' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' @param full_corrmat A numeric matrix holding the full correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' @param sq.herits A numeric vector representing the squared heritabilities on liability scale
+#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' 
-#' @return If either fam_vec or n_fam is used as the argument, if it is of the 
-#' required format and h2 is a numeric matrix satisfying that all 
-#' diagonal entries are non-negative and that all off-diagonal
-#' entries are between -1 and 1, then the output will be a named covariance matrix. 
+#' @return If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the 
+#' required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
+#' satisfying that all diagonal entries are one and that all off-diagonal
+#' entries are between -1 and 1, and if \code{sq.herits} is a numeric vector satisfying
+#' \eqn{0 \leq sq.herits_i \leq 1} for all \eqn{i \in \{1,...,n_pheno\}},
+#' then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
-#' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
-#' If both fam_vec and n_fam are equal to c() or NULL, the function returns
-#' a \eqn{(2 \times number of phenotypes) \times (2\times number of phenotypes)}{ (2 X number of phenotypes) X (2 X number of phenotypes)} 
+#' the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}). 
+#' If both \code{fam_vec} and \code{n_fam} are equal to \code{c()} or \code{NULL},
+#' the function returns a \eqn{(2 \times n_pheno) \times (2\times n_pheno)} 
 #' matrix holding only the correlation between the genetic component of the full
 #' liability and the full liability for the underlying individual for all
-#' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
+#' phenotypes. If both \code{fam_vec} and \code{n_fam} are specified, the user is asked to 
 #' decide on which of the two vectors to use.
-#' Note that the returned object has different attributes, such as 
-#' fam_vec, n_fam, add_ind, h2 and phenotype_names.
+#' Note that the returned object has a number different attributes,namely
+#' \code{fam_vec}, \code{n_fam}, \code{add_ind}, \code{genetic_corrmat}, \code{full_corrmat},
+#' \code{sq.herits} and \code{phenotype_names}.
 #' 
 #' @examples
 #' construct_covmat_multi(fam_vec = NULL, 
-#'                        corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2), 
-#'                        h2s = c(0.37,0.44),
+#'                        genetic_corrmat = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+#'                        full_corrmat = matrix(c(1, 0.55, 0.55, 1), nrow = 2),
+#'                        sq.herits = c(0.37,0.44),
 #'                        phen_names = c("p1","p2"))
 #' construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
 #'                        n_fam = NULL, 
 #'                        add_ind = TRUE,
-#'                        corrmat = diag(3),
-#'                        h2s = c(0.8, 0.65))
+#'                        genetic_corrmat = diag(3),
+#'                        full_corrmat = diag(3),
+#'                        sq.herits = c(0.8, 0.65))
 #' construct_covmat_multi(fam_vec = NULL, 
 #'                        n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
 #'                        add_ind = FALSE,
-#'                        corrmat = diag(2),
-#'                        h2s = c(0.75,0.85))
+#'                        genetic_corrmat = diag(2),
+#'                        full_corrmat = diag(2),
+#'                        sq.herits = c(0.75,0.85))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat}}.
 #' 
 #' @export
 construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, 
-                                   corrmat, h2s, phen_names = NULL){
+                                   genetic_corrmat, full_corrmat, sq.herits, phen_names = NULL){
+
   # forcing fam_vec to be null if a vector of length 0 is provided. 
   if (length(fam_vec) == 0) fam_vec = NULL
   
@@ -487,17 +508,11 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   add_ind <- as.logical(add_ind)
   
   # Checking that the heritabilities are valid
-  if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(!is.numeric(h2s) & !is.integer(h2s))stop("The heritabilities must be numeric!")
-  if(any(h2s<0)) stop("The heritabilities must be non-negative!")
-  if(any(h2s>1)) stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
+  if(check_proportion(sq.herits)){invisible()}
   
   # Checking that all correlations are valid
-  if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
-  if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
-  # In addition, corrmat must be symmetric
-  if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
-  
+  if(check_correlation_matrix(genetic_corrmat)){invisible()}
+  if(check_correlation_matrix(full_corrmat)){invisible()}
   # Computing the number of phenotypes
   num_phen <- length(h2s)
   
@@ -529,7 +544,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
           covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(h2s[p1], h2s[p1], h2s[p1], 1), nrow = 2)
         }else{
           
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(h2s[p1]*h2s[p2])*corrmat[p1,p2], nrow = 2, ncol = 2)
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(sq.herits[p1]*sq.herits[p2])*full_corrmat[p1,p2], nrow = 2, ncol = 2)
         }
       }
     }
@@ -540,8 +555,9 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$h2 <- h2s
-    attributes(covmat)$corrmat <- corrmat
+    attributes(covmat)$sq.herit <- sq.herits
+    attributes(covmat)$genetic_corrmat <- genetic_corrmat
+    attributes(covmat)$full_corrmat <- full_corrmat
     attributes(covmat)$phenotype_names <- phen_names
     
     return(covmat)
@@ -568,44 +584,48 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
       }
     }
   }
-  
   if(is.null(fam_vec)){
     # If only n_fam is specified, the function uses this
     # vector to create the covariance matrix
     
     # Checking that n_fam is named
     if(is.null(names(n_fam))) stop("n_fam must be a named vector")
-    # Extracting the names which are equal to the desired family members
-    fam <- names(n_fam)
     # Checking that all family members are valid strings
-    check_family_role(fam)
-
+    if(check_valid_relatives(names(n_fam))){invisible()}
+    
     # Checking that all entries in n_fam are non-negative
     if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
+    
     # Removing all family members that occur zero times
-    n_fam <- n_fam[n_fam >0]
+    n_fam <- n_fam[n_fam > 0]
+    
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
+    if(any(names(n_fam) %in% c("g","o"))){
+      n_fam <- n_fam[-which(names(n_fam) %in% c("g","o"))]
+    }
     if(add_ind){
       n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
-    # Extracting all family members that can occur exactly once
+    
+    # Extracting all family members that can only occur exactly once
     single_indx <- which(stringr::str_detect(names(n_fam), "^[gomf]$") | stringr::str_detect(names(n_fam), "^[mp]g[mf]$"))
     # Extracting all family members that can occur multiple times
     multiple_indx <- setdiff(1:length(n_fam), single_indx)
+    
     # Getting the names for all family members that
     # occur only once
     if(length(single_indx)==0){
-      fam <- c()
+      fam_vec <- c()
     }else{
-      fam <- names(n_fam)[single_indx]
+      fam_vec <- names(n_fam)[single_indx]
     }
     # And the names for those family members that occur
     # several times
-    if(length(multiple_indx) > 0){
+    if(length(multiple_indx)>0){
       for(indx in multiple_indx){
         
-        fam <- c(fam, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
+        fam_vec <- c(fam_vec, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
       }
     }
     
@@ -647,47 +667,53 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    check_family_role(fam_vec)
+    if(check_valid_relatives(fam_vec)){invisible()}
 
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
+    if(any(fam_vec %in% c("g","o"))){
+      fam_vec <- fam_vec[-which(fam_vec %in% c("g","o"))]
+    }
     if(add_ind){
       fam_vec <- c(c("g", "o"), fam_vec)
     }
     
-    # Now that we have a vector holding the desired family
-    # members, we can build the covariance matrix.
-    covmat <- matrix(NA, nrow = length(fam_vec)*num_phen, ncol = length(fam_vec)*num_phen)
-    # Changing the row and column names
-    rownames(covmat) <- colnames(covmat) <- paste0(fam_vec, "_", rep(phen_names, each = length(fam_vec)))
-      
-    # Filling in all entries 
-    for(p1 in 1:num_phen){
-      for(p2 in 1:num_phen){
+    n_fam <- table(sub("[0-9]*$", "", fam_vec))
+  }
+  
+  # Now that we have a vector holding the desired family
+  # members, we can create the covariance matrix.
+  covmat <- matrix(NA, nrow = length(fam_vec)*num_phen, ncol = length(fam_vec)*num_phen)
+  # Changing the row and column names
+  rownames(covmat) <- colnames(covmat) <- paste0(fam_vec,"_", rep(phen_names, each = length(fam_vec)))
+  
+  # Filling in all entries
+  for(p1 in 1:num_phen){
+    for(p2 in 1:num_phen){
+      for(mem in fam_vec){
         
-        for(mem in fam_vec) {
-          
-          if(p1==p2){
-            
-            covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2s[p1])
-          }else{
-            
-            covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = sqrt(h2s[p1]*h2s[p2])*corrmat[p1,p2])
-          }
+        if(p1==p2){
+        
+          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herits[p1])
+        }else{
+         
+          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sqrt(sq.herits[p1]*sq.herits[p2])*genetic_corrmat[p1,p2]) 
         }
+       
       }
     }
-    
-    # Adding attributes to covmat
-    attributes(covmat)$fam_vec <- fam_vec
-    attributes(covmat)$n_fam <- NULL
-    attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$h2 <- h2s
-    attributes(covmat)$corrmat <- corrmat
-    attributes(covmat)$phenotype_names <- phen_names
-    
-    return(covmat)
   }
+  
+  # Adding attributes to covmat
+  attributes(covmat)$fam_vec <- fam_vec
+  attributes(covmat)$n_fam <- n_fam
+  attributes(covmat)$add_ind <- add_ind
+  attributes(covmat)$sq.herit <- sq.herits
+  attributes(covmat)$genetic_corrmat <- genetic_corrmat
+  attributes(covmat)$full_corrmat <- full_corrmat
+  attributes(covmat)$phenotype_names <- phen_names
+  
+  return(covmat)
 }
 
 #' Constructing a covariance matrix for a variable number of
@@ -702,9 +728,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' a given number of family members. If h2 is a number,
 #' each entry in this covariance matrix equals the percentage 
 #' of shared DNA between the corresponding individuals times 
-#' the heritability \eqn{h^2}. However, if h2 is a matrix,
+#' the squared heritability \deqn{h^2}. However, if sq.herit is a numeric vector,
+#' and genetic_corrmat and full_corrmat are two symmetric correlation matrices,
 #' each entry equals either the percentage of shared DNA between the corresponding 
-#' individuals times the heritability \eqn{h^2} or the 
+#' individuals times the squared heritability \deqn{h^2} or the 
 #' percentage of shared DNA between the corresponding individuals times 
 #' the correlation between the corresponding phenotypes. The family members
 #' can be specified using one of two possible formats.
@@ -735,33 +762,44 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' the covariance matrix. Defaults to TRUE.
 #' @param h2 Either a number representing the heritability 
 #' on liability scale for one single phenotype or a numeric vector representing
-#' the heritabilities on liability scale for a positive number of phenotypes.
-#' All entries in h2 must be non-negative and at most 1.
-#' @param corrmat Either NULL or a numeric matrix holding the genetic correlation between the desired 
-#' number of phenotypes as well as the full correlation. 
-#' The full correlations must be given on the diagonal,
-#' while the off-diagonal entries must hold the genetic correlations between phenotypes.
-#' All correlations must be between -1 and 1.
+#' the squared heritabilities on liability scale for a positive number of phenotypes.
+#' All entries in sq.herit must be non-negative and at most 1.
+#' @param genetic_corrmat Either \code{NULL} or a numeric matrix holding the genetic correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
 #' Defaults to NULL.
-#' @param phen_names A character vector holding the phenotype names. These names
+#' @param full_corrmat Either \code{NULL} or a  numeric matrix holding the full correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
+#' @param phen_names Either \code{NULL} or a character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' 
-#' @return If either fam_vec or n_fam is used as the argument, if it is of 
-#' the required format, if h2 is either a number or a numeric vector satisfying 
-#' that all entries are non-negative and corrmat is a numeric matrix satisfying that all 
-#' entries are between -1 and 1, then the output will be a named covariance matrix. 
-#' The number of rows and columns corresponds to the number of phenotypes times 
-#' the length of fam_vec or n_fam (+ 2 if add_ind=T). 
-#' If both fam_vec and n_fam are equal to c() or NULL, the function returns
-#' a \eqn{(2 \times number of phenotypes) \times (2 \times number of phenotypes)} 
-#' matrix holding only the correlation between the genetic component of the full
+#' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, if it is of 
+#' the required format, if \code{add_ind} is a logical scalar and \code{sq.herit} is a 
+#' number satisfying \deqn{0 \leq sq.herit \leq 1}, then the function \code{construct_covmat}
+#' will return a named covariance matrix, which row- and column-number 
+#' corresponds to the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
+#' However, if \code{sq.herits} is a numeric vector satisfying
+#' \deqn{0 \leq sq.herits_i \leq 1} for all \deqn{i \in \{1,...,n_pheno\}} and if 
+#' \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
+#' satisfying that all diagonal entries are one and that all off-diagonal
+#' entries are between -1 and 1, then \code{construct_covmat} will return 
+#' a named covariance matrix, which number of rows and columns corresponds to the number 
+#' of phenotypes times the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}). 
+#' If both \code{fam_vec} and \code{n_fam} are equal to \code{c()} or \code{NULL},
+#' the function returns either a \eqn{2 \times 2} matrix holding only the correlation
+#' between the genetic component of the full liability and the full liability for the 
+#' individual under consideration, or a \deqn{(2 \times n_pheno) \times (2\times n_pheno)} 
+#' matrix holding the correlation between the genetic component of the full
 #' liability and the full liability for the underlying individual for all
-#' phenotypes. If both fam_vec and n_fam are specified, the user is asked to 
+#' phenotypes. 
+#' If both \code{fam_vec} and \code{n_fam} are specified, the user is asked to 
 #' decide on which of the two vectors to use.
 #' Note that the returned object has different attributes, such as 
-#' fam_vec, n_fam, add_ind, h2 and phenotype_names.
+#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
 #' 
 #' @examples
 #' construct_covmat()
@@ -771,21 +809,26 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #'                  h2 = 0.5)
 #' construct_covmat(fam_vec = NULL, 
 #'                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
-#'                  add_ind = FALSE, h2 = 0.3)
-#' construct_covmat(h2 = c(0.5,0.5), corrmat = matrix(c(0.6,0.2,0.2,0.4), nrow = 2))
+#'                  add_ind = FALSE, sq.herit = 0.3)
+#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
+#' full_corrmat = matrix(c(1,0.6,0.6,1), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
 #' \code{\link{construct_covmat_multi}}
 #' @export
-construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, h2 = 0.5, corrmat = NULL, phen_names = NULL){
+construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, 
+                             add_ind = TRUE, sq.herit = 0.5, genetic_corrmat = NULL, 
+                             full_corrmat = NULL, phen_names = NULL){
   
   if(length(h2) == 1){
     
     return(construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, h2 = h2))
     
   }else{
-    
-    return(construct_covmat_multi(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, corrmat = corrmat, h2s = h2, phen_names = phen_names))
+
+    return(construct_covmat_multi(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, 
+                                  genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                                  sq.herits = sq.herit, phen_names = phen_names))
   } 
 }
 

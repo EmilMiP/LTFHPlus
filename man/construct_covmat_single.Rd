@@ -41,23 +41,24 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{h2}{A number representing the heritability on liability scale
-for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-the heritability must also be at most 1.
+\item{sq.herit}{A number representing the squared heritability on liability scale
+for a single phenotype. Must be non-negative and at most 1.
 Defaults to 0.5.}
 }
 \value{
-If either fam_vec or n_fam is used as the argument, if it is of the required format and h2 is a number
-satisfying 0 <= h2, then the output will be a named covariance matrix. The number of rows and columns
-correspond to the length of fam_vec or n_fam (+ 2 if add_ind=T).
-If both fam_vec = c()/NULL and n_fam = c()/NULL, the
+If either \code{fam_vec} or \code{n_fam} is used as the argument, if it
+is of the required format and \code{sq.herit} is a number satisfying
+\eqn{0 \leq sq.herit \leq 1}, then the output will be a named covariance matrix.
+The number of rows and columns corresponds to the length of \code{fam_vec}
+or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
+If both \code{fam_vec = c()/NULL} and \code{n_fam = c()/NULL}, the
 function returns a \eqn{2 \times 2} matrix holding only the correlation
 between the genetic component of the full liability and
-the full liability for the individual. If both fam_vec and
-n_fam are given, the user is asked to decide on which
+the full liability for the individual. If both \code{fam_vec} and
+\code{n_fam} are given, the user is asked to decide on which
 of the two vectors to use.
 Note that the returned object has different attributes, such as
-fam_vec, n_fam, add_ind, h2 and phenotype_names.
+\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
 }
 \description{
 \code{construct_covmatc_single} returns the covariance matrix for an

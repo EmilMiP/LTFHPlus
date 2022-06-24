@@ -8,7 +8,7 @@ get_relatedness(s1, s2, h2 = 0.5)
 }
 \arguments{
 \item{s1, s2}{Strings representing the two family members.
-The string must be one of the following:
+The strings must be chosen from the following list of strings:
 \itemize{
 \item g (Genetic component of full liability)
 \item o (Full liability)
@@ -28,14 +28,13 @@ The string must be one of the following:
 \item pau[0-9]* (Aunts/Uncles - paternal side).
 }}
 
-\item{h2}{A number representing the heritability on liability scale.
-Must be non-negative. Note that under the liability threshold model,
-the heritability must also be at most 1.}
+\item{sq.herit}{A number representing the squared heritability on liability scale.
+Must be non-negative and at most 1. Defaults to 0.5}
 }
 \value{
-If both s1 and s2 are strings chosen from the mentioned list of strings and h2 is a number
-satisfying 0 <= h2, then the output will be a number that equals the percentage of shared
-DNA between \code{s1} and \code{s2} times the heritability \code{h2}.
+If both \code{s1} and \code{s2} are strings chosen from the mentioned list of strings and \code{sq.herit} is a number
+satisfying \eqn{0 \leq sq.herit \leq 1}, then the output will be a number that equals the percentage of shared
+DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
 }
 \description{
 \code{get_relatedness} returns the relatedness times the

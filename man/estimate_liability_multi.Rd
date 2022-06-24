@@ -11,8 +11,9 @@ on their family history for a variable number of phenotypes.}
 estimate_liability_multi(
   family,
   threshs,
-  h2s,
-  corrmat,
+  sq.herits,
+  genetic_corrmat,
+  full_corrmat,
   pid = "PID",
   fam_id = "fam_ID",
   out = c(1),
@@ -55,11 +56,15 @@ thresholds corresponding to the first phenotype.}
 \item{h2s}{A numeric vector representing the heritability on liability scale
 for all phenotypes. All entries in h2s must be non-negative and at most 1.}
 
-\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
-number of phenotypes as well as the full correlation.
-The full correlations must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All correlations must be between -1 and 1.}
+\item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
+
+\item{full_corrmat}{A  numeric matrix holding the full correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
 
 \item{pid}{A string holding the name of the column in \code{family} and
 \code{threshs} that hold the personal identifier(s). Defaults to "PID".}
@@ -86,7 +91,7 @@ In order for this to be possible, the user must install the library "future.appl
 If family and threshs are two matrices, lists or data frames that can be converted into
 tibbles, if family has two columns named like the strings represented in pid and fam_id, if
 threshs has a column named like the string given in pid as well as a column named "lower" and
-a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
+a column named "upper" and if the squared heritabilities, corrmat, out and tol are of the required form,
 then the function returns a tibble with at least six columns (depending on the length of out).
 The first two columns correspond to the columns fam_id and pid from family.
 If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic
@@ -101,6 +106,11 @@ The remaining columns hold the estimated genetic liabilities and/or the estimate
 as well as the corresponding standard errors for the remaining phenotypes.
 }
 \description{
+\code{estimate_liability_multi} estimates the genetic component of the full
+liability and/or the full liability for a number of individuals based
+on their family history for a variable number of phenotypes.
+}
+\details{
 This function can be used to estimate either the genetic component of the
 full liability, the full liability or both for a variable number of traits.
 }
