@@ -1,11 +1,11 @@
-utils::globalVariables("sq.herit")
+utils::globalVariables("h2")
 #' Relatedness between a pair of family members
 #'
 #' \code{get_relatedness} returns the relatedness times the
-#' squared heritability for a pair of family members
+#' liability-scale heritability for a pair of family members
 #'
 #' This function can be used to get the percentage of shared
-#' DNA times the squared heritability \eqn{h^2} for two family members.
+#' DNA times the liability-scale heritability \eqn{h^2} for two family members.
 #'
 #' @param s1,s2 Strings representing the two family members.
 #' The strings must be chosen from the following list of strings:
@@ -13,6 +13,7 @@ utils::globalVariables("sq.herit")
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
+#' - c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -22,19 +23,19 @@ utils::globalVariables("sq.herit")
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
-#' @param sq.herit A number representing the squared heritability on liability scale.
+#' @param h2 A number representing the heritability on liability scale.
 #' Must be non-negative and at most 1. Defaults to 0.5
 #' 
-#' @return If both \code{s1} and \code{s2} are strings chosen from the mentioned list of strings and \code{sq.herit} is a number
-#' satisfying \eqn{0 \leq sq.herit \leq 1}, then the output will be a number that equals the percentage of shared 
-#' DNA between \code{s1} and \code{s2} times the squared heritability \code{sq.herit}.
+#' @return If both \code{s1} and \code{s2} are strings chosen from the mentioned list of strings and \code{h2} is a number
+#' satisfying \eqn{0 \leq h2 \leq 1}, then the output will be a number that equals the percentage of shared 
+#' DNA between \code{s1} and \code{s2} times the liability-scale heritability \code{h2}.
 #' 
-#' @note If you are only interested in the percentage of shared DNA, set \code{sq.herit = 1}.
+#' @note If you are only interested in the percentage of shared DNA, set \code{h2 = 1}.
 #' 
 #' @examples
 #' get_relatedness("g","o")
-#' get_relatedness("g","f",sq.herit = 1)
-#' get_relatedness("o","s",sq.herit = 0.3)
+#' get_relatedness("g","f",h2 = 1)
+#' get_relatedness("o","s",h2 = 0.3)
 #'
 #'
 #' \dontrun{
@@ -46,95 +47,101 @@ utils::globalVariables("sq.herit")
 #' @importFrom stringr str_detect
 #' 
 #' @export
-get_relatedness <- function(s1,s2, sq.herit=0.5){
+get_relatedness <- function(s1,s2, h2=0.5){
   
   # Checking that s1 and s2 are strings
-  if(class(s1) != "character") stop("s1 must be a string!")
-  if(class(s2) != "character") stop("s2 must be a string!")
+  if(!is.character(s1)) stop("s1 must be a string!")
+  if(!is.character(s2)) stop("s2 must be a string!")
   # Convert s1 and s2 to lowercase strings
   s1 <- tolower(s1)
   s2 <- tolower(s2)
   # Checking that s1 and s2 are valid strings
-  if(check_valid_relatives(s1)){invisible()}
-  if(check_valid_relatives(s2)){invisible()}
+  if(validate_relatives(s1)){invisible()}
+  if(validate_relatives(s2)){invisible()}
 
   # Checking that the heritability is valid
-  if(check_proportion(sq.herit)){invisible()}
+  if(validate_proportion(h2)){invisible()}
   
   # Getting the percentage of shared DNA
   if(str_detect(s1, "^o$")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")) return(1*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^g$")) return(1*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^c[0-9]*")) return(0.5*h2)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if(str_detect(s1, "^g$")){
     
-    if(str_detect(s2, "^[go]$")) return(1*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^[go]$")) return(1*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^c[0-9]*")) return(0.5*h2)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if(str_detect(s1, "^m$")){
     
     if(str_detect(s2, "^m$")) return(1)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]") ) return(0.5*h2)
     if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^f$")){
     
     if(str_detect(s2, "^f$")) return(1)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]") ) return(0.5*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
+    
+  }else if(str_detect(s1, "^c[0-9]*$")){
+    
+    if(str_detect(s2, "^f$")) return(1)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]") ) return(0.5*h2)
     if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^s[0-9]*")){
     
     if(s1==s2) return(1)
-    if(str_detect(s2, "^[go]$") | str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*sq.herit)
-    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*sq.herit)
+    if(str_detect(s2, "^[go]$") | str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*h2)
+    if(str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if(str_detect(s1, "^mg[mf]$")){
     
     if(s1==s2)return(1)
     if(str_detect(s2, "^mg[mf]$")) return(0)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*sq.herit)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mhs[0-9]*")) return(0.25*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*h2)
     if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^pg[mf]$")){
     
     if(s1==s2)return(1)
     if(str_detect(s2, "^pg[mf]$")) return(0)
-    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^[go]$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^phs[0-9]*")) return(0.25*h2)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
     if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^mhs[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mhs[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*")|str_detect(s2, "^mg[mf]$")|str_detect(s2, "^mau[0-9]")) return(0.25*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mhs[0-9]*")) return(0.5*h2)
     if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^phs[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")|str_detect(s2, "^pg[mf]$")|str_detect(s2, "^pau[0-9]")) return(0.25*h2)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*h2)
     if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^mau[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^mhs[0-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^mhs[0-9]")) return(0.25*h2)
+    if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.5*h2)
     if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if(str_detect(s1, "^pau[0-9]*")){
     
     if(s1==s2)return(1)
-    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^phs[0-9]")) return(0.25*sq.herit)
-    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*sq.herit)
+    if(str_detect(s2, "^g$")|str_detect(s2, "^o$")|str_detect(s2, "^s[0-9]*")| str_detect(s2, "^phs[0-9]")) return(0.25*h2)
+    if(str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
     if(str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$")| str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
   }else{
@@ -150,7 +157,7 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' This function can be used to construct a covariance matrix for
 #' a given number of family members. Each entry in this covariance 
 #' matrix equals the percentage of shared DNA between the corresponding 
-#' individuals times the squared heritability \eqn{h^2}. The family members
+#' individuals times the liability-scale heritability \eqn{h^2}. The family members
 #' can be specified using one of two possible formats.
 #'
 #' @param fam_vec A vector of strings holding the different 
@@ -175,13 +182,13 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit A number representing the squared heritability on liability scale
+#' @param h2 A number representing the heritability on liability scale
 #' for a single phenotype. Must be non-negative and at most 1.
 #' Defaults to 0.5.
 #' 
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, if it 
-#' is of the required format and \code{sq.herit} is a number satisfying 
-#' \eqn{0 \leq sq.herit \leq 1}, then the output will be a named covariance matrix. 
+#' is of the required format and \code{h2} is a number satisfying 
+#' \eqn{0 \leq h2 \leq 1}, then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the length of \code{fam_vec}
 #' or \code{n_fam} (+ 2 if \code{add_ind=TRUE}). 
 #' If both \code{fam_vec = c()/NULL} and \code{n_fam = c()/NULL}, the 
@@ -191,26 +198,26 @@ get_relatedness <- function(s1,s2, sq.herit=0.5){
 #' \code{n_fam} are given, the user is asked to decide on which 
 #' of the two vectors to use.
 #' Note that the returned object has different attributes, such as 
-#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
+#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{h2}.
 #' 
 #' @examples
 #' construct_covmat_single()
 #' construct_covmat_single(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
-#' n_fam = NULL, add_ind = TRUE, sq.herit = 0.5)
+#' n_fam = NULL, add_ind = TRUE, h2 = 0.5)
 #' construct_covmat_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, sq.herit = 0.3)
+#' c("m","mgm","mgf","s","mhs")), add_ind = FALSE, h2 = 0.3)
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_multi}},
 #' \code{\link{construct_covmat}}
 #' @export
 construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, 
-                                    add_ind = TRUE, sq.herit = 0.5){
+                                    add_ind = TRUE, h2 = 0.5){
   
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
-  # Checking that the squared heritability is valid
-  if(check_proportion(sq.herit)){invisible()}
+  # Checking that the liability-scale heritability is valid
+  if(check_proportion(h2)){invisible()}
   
   # If neither fam_vec nor n_fam are specified, the
   # covariance matrix will simply include the 
@@ -220,7 +227,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     warning("Neither fam_vec nor n_fam is specified...")
     # Constructing the simple 2x2 matrix
-    covmat <- matrix(c(sq.herit,sq.herit,sq.herit,1), nrow = 2)
+    covmat <- matrix(c(h2,h2,h2,1), nrow = 2)
     # Naming the columns and rows
     colnames(covmat) <- rownames(covmat) <- c("g","o")
     
@@ -228,7 +235,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$sq.herit <- sq.herit
+    attributes(covmat)$h2 <- h2
     
     return(covmat)
     
@@ -327,14 +334,14 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
   # Filling in all entries 
   for(mem in fam_vec) {
-    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herit)
+    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2)
   }
   
   # Adding attributes to covmat
   attributes(covmat)$fam_vec <- fam_vec
   attributes(covmat)$n_fam <- n_fam
   attributes(covmat)$add_ind <- add_ind
-  attributes(covmat)$sq.herit <- sq.herit
+  attributes(covmat)$h2 <- h2
     
   return(covmat)
 }
@@ -348,7 +355,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' This function can be used to construct a covariance matrix for
 #' a given number of family members. Each entry in this covariance 
 #' matrix equals either the percentage of shared DNA between the corresponding 
-#' individuals times the squared heritability \eqn{h^2} or the 
+#' individuals times the liability-scale heritability \eqn{h^2} or the 
 #' percentage of shared DNA between the corresponding individuals times 
 #' the correlation between the corresponding phenotypes. The family members
 #' can be specified using one of two possible formats.
@@ -380,8 +387,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' @param full_corrmat A numeric matrix holding the full correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
-#' @param sq.herits A numeric vector representing the squared heritabilities on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param h2 A numeric vector representing the squared heritabilities on liability scale
+#' for all phenotypes. All entries in h2 must be non-negative and at most 1.
 #' @param phen_names A character vector holding the phenotype names. These names
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
@@ -390,8 +397,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the 
 #' required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
 #' satisfying that all diagonal entries are one and that all off-diagonal
-#' entries are between -1 and 1, and if \code{sq.herits} is a numeric vector satisfying
-#' \eqn{0 \leq sq.herits_i \leq 1} for all \eqn{i \in \{1,...,n_pheno\}},
+#' entries are between -1 and 1, and if \code{h2} is a numeric vector satisfying
+#' \eqn{0 \leq h2_i \leq 1} for all \eqn{i \in \{1,...,n_pheno\}},
 #' then the output will be a named covariance matrix. 
 #' The number of rows and columns corresponds to the number of phenotypes times 
 #' the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}). 
@@ -403,45 +410,45 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' decide on which of the two vectors to use.
 #' Note that the returned object has a number different attributes,namely
 #' \code{fam_vec}, \code{n_fam}, \code{add_ind}, \code{genetic_corrmat}, \code{full_corrmat},
-#' \code{sq.herits} and \code{phenotype_names}.
+#' \code{h2} and \code{phenotype_names}.
 #' 
 #' @examples
 #' construct_covmat_multi(fam_vec = NULL, 
 #'                        genetic_corrmat = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
 #'                        full_corrmat = matrix(c(1, 0.55, 0.55, 1), nrow = 2),
-#'                        sq.herits = c(0.37,0.44),
+#'                        h2 = c(0.37,0.44),
 #'                        phen_names = c("p1","p2"))
 #' construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
 #'                        n_fam = NULL, 
 #'                        add_ind = TRUE,
 #'                        genetic_corrmat = diag(3),
 #'                        full_corrmat = diag(3),
-#'                        sq.herits = c(0.8, 0.65))
+#'                        h2 = c(0.8, 0.65))
 #' construct_covmat_multi(fam_vec = NULL, 
 #'                        n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
 #'                        add_ind = FALSE,
 #'                        genetic_corrmat = diag(2),
 #'                        full_corrmat = diag(2),
-#'                        sq.herits = c(0.75,0.85))
+#'                        h2 = c(0.75,0.85))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat}}.
 #' 
 #' @export
 construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, add_ind = TRUE, 
-                                   genetic_corrmat, full_corrmat, sq.herits, phen_names = NULL){
+                                   genetic_corrmat, full_corrmat, h2, phen_names = NULL){
   
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
   # Checking that the heritabilities are valid
-  if(check_proportion(sq.herits)){invisible()}
+  if(check_proportion(h2)){invisible()}
   
   # Checking that all correlations are valid
   if(check_correlation_matrix(genetic_corrmat)){invisible()}
   if(check_correlation_matrix(full_corrmat)){invisible()}
   # Computing the number of phenotypes
-  num_phen <- length(sq.herits)
+  num_phen <- length(h2)
   
   # Checking that phen_names is either NULL or a valid
   # vector of strings
@@ -468,10 +475,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         
         if(p1==p2){
           
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(sq.herits[p1], sq.herits[p1], sq.herits[p1], 1), nrow = 2)
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(h2[p1], h2[p1], h2[p1], 1), nrow = 2)
         }else{
           
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(sq.herits[p1]*sq.herits[p2])*full_corrmat[p1,p2], nrow = 2, ncol = 2)
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(h2[p1]*h2[p2])*full_corrmat[p1,p2], nrow = 2, ncol = 2)
         }
       }
     }
@@ -482,7 +489,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     attributes(covmat)$fam_vec <- NULL
     attributes(covmat)$n_fam <- NULL
     attributes(covmat)$add_ind <- add_ind
-    attributes(covmat)$sq.herit <- sq.herits
+    attributes(covmat)$h2 <- h2
     attributes(covmat)$genetic_corrmat <- genetic_corrmat
     attributes(covmat)$full_corrmat <- full_corrmat
     attributes(covmat)$phenotype_names <- phen_names
@@ -588,10 +595,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         
         if(p1==p2){
           
-          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sq.herits[p1])
+          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2[p1])
         }else{
          
-          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, sq.herit = sqrt(sq.herits[p1]*sq.herits[p2])*genetic_corrmat[p1,p2]) 
+          covmat[which(rownames(covmat) == paste0(mem,"_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = sqrt(h2[p1]*h2[p2])*genetic_corrmat[p1,p2]) 
         }
        
       }
@@ -602,7 +609,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   attributes(covmat)$fam_vec <- fam_vec
   attributes(covmat)$n_fam <- n_fam
   attributes(covmat)$add_ind <- add_ind
-  attributes(covmat)$sq.herit <- sq.herits
+  attributes(covmat)$h2 <- h2
   attributes(covmat)$genetic_corrmat <- genetic_corrmat
   attributes(covmat)$full_corrmat <- full_corrmat
   attributes(covmat)$phenotype_names <- phen_names
@@ -619,13 +626,13 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' \code{\link{construct_covmat_single}} and \code{\link{construct_covmat_multi}}. 
 #'
 #' This function can be used to construct a covariance matrix for
-#' a given number of family members. If sq.herit is a number,
+#' a given number of family members. If h2 is a number,
 #' each entry in this covariance matrix equals the percentage 
 #' of shared DNA between the corresponding individuals times 
-#' the squared heritability \deqn{h^2}. However, if sq.herit is a numeric vector,
+#' the heritability on liability scale \deqn{h^2}. However, if h2 is a numeric vector,
 #' and genetic_corrmat and full_corrmat are two symmetric correlation matrices,
 #' each entry equals either the percentage of shared DNA between the corresponding 
-#' individuals times the squared heritability \deqn{h^2} or the 
+#' individuals times the heritability \deqn{h^2} or the 
 #' percentage of shared DNA between the corresponding individuals times 
 #' the correlation between the corresponding phenotypes. The family members
 #' can be specified using one of two possible formats.
@@ -651,10 +658,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' component of the full liability as well as the full
 #' liability for the underlying individual should be included in 
 #' the covariance matrix. Defaults to TRUE.
-#' @param sq.herit Either a number representing the squared heritability 
+#' @param h2 Either a number representing the liability-scale heritability 
 #' on liability scale for one single phenotype or a numeric vector representing
 #' the squared heritabilities on liability scale for a positive number of phenotypes.
-#' All entries in sq.herit must be non-negative and at most 1.
+#' All entries in h2 must be non-negative and at most 1.
 #' @param genetic_corrmat Either \code{NULL} or a numeric matrix holding the genetic correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
@@ -669,12 +676,12 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' Defaults to NULL.
 #' 
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, if it is of 
-#' the required format, if \code{add_ind} is a logical scalar and \code{sq.herit} is a 
-#' number satisfying \deqn{0 \leq sq.herit \leq 1}, then the function \code{construct_covmat}
+#' the required format, if \code{add_ind} is a logical scalar and \code{h2} is a 
+#' number satisfying \deqn{0 \leq h2 \leq 1}, then the function \code{construct_covmat}
 #' will return a named covariance matrix, which row- and column-number 
 #' corresponds to the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
-#' However, if \code{sq.herits} is a numeric vector satisfying
-#' \deqn{0 \leq sq.herits_i \leq 1} for all \deqn{i \in \{1,...,n_pheno\}} and if 
+#' However, if \code{h2} is a numeric vector satisfying
+#' \deqn{0 \leq h2_i \leq 1} for all \deqn{i \in \{1,...,n_pheno\}} and if 
 #' \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
 #' satisfying that all diagonal entries are one and that all off-diagonal
 #' entries are between -1 and 1, then \code{construct_covmat} will return 
@@ -690,35 +697,35 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' If both \code{fam_vec} and \code{n_fam} are specified, the user is asked to 
 #' decide on which of the two vectors to use.
 #' Note that the returned object has different attributes, such as 
-#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
+#' \code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{h2}.
 #' 
 #' @examples
 #' construct_covmat()
 #' construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
 #'                  n_fam = NULL, 
 #'                  add_ind = TRUE, 
-#'                  sq.herit = 0.5)
+#'                  h2 = 0.5)
 #' construct_covmat(fam_vec = NULL, 
 #'                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
-#'                  add_ind = FALSE, sq.herit = 0.3)
-#' construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
+#'                  add_ind = FALSE, h2 = 0.3)
+#' construct_covmat(h2 = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
 #' full_corrmat = matrix(c(1,0.6,0.6,1), nrow = 2))
 #' 
 #' @seealso \code{\link{get_relatedness}}, \code{\link{construct_covmat_single}},
 #' \code{\link{construct_covmat_multi}}
 #' @export
 construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), n_fam = NULL, 
-                             add_ind = TRUE, sq.herit = 0.5, genetic_corrmat = NULL, 
+                             add_ind = TRUE, h2 = 0.5, genetic_corrmat = NULL, 
                              full_corrmat = NULL, phen_names = NULL){
   
-  if(length(sq.herit) == 1){
+  if(length(h2) == 1){
     
-    return(construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, sq.herit = sq.herit))
+    return(construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, h2 = h2))
     
   }else{
     
     return(construct_covmat_multi(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, 
                                   genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                                  sq.herits = sq.herit, phen_names = phen_names))
+                                  h2 = h2, phen_names = phen_names))
   } 
 }

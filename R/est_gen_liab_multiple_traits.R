@@ -34,8 +34,8 @@
 #' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
 #' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 #' thresholds corresponding to the first phenotype. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param h2 A numeric vector representing the squared heritability on liability scale
+#' for all phenotypes. All entries in h2 must be non-negative and at most 1.
 #' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
@@ -86,7 +86,7 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat, full_corrmat,
+estimate_liability_multi <- function(family, threshs, h2, genetic_corrmat, full_corrmat,
                                      pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
                                      parallel = FALSE, progress = FALSE){
   # Turning parallel and progress into class logical
@@ -102,7 +102,7 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   if(!("tbl_df" %in% class(threshs))) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
-  if(check_proportion(sq.herits)){invisible()}
+  if(check_proportion(h2)){invisible()}
   # Checking that all correlations are valid
   if(check_correlation_matrix(genetic_corrmat)){invisible()}
   if(check_correlation_matrix(full_corrmat)){invisible()}
@@ -148,9 +148,9 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   threshs <- select(threshs, !!as.symbol(pid), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
   
   # Now we can extract the number of phenotypes
-  n_pheno <- length(sq.herits)
+  n_pheno <- length(h2)
   if(ncol(threshs) != (2*n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in sq.herits...\
+The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in h2...\
 Does all columns have the required names?")
   
   # As well as the phenotype names
@@ -224,7 +224,7 @@ The lower and upper thresholds will be swapped...")
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
                               genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                              sq.herit = sq.herits, phen_names = pheno_names)
+                              sq.herit = h2, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
@@ -306,7 +306,7 @@ The lower and upper thresholds will be swapped...")
       # Constructing the covariance matrix
       cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
                               genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                              sq.herit = sq.herits, phen_names = pheno_names)
+                              sq.herit = h2, phen_names = pheno_names)
       
       if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
         
