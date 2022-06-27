@@ -1,6 +1,6 @@
 #' Checking that relatives are represented by valid strings
 #'
-#' \code{check_valid_relatives} checks whether relatives are represented
+#' \code{validate_relatives} checks whether relatives are represented
 #' by valid abbreviations.
 #'
 #' This function can be used to check whether relatives are represented
@@ -9,6 +9,7 @@
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
+#' - c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -26,6 +27,7 @@
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
+#' - c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -43,32 +45,33 @@
 #' 
 #' @examples
 #' \dontrun{
-#' check_valid_relatives("g")
-#' check_valid_relatives("o")
-#' check_valid_relatives("mgm")
+#' validate_relatives("g")
+#' validate_relatives("o")
+#' validate_relatives("mgm")
 #' 
 #' # This will result in errors:
-#' get_relatedness("a")
-#' get_relatedness(m)
+#' validate_relatives("a")
+#' validate_relatives(m)
 #' }
 #' 
 #' @importFrom stringr str_detect
 #' 
-check_valid_relatives <- function(relatives){
+validate_relatives <- function(relatives){
   
-  if(class(relatives) != "character"){
+  if(!is.character(relatives)){
     
     stop(paste0(deparse(substitute(relatives)), " must be a string or character vector!"))
-  
-  }else if(any(!(str_detect(relatives, "^[gomf]$") | str_detect(relatives, "^[mp]g[mf]$") | 
-       str_detect(relatives, "^s[0-9]*") | str_detect(relatives, "^[mp]hs[0-9]*")| 
-       str_detect(relatives, "^[mp]au[0-9]*")))){
-       
-       stop(paste0(deparse(substitute(relatives)), " contains invalid abbreviations! Use strings from the following list: \n
+    
+  }else if(any(!(str_detect(relatives, "^[gomf]$") | str_detect(relatives, "^c[0-9]*")|
+                 str_detect(relatives, "^[mp]g[mf]$") | str_detect(relatives, "^s[0-9]*") | 
+                 str_detect(relatives, "^[mp]hs[0-9]*")| str_detect(relatives, "^[mp]au[0-9]*")))){
+    
+    stop(paste0(deparse(substitute(relatives)), " contains invalid abbreviations! Use strings from the following list: \n
   - g (Genetic component of full liability)\n
   - o (Full liability)\n
   - m (Mother)\n
   - f (Father)\n
+  - c[0-9]* (Children)\n
   - mgm (Maternal grandmother)\n
   - mgf (Maternal grandfather)\n
   - pgm (Paternal grandmother)\n
@@ -85,7 +88,7 @@ check_valid_relatives <- function(relatives){
 
 #' Checking that proportions are valid
 #'
-#' \code{check_proportion} checks whether proportions are valid, i.e.
+#' \code{validate_proportion} checks whether proportions are valid, i.e.
 #' whether they are non-negative and at most one.
 #'
 #' This function can be used to check whether proportions are non-negative
@@ -94,40 +97,40 @@ check_valid_relatives <- function(relatives){
 #' @param prop A number, integer or numeric vector representing the proportions that 
 #' need to be validated.
 #' 
-#' @return If \code{prop} are valid proportions of class \code{numeric}
-#' or \code{integer}, non-negative and at most one,
+#' @return If \code{prop} is a vector holding valid proportions of class \code{numeric}
+#' or \code{integer} that are non-negative and at most one,
 #' then the function will return TRUE. Otherwise, the function aborts.
 #' 
 #' @examples
 #' \dontrun{
-#' check_proportion(0.2)
-#' check_proportion(0.04)
-#' check_proportion(0)
-#' check_proportion(1)
+#' validate_proportion(0.2)
+#' validate_proportion(0.04)
+#' validate_proportion(0)
+#' validate_proportion(1)
 #' 
 #' # This will result in errors:
-#' check_proportion(2)
-#' check_proportion(-0.5)
+#' validate_proportion(2)
+#' validate_proportion(-0.5)
 #' }
 #' 
-check_proportion <- function(prop){
+validate_proportion <- function(prop){
   
   if(is.null(prop)){
     
     stop(paste0(deparse(substitute(prop)), " must be specified!"))
-  
-  }else if(class(prop)!= "numeric" && class(prop)!= "integer"){
+    
+  }else if(!is.numeric(prop) && !is.integer(prop)){
     
     stop(paste0(deparse(substitute(prop)), " must be numeric!"))
-  
+    
   }else if(any(prop<0)){
     
     stop(paste0(deparse(substitute(prop)), " must be non-negative!"))
-  
+    
   }else if(any(prop>1)){
     
     stop(paste0(deparse(substitute(prop)), " must be smaller than or equal to 1!"))
-  
+    
   }else{
     return(TRUE)
   }
@@ -136,7 +139,7 @@ check_proportion <- function(prop){
 
 #' Checking that a correlation matrix is valid
 #'
-#' \code{check_correlation_matrix} checks whether a matrix is a valid 
+#' \code{validate_correlation_matrix} checks whether a matrix is a valid 
 #' correlation matrix, i.e. whether its diagonal entries are equal to one, 
 #' while all off-diagonal entries are between -1 and 1, and whether it is
 #' symmetric.
@@ -156,24 +159,24 @@ check_proportion <- function(prop){
 #' 
 #' @examples
 #' \dontrun{
-#' check_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
-#' check_correlation_matrix(diag(3))
+#' validate_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
+#' validate_correlation_matrix(diag(3))
 #' 
 #' # This will result in errors:
-#' check_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2))
-#' check_correlation_matrix(matrix(nrow=2, ncol = 2))
+#' validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2))
+#' validate_correlation_matrix(matrix(nrow=2, ncol = 2))
 #' }
 #' 
-check_correlation_matrix <- function(corrmat){
+validate_correlation_matrix <- function(corrmat){
   
   if(is.null(corrmat)){
     
     stop(paste0(deparse(substitute(corrmat)), " must be specified!"))
-  
+    
   }else if(any(diag(corrmat)!= 1)){
     
     stop(paste0("All diagonal entries in ", deparse(substitute(corrmat))," must be 1!"))
-  
+    
   }else if(any(abs(corrmat)>1)){
     stop(paste0("All off-diagonal entries in ", deparse(substitute(corrmat))," must be between -1 and 1!"))
   }else if(!isSymmetric.matrix(corrmat)){
