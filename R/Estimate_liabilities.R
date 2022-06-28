@@ -12,22 +12,20 @@ utils::globalVariables("upper")
 #'
 #' @param family A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least two columns that hold the family identifier and the corresponding
-#' personal identifiers, respectively. That is, for each family in fam_id there should
-#' be a list holding all individuals belonging to that family in pid. Note that the 
-#' personal identifiers for all individuals must have a special format. It must be end
-#' with _?, where ? is one of the following abbreviations 
+#' personal identifiers, respectively. That is, for each family in \code{fam_id} there should
+#' be a list holding all individuals belonging to that family in \code{pid}. Note that the 
+#' personal identifiers for all individuals must have a special format. It must end
+#' on \code{_?}, where \code{?} is one of the following abbreviations 
 #' - g (Genetic component of the full liability)
-#' - o (full liability)
+#' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
+#' - c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
-#' - mgp\[1-2\]* (Maternal grandparent)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - pgp\[1-2\]* (Paternal grandparent)
 #' - s\[0-9\]* (Full siblings)
-#' - c\[0-9\]* (children)
 #' - mhs\[0-9\]* (Half-siblings - maternal side)
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
@@ -35,7 +33,8 @@ utils::globalVariables("upper")
 #' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
-#' and the remaining two holding the lower and upper thresholds, respectively.
+#' and the remaining two holding the lower and upper thresholds, respectively. The latter
+#' should be called "lower" and "upper", respectively. 
 #' @param h2 A number representing the heritability on liability scale
 #' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
 #' the heritability must also be at most 1.
@@ -45,33 +44,43 @@ utils::globalVariables("upper")
 #' @param fam_id A string holding the name of the column in \code{family} that
 #' holds the family identifier. Defaults to "fam_ID".
 #' @param out A character or numeric vector indicating whether the genetic component
-#' of the full liability, the full liability or both should be returned. If out = c(1) or 
-#' out = c("genetic"), the genetic liability is estimated and returned. If out = c(2) or 
-#' out = c("full"), the full liability is estimated and returned. If out = c(1,2) or 
-#' out = c("genetic", "full"), both components are estimated and returned. 
-#' Defaults to c(1).
+#' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
+#' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
+#' \code{out = c("full")}, the full liability is estimated and returned. If \code{out = c(1,2)} or 
+#' \code{out = c("genetic", "full")}, both components are estimated and returned. 
+#' Defaults to \code{c(1)}.
 #' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
 #' Equals the standard error of the mean. That is, a tolerance of 0.2 means that the 
 #' standard error of the mean is below 0.2. Defaults to 0.01.
-#' @param always_add A character vector or NULL. If always_add = c("g","o"), both the genetic component 
+#' @param always_add A character vector or \code{NULL}. If \code{always_add = c("g","o")}, both the genetic component 
 #' of the full liability as well as the full liability will be added to the list of family members. 
-#' If always_add equals "g" or "o", the genetic component of the full liability or the full liability
-#' will be added, respectively. If always_add = NULL, no component will be added.
-#' Defaults to c("g","o").
+#' If always_add equals \code{"g"} or \code{"o"}, the genetic component of the full liability or the full liability
+#' will be added, respectively. If \code{always_add = NULL}, no component will be added.
+#' Defaults to \code{c("g","o")}.
+#' @param progress A logical scalar indicating whether the function should display
+#' a progress bar. Defaults to \code{FALSE}.
 #' 
-#' @return If family and threshs are two matrices, lists or data frames that can be converted into
-#' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
-#' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the heritability, out, tol and always_add are of the required form,
-#' then the function returns a tibble with either four or six columns (depending on the length of out).
-#' The first two columns correspond to the columns fam_id and pid from family. 
-#' If out is equal to c(1) or c("genetic"), the third and fourth column hold the estimated genetic 
-#' liability as well as the corresponding standard error, respectively. 
-#' If out equals c(2) or c("full"), the third and fourth column hold the estimated full liability 
-#' as well as the corresponding standard error, respectively. 
-#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth column hold the estimated 
-#' genetic liability as well as the corresponding standard error, respectively, while the fifth and
-#' sixth column hold the estimated full liability as well as the corresponding standard error, respectively.
+#' @return If \code{family} and \code{threshs} are two matrices, lists or 
+#' data frames that can be converted into tibbles, if \code{family} has two 
+#' columns named like the strings represented in \code{pid} and \code{fam_id}, if 
+#' \code{threshs} has a column named like the string given in \code{pid} as 
+#' well as a column named "lower" and a column named "upper" and if the 
+#' liability-scale heritability \code{h2}, \code{out}, \code{tol} and 
+#' \code{always_add} are of the required form, then the function returns a 
+#' tibble with either four or six columns (depending on the length of out).
+#' The first two columns correspond to the columns \code{fam_id} and \code{pid} '
+#' present in \code{family}. 
+#' If \code{out} is equal to \code{c(1)} or \code{c("genetic")}, the third 
+#' and fourth column hold the estimated genetic liability as well as the 
+#' corresponding standard error, respectively. 
+#' If \code{out} equals \code{c(2)} or \code{c("full")}, the third and 
+#' fourth column hold the estimated full liability as well as the 
+#' corresponding standard error, respectively. 
+#' If \code{out} is equal to \code{c(1,2)} or \code{c("genetic","full")},
+#' the third and fourth column hold the estimated genetic liability as 
+#' well as the corresponding standard error, respectively, while the fifth and
+#' sixth column hold the estimated full liability as well as the corresponding 
+#' standard error, respectively.
 #' 
 #' @examples
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
@@ -80,9 +89,11 @@ utils::globalVariables("upper")
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
 #' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
 #' always_add = c("g","o"))
+#' 
 #' # 
 #' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
 #' h2 = 0.5, n_sim=10, pop_prev = .05)
+#' 
 #' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
 #' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
 #' tol = 0.01, always_add = c("g","o"))
@@ -95,11 +106,17 @@ utils::globalVariables("upper")
 #' 
 #' @export
 estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
-                               tol = 0.01, always_add = c("g","o")){
+                               tol = 0.01, always_add = c("g","o"), progress = FALSE){
   
-
 # Making sure input is valid ----------------------------------------------
 
+  # If always_add is a vector of length zero, it is set to
+  # NULL instead
+  if(length(always_add) == 0) always_add <- NULL
+  
+  # Turning progress into class logical
+  progress <- as.logical(progress)
+  
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
   fam_id <- as.character(fam_id)
@@ -109,11 +126,8 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   if(!tibble::is_tibble(family))  family <- tibble::as_tibble(family)
   if(!tibble::is_tibble(threshs)) threshs <- tibble::as_tibble(threshs)
   
-  
   # Checking that the heritability is valid
-  if(!is.numeric(h2) && !is.integer(h2) )stop("The heritability must be numeric!")
-  if(h2<0)stop("The heritability must be non-negative!")
-  if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
+  if(validate_proportion(h2)){invisible()}
   
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
@@ -126,7 +140,7 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   if(any(!c("lower","upper") %in% colnames(threshs))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   
   # Checking that tol is valid
-  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
+  if(!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   
   # Checking that always_add is a vector of strings
@@ -180,6 +194,12 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
   # Extracting the families
   fam_list <- pull(family, !!as.symbol(fam_id))
   
+  # If progress = TRUE, a progress bar will be displayed
+  if(progress){
+    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+    j <- 0
+  }
+  
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
   gibbs_res <- future.apply::future_lapply(X = 1:nrow(family), FUN = function(i){
@@ -191,10 +211,10 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
     tmp_split <- str_split(fam, "_\\s*(?=[^_]+$)")
     family_ids <- sapply(tmp_split, function(x) x[1])
     always_add_inds <- sapply(tmp_split, function(x) str_ends(x[2], "o") | str_ends(x[2], "g")) 
+    
     # Constructing the covariance matrix
     # If always_add holds "g" or "o", add_ind must be TRUE
     cov <- construct_covmat(fam_vec = full_fam, n_fam = NULL, add_ind = length(always_add), h2 = h2)
-    
     
     # Extracting the thresholds for all family members 
     fam_threshs = threshs %>% filter(!!as.symbol(fam_id) %in% family_ids[!always_add_inds])
@@ -248,15 +268,25 @@ estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = 
       # Adding one to the counter
       n_gibbs <- n_gibbs +1
     }
+    
     # If all standard errors are below the tolerance, 
     # the estimated liabilities as well as the corresponding 
     # standard error can be returned
     return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
     
+    # If progress = TRUE, a progress bar will be displayed
+    if(progress){
+      j <- j+1
+      utils::setTxtProgressBar(pb, j)
+    }
+    
+    
   }, future.seed = TRUE) %>% 
     do.call("bind_rows", .)
     
-    
+  # Close the connection 
+  if(progress) close(bp)  
+  
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information
