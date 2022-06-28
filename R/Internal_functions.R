@@ -185,3 +185,89 @@ validate_correlation_matrix <- function(corrmat){
     return(TRUE)
   }
 }
+
+
+#' Constructing age of onset (aoo)
+#'
+#' \code{construct_aoo} constructs the age of onset (aoo)
+#' for a variable number of family members based on their 
+#' liability, disease status and current age.
+#'
+#' @param fam_mem A character vector holding all family members.
+#' @param .tbl A tibble holding the liability as well as age and
+#' disease status for the set of individuals in \code{fam_mem}.
+#' @param pop_prev A positive number representing the population prevalence, i.e. the 
+#' overall prevalence in the population.
+#' 
+#' @return A tibble holding all columns present in .tbl as well
+#' as the age of onset or the current age
+#' (depending on the disease status) for all individuals 
+#' given in \code{fam_mem}. 
+#' 
+#' @importFrom dplyr %>% rowwise select mutate bind_cols
+#' @importFrom rlang :=
+construct_aoo <- function(fam_mem,.tbl, pop_prev){
+  
+  # Removing the genetic component from the 
+  # set of family members, if it is present
+  i_ind <- setdiff(fam_mem, c("g"))
+  
+  # Looping over all family members ind i_ind
+  lapply(i_ind, function(i){
+    
+    # Selecting the liability, disease status and age for 
+    # individual i, in order to compute the age of onset.
+    select(.tbl, c(tidyselect::matches(paste0("^",i,"$")), tidyselect::matches(paste0("^",i,"_[as].*$")))) %>%
+      rowwise() %>% 
+      mutate(., !!as.symbol(paste0(i,"_aoo")) := ifelse(!!as.symbol(paste0(i,"_status")), 
+                                                        round(convert_liability_to_aoo(!!as.symbol(i), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
+                                                        !!as.symbol(paste0(i,"_age")))) %>%
+      select(., !!as.symbol(paste0(i,"_aoo")))
+  }
+  ) %>% do.call("bind_cols",.) %>% bind_cols(.tbl,.)
+}
+
+
+#' Computing thresholds
+#'
+#' \code{construct_thresholds} computes the upper and lower 
+#' thresholds for a variable number of family members based on their 
+#' disease status and current age or age of onset (depending on 
+#' the disease status).
+#'
+#' @param fam_mem A character vector holding all family members.
+#' @param .tbl A tibble holding the family ID, disease status as well
+#' as the age of onset or the current age
+#' (depending on the disease status).
+#' @param pop_prev A positive number representing the population prevalence, i.e. the 
+#' overall prevalence in the population.
+#' 
+#' @return A tibble holding the personal identifier (PID) as well as 
+#' the lower and the upper threshold for all individuals
+#' present in \code{fam_mem}.
+#' 
+#' @importFrom dplyr %>% rowwise select mutate bind_rows ungroup
+construct_thresholds <- function(fam_mem, .tbl, pop_prev){
+  
+  # Removing the genetic component from the 
+  # set of family members, if it is present
+  i_ind <- setdiff(fam_mem, c("g"))
+  
+  # Looping over all family members ind i_ind
+  lapply(seq_along(i_ind), function(nbr){
+    i = i_ind[nbr]
+    
+    # Selecting the family ID, disease status and age/aoo for 
+    # individual i, in order to compute the thresholds.
+    select(.tbl, c(tidyselect::matches(paste0("^indiv_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
+      rowwise() %>% 
+      mutate(., fam_ID = paste0(indiv_ID,"_member", nbr), 
+             upper = convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
+             lower = ifelse(!!as.symbol(paste0(i,"_status")), 
+                            convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
+                            -Inf)) %>%
+      select(., fam_ID, lower, upper) %>% 
+      ungroup()
+    
+  }) %>% do.call("bind_rows",.)
+}
