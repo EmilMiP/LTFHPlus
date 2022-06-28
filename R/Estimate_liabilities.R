@@ -3,7 +3,7 @@ utils::globalVariables("upper")
 
 #' Estimating the genetic or full liability 
 #'
-#' \code{estimate_liability} estimates the genetic component of the full
+#' \code{estimate_liability_single} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history.
 #'
@@ -86,7 +86,7 @@ utils::globalVariables("upper")
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 #' add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 #' 
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
 #' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
 #' always_add = c("g","o"))
 #' 
@@ -94,7 +94,7 @@ utils::globalVariables("upper")
 #' sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
 #' h2 = 0.5, n_sim=10, pop_prev = .05)
 #' 
-#' estimate_liability(family = sims$fam_ID, threshs = sims$thresholds, 
+#' estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
 #' h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
 #' tol = 0.01, always_add = c("g","o"))
 #' 
@@ -105,7 +105,7 @@ utils::globalVariables("upper")
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
+estimate_liability_single <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
                                tol = 0.01, always_add = c("g","o"), progress = FALSE){
   
 # Making sure input is valid ----------------------------------------------
