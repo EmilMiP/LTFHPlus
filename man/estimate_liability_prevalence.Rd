@@ -7,7 +7,7 @@ using prevalence information}
 \usage{
 estimate_liability_prevalence(
   status,
-  sq.herits,
+  h2_vec,
   genetic_corrmat,
   full_corrmat,
   prevalences,
@@ -26,8 +26,8 @@ phenotype, respectively. It must be possible to tie each status variable
 to a specific phenotype uniquely. The function will use the column names to create
 phenotype names.}
 
-\item{sq.herits}{A numeric vector representing the squared heritability on liability scale
-for all phenotypes. All entries in sq.herits must be non-negative and at most 1.}
+\item{h2_vec}{A numeric vector representing the heritabilites on liability scale
+for all phenotypes. All entries in \code{h2_vec} must be non-negative and at most 1.}
 
 \item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
 phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
@@ -60,12 +60,12 @@ standard error of the mean is below 0.2. Defaults to 0.01.}
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
 
-\item{progress}{A logical scalar indicating whether the function should display a progress bar.
-Defaults to FALSE.}
+\item{progress}{A logical scalar indicating whether the function should display
+a progress bar. Defaults to \code{FALSE}.}
 }
 \value{
 If \code{status} is a matrix, list or data frame that can be converted into a
-tibble and that has a column named \code{PID} and if the squared heritabilities, corrmat,
+tibble and that has a column named \code{PID} and if the heritabilities, corrmat,
 out and tol are of the required form, then the function returns a tibble with at least
 five columns (depending on the length of out).
 The first column corresponds to the columns pid.
@@ -88,6 +88,11 @@ FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
 the full liability and/or the full liability for a number of individuals
 based solely on prevalence information for a variable number of
 phenotypes.
+
+This function can be used to estimate either the genetic component of the
+full liability, the full liability or both for a variable number of traits,
+when no family history is available, but prevalence information for each
+phenotype can be obtained.
 }
 \seealso{
 \code{\link[future.apply]{future_apply}}

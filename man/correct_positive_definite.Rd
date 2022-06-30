@@ -14,15 +14,15 @@ correct_positive_definite(
 \item{covmat}{A symmetric and numeric matrix. If the covariance matrix
 should be corrected, it must have a number of attributes, such as
 \code{attr(covmat,"fam_vec")}, \code{attr(covmat,"n_fam")},
-\code{attr(covmat,"add_ind")}, \code{attr(covmat,"sq.herit")},
+\code{attr(covmat,"add_ind")}, \code{attr(covmat,"h2")},
 \code{attr(covmat,"genetic_corrmat")}, \code{attr(covmat,"full_corrmat")}
 and \code{attr(covmat,"phenotype_names")}. Any covariance matrix
 obtained by \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}}
 or \code{\link{construct_covmat_multi}} will have these attributes by default.}
 
 \item{correction_val}{A positive number representing the amount by which
-\code{genetic_corrmat} and \code{full_corrmat} will be changed, if not all
-eigenvalues are positive. That is, correction_val is the number that will be
+\code{genetic_corrmat} and \code{full_corrmat} will be changed, if some
+eigenvalues are non-positive. That is, correction_val is the number that will be
 multiplied to all off_diagonal entries in \code{genetic_corrmat} and \code{full_corrmat}.
 Defaults to 0.99.}
 
@@ -34,7 +34,7 @@ If \code{covmat} is a symmetric and numeric matrix and all eigenvalues are
 positive, \code{correct_positive_definite} simply returns \code{covmat}. If some
 eigenvalues are not positive and \code{correction_val} is a positive number,
 \code{correct_positive_definite} tries to convert \code{covmat} into a positive definite
-matrix. If \code{covmat} has attributes \code{add_ind}, \code{sq.herit},
+matrix. If \code{covmat} has attributes \code{add_ind}, \code{h2},
 \code{genetic_corrmat}, \code{full_corrmat} and \code{phenotype_names},
 \code{correct_positive_definite} computes a new covariance matrix using slightly
 modified correlation matrices \code{genetic_corrmat} and \code{full_corrmat}.
@@ -54,7 +54,7 @@ covariance matrix.
 This function can be used to verify that a given covariance matrix
 is positive definite. It calculates all eigenvalues in order to
 investigate whether they are all positive. This property is necessary
-if the covariance matrix should be used as a Gaussian covariance matrix.
+for the covariance matrix to be used as a Gaussian covariance matrix.
 It is especially useful to check whether any covariance matrix obtained
 by \code{\link{construct_covmat_multi}} is positive definite.
 If the given covariance matrix is not positive definite, \code{correct_positive_definite}

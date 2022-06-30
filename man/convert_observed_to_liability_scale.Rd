@@ -11,8 +11,9 @@ convert_observed_to_liability_scale(
 )
 }
 \arguments{
-\item{obs_h2}{A number or numeric vector representing the heritability(ies)
-on the observed scale. Must be non-negative and at most 1. Defaults to 0.5}
+\item{obs_h2}{A number or numeric vector representing the liability-scale
+heritability(ies)on the observed scale. Must be non-negative and at most 1.
+Defaults to 0.5}
 
 \item{pop_prev}{A number or numeric vector representing the population prevalence(s). All
 entries must be non-negative and at most one.
@@ -31,7 +32,7 @@ The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
 \doi{10.1016/j.ajhg.2011.02.002}.
 If \code{obs_h2}, \code{pop_prev} and \code{prop_cases} are non-negative numeric
 vectors where all entries are at most one, the function returns a vector of the same
-length as obq_h2. Each entry holds to the heritability on the liability
+length as obs_h2. Each entry holds to the heritability on the liability
 scale which was obtained from the corresponding entry in obs_h2 using Equation 23.
 If \code{obs_h2} and \code{pop_prev} are non-negative numbers that are at most
 one and \code{prop_cases} is \code{NULL}, the function returns the heritability
@@ -43,8 +44,8 @@ The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
 If \code{obs_h2} and \code{pop_prev} are non-negative numeric vectors such that
 all entries are at most one, while \code{prop_cases} is \code{NULL},
 \code{convert_observed_to_liability_scale} returns a vector of the same
-length as obq_h2. Each entry holds to the heritability on the liability
-scale which was obtained from the corresponding entry in obs_h2 using Equation 17.}
+length as obq_h2. Each entry holds to the liability-scale heritability that
+was obtained from the corresponding entry in obs_h2 using Equation 17.}
 }
 \description{
 \code{convert_observed_to_liability_scale} transforms the heritability on the
