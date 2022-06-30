@@ -381,8 +381,27 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' matrix equals either the percentage of shared DNA between the corresponding 
 #' individuals times the liability-scale heritability \eqn{h^2} or the 
 #' percentage of shared DNA between the corresponding individuals times 
-#' the correlation between the corresponding phenotypes. The family members
-#' can be specified using one of two possible formats.
+#' the correlation between the corresponding phenotypes. 
+#' That is, for the same phenotype, the covariance between all
+#' combinations of the genetic component of the full liability 
+#' and the full liability is given by
+#' \deqn{\text{Cov}\left( l_g, l_g \right) = h^2,}
+#' \deqn{\text{Cov}\left( l_g, l_o \right) = h^2,}
+#' \deqn{\text{Cov}\left( l_o, l_g \right) = h^2}
+#' and
+#' \deqn{\text{Cov}\left( l_o, l_o \right) = 1.}
+#' For two different phenotypes, the covariance is given by
+#' \deqn{\text{Cov}\left( l_g^1, l_g^2 \right) = \rho_g^{1,2},}
+#' \deqn{\text{Cov}\left( l_g^1, l_o^2 \right) = \rho_g^{1,2},}
+#' \deqn{\text{Cov}\left( l_o^1, l_g^2 \right) = \rho_g^{1,2}}
+#' and
+#' \deqn{\text{Cov}\left( l_o^1, l_o^2 \right) = \rho_g^{1,2} + \rho_e^{1,2},}
+#' where \eqn{l_g^i} and \eqn{l_o^i} are the genetic component 
+#' of the full liability and the full liability for phenotype \eqn{i},
+#' respectively, \eqn{\rho_g^{i,j}} is the genetic correlation between
+#' phenotype \eqn{i} and \eqn{j} and \eqn{\rho_e^{1,2}} is the 
+#' environmental correlation between phenotype \eqn{i} and \eqn{j}. 
+#' The family members can be specified using one of two possible formats.
 #' 
 #' @param fam_vec A vector of strings holding the different 
 #' family members. All family members must be represented by strings from the 
@@ -510,7 +529,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
           covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(h2_vec[p1], h2_vec[p1], h2_vec[p1], 1), nrow = 2)
         }else{
           
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(sqrt(h2_vec[p1]*h2_vec[p2])*full_corrmat[p1,p2], nrow = 2, ncol = 2)
+          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(genetic_corrmat[p1,p2],genetic_corrmat[p1,p2],genetic_corrmat[p1,p2], full_corrmat[p1,p2]), nrow = 2, ncol = 2)
         }
       }
     }
@@ -630,7 +649,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
           covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, h2 = h2_vec[p1])
         }else{
          
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, h2 = sqrt(h2_vec[p1]*h2_vec[p2])*genetic_corrmat[p1,p2]) 
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2])
+          diag(covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)]) <- c(genetic_corrmat[p1,p2], replicate(n= length(fam)-1, full_corrmat[p1,p2]))
         }
       }
     }
