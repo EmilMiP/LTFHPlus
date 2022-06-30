@@ -1,5 +1,6 @@
 #' Estimating the genetic or full liability for multiple phenotypes
 #' FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
+#' 
 #' \code{estimate_liability_multi} estimates the genetic component of the full
 #' liability and/or the full liability for a number of individuals based
 #' on their family history for a variable number of phenotypes.
@@ -17,6 +18,7 @@
 #' - o (full liability)
 #' - m (Mother)
 #' - f (Father)
+#' -c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -34,49 +36,62 @@
 #' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
 #' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 #' thresholds corresponding to the first phenotype. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
 #' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
-#' Defaults to NULL.
-#' @param full_corrmat A  numeric matrix holding the full correlations between the desired 
+#' @param full_corrmat A numeric matrix holding the full correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' @param h2_vec A numeric vector representing the liability-scale heritabilities
+#' for all phenotypes. All entries in h2_vec must be non-negative and at most 1.
+#' @param phen_names A character vector holding the phenotype names. These names
+#' will be used to create the row and column names for the covariance matrix.
+#' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' @param  pid A string holding the name of the column in \code{family} and 
 #' \code{threshs} that hold the personal identifier(s). Defaults to "PID".
 #' @param fam_id A string holding the name of the column in \code{family} that
 #' holds the family identifier. Defaults to "fam_ID".
 #' @param out A character or numeric vector indicating whether the genetic component
-#' of the full liability, the full liability or both should be returned. If out = c(1) or 
-#' out = c("genetic"), the genetic liability is estimated and returned. If out = c(2) or 
-#' out = c("full"), the full liability is estimated and returned. If out = c(1,2) or 
-#' out = c("genetic", "full"), both components are estimated and returned. 
-#' Defaults to c(1).
+#' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
+#' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
+#' \code{out = c("full")}, the full liability is estimated and returned. If \code{out = c(1,2)} or 
+#' \code{out = c("genetic", "full")}, both components are estimated and returned. 
+#' Defaults to \code{c(1)}.
 #' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
 #' Equals the standard error of the mean. That is, a tolerance of 0.2 means that the 
 #' standard error of the mean is below 0.2. Defaults to 0.01.
-#' @param parallel A logical scalar indicating whether computations should be performed parallel.
-#' In order for this to be possible, the user must install the library "future.apply" and create a plan
-#' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param always_add A character vector or \code{NULL}. If \code{always_add = c("g","o")}, both the genetic component 
+#' of the full liability as well as the full liability will be added to the list of family members. 
+#' If always_add equals \code{"g"} or \code{"o"}, the genetic component of the full liability or the full liability
+#' will be added, respectively. If \code{always_add = NULL}, no component will be added.
+#' Defaults to \code{c("g","o")}.
+#' @param progress A logical scalar indicating whether the function should display
+#' a progress bar. Defaults to \code{FALSE}.
 #' 
-#' @return If family and threshs are two matrices, lists or data frames that can be converted into
-#' tibbles, if family has two columns named like the strings represented in pid and fam_id, if 
-#' threshs has a column named like the string given in pid as well as a column named "lower" and 
-#' a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
-#' then the function returns a tibble with at least six columns (depending on the length of out).
-#' The first two columns correspond to the columns fam_id and pid from family. 
-#' If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic 
-#' liability as well as the corresponding standard error for the first phenotype, respectively. 
-#' If out equals c(2) or c("full"), the third and fourth columns hold the estimated full liability 
-#' as well as the corresponding standard error for the first phenotype, respectively. 
-#' If out is equal to c(1,2) or c("genetic","full"), the third and fourth columns hold the estimated 
-#' genetic liability as well as the corresponding standard error for the first phenotype, respectively, 
-#' while the fifth and sixth columns hold the estimated full liability as well as the corresponding standard error
-#' for the first phenotype, respectively.
-#' The remaining columns hold the estimated genetic liabilities and/or the estimated full liabilities
-#' as well as the corresponding standard errors for the remaining phenotypes.
+#' @return If \code{family} and \code{threshs} are two matrices, lists or data frames 
+#' that can be converted into tibbles, if \code{family} has two columns named like 
+#' the strings represented in \code{pid} and \code{fam_id}, if \code{threshs} has a 
+#' column named like the string given in \code{pid} as well as a column named \code{"lower"} 
+#' and a column named \code{"upper"} and if the liability-scale heritabilities in \code{h2_vec}, 
+#' \code{genetic_corrmat}, \code{full_corrmat}, \code{out} and \code{tol} are of the 
+#' required form, then the function returns a tibble with at least six columns (depending 
+#' on the length of out).
+#' The first two columns correspond to the columns \code{fam_id} and \code{pid} present in 
+#' the tibble \code{family}. 
+#' If \code{out} is equal to \code{c(1)} or \code{c("genetic")}, the third and fourth columns 
+#' hold the estimated genetic liability as well as the corresponding standard error for the 
+#' first phenotype, respectively. 
+#' If \code{out} equals \code{c(2)} or \code{c("full")}, the third and fourth columns hold 
+#' the estimated full liability as well as the corresponding standard error for the first 
+#' phenotype, respectively. 
+#' If \code{out} is equal to \code{c(1,2)} or \code{c("genetic","full")}, the third and 
+#' fourth columns hold the estimated genetic liability as well as the corresponding standard 
+#' error for the first phenotype, respectively, while the fifth and sixth columns hold the 
+#' estimated full liability as well as the corresponding standard error for the first 
+#' phenotype, respectively.
+#' The remaining columns hold the estimated genetic liabilities and/or the estimated full 
+#' liabilities as well as the corresponding standard errors for the remaining phenotypes.
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}
 #' 
@@ -84,11 +99,19 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat, full_corrmat,
-                                     pid = "PID", fam_id = "fam_ID", out = c(1), tol = 0.01, 
-                                     parallel = FALSE, progress = FALSE){
-  # Turning parallel and progress into class logical
-  parallel <- as.logical(parallel)
+estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, full_corrmat,
+                                     phen_names = NULL, always_add, pid = "PID",
+                                     fam_id = "fam_ID", out = c(1), tol = 0.01, 
+                                     progress = FALSE){
+  
+# Making sure input is valid--------------------------------------------
+  
+  # If always_add is a vector of length zero, it is set to
+  # NULL instead
+  if(length(always_add) == 0) always_add <- NULL
+  
+  # Turning parallel into class logical
+  progress <- as.logical(progress)
 
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
@@ -99,21 +122,30 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   if(!tibble::is_tibble(threshs)) threshs <- tibble::as_tibble(threshs)
   
   # Checking that the heritability is valid
-  if(check_proportion(sq.herits)){invisible()}
+  if(validate_proportion(h2_vec)){invisible()}
   
   # Checking that all correlations are valid
-  if(check_correlation_matrix(genetic_corrmat)){invisible()}
-  if(check_correlation_matrix(full_corrmat)){invisible()}
+  if(validate_correlation_matrix(genetic_corrmat)){invisible()}
+  if(validate_correlation_matrix(full_corrmat)){invisible()}
+  
   # Checking that family has two columns named pid_col and fam_id
   if(!(pid %in% colnames(family))) stop(paste0("The column ", pid," does not exist in the tibble family..."))
   if(!(fam_id %in% colnames(family))) stop(paste0("The column ", fam_id," does not exist in the tibble family..."))
+  
   # And that pid is also present in the tibble threshs
   if(!(pid %in% colnames(threshs))) stop(paste0("The column ", pid," does not exist in the tibble threshs..."))
+  
   # In addition, we check that threshs has columns named lower and upper
   if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
+  
   # Checking that tol is valid
   if(!is.numeric(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
+  
+  # Checking that always_add is a vector of strings
+  if(!is.character(always_add) && !is.null(always_add)) stop("always_add must be of class character!") 
+  always_add <- intersect(always_add, c("g","o"))
+  
   # Checking that out is either a character vector or a
   # numeric vector 
   if(is.numeric(out)){
@@ -146,9 +178,9 @@ estimate_liability_multi <- function(family, threshs, sq.herits, genetic_corrmat
   threshs <- select(threshs, !!as.symbol(pid), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
   
   # Now we can extract the number of phenotypes
-  n_pheno <- length(sq.herits)
+  n_pheno <- length(h2_vec)
   if(ncol(threshs) != (2*n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in sq.herits...\
+The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in h2_vec...\
 Does all columns have the required names?")
   
   # As well as the phenotype names
@@ -171,210 +203,109 @@ The lower and upper thresholds will be swapped...")
     }
   }
   
-  # If parallel = T, future_lapply needs to be installed 
-  if(parallel){
-    if(!("future.apply" %in% library()$results[,1])){
+  # Extracting the families
+  fam_list <- pull(family, !!as.symbol(fam_id))
+  
+  cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
+  
+  # If progress = TRUE, a progress bar will be displayed
+  if(progress){
+    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+    j <- 0
+  }
+  
+  gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
+    
+    # Extract family members
+    fam <- unlist(fam_list[i])
+
+    # Constructing the covariance matrix
+    cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
+                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                            h2 = h2_vec, phen_names = pheno_names)
+
+    if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
       
-      count <- 1
-      ver <- "a"
-      while(!(ver %in% c("y","n"))){
+      cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
+    
+    }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
         
-        if(count < 4){
-          
-          count <- count + 1 
-          ver <- readline(prompt="In order to use a parallelized version of this function, the package future.apply must be installed. \n 
-                          Do you want to install future.apply now [y/n]?: ")
-        }else{
-          
-          stop("Function aborted...")
-        }
-      }
+      cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
+    }
+    
+    # Extracting the thresholds for all family members 
+    # and all phenotypes
+    intermed_res = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
+    
+    for(pheno in pheno_names){
       
-      if(ver == "y"){
+      if(which(pheno_names == pheno) == 1){
         
-        utils::install.packages("future.apply")
+        fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
+          rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno)))
+      
       }else{
         
-        parallel <- FALSE
+        fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
+          rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno))) %>% 
+          bind_rows(fam_threshs,.)
       }
+
     }
-  }
+    rm(intermed_res)
+      
+    # Setting the variables needed for Gibbs sampler
+    fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
+    std_err <- rep(Inf, length(out))
+    names(std_err) <- c("genetic", "full")[out]
+    n_gibbs <- 1
+    
+    # Running Gibbs sampler
+    while(any(std_err > tol)){
+      
+      if(n_gibbs == 1){
+        
+        est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                    fixed = fixed, out = out, burn_in = 1000) %>% 
+          `colnames<-`(c("genetic", "full")[out]) %>% 
+          tibble::as_tibble()
+        
+      }else{
+        
+        est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
+                                    fixed = fixed, out = out, burn_in = 1000) %>%
+          `colnames<-`(c("genetic", "full")[out]) %>%
+          tibble::as_tibble() %>% 
+          bind_rows(est_liabs)
+      }
+      
+      # Computing the standard error
+      std_err <- batchmeans::bmmat(est_liabs)[,2]
+      # Adding one to the counter
+      n_gibbs <- n_gibbs +1
+    }
+    
+    # If progress = TRUE, a progress bar will be displayed
+    if(progress){
+      j <- j+1
+      utils::setTxtProgressBar(pb, j)
+    }
+    
+    # If all standard errors are below the tolerance, 
+    # the estimated liabilities as well as the corresponding 
+    # standard error can be returned
+    return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
+    
+  }, future.seed = TRUE) %>% 
+    do.call("bind_rows",.)
   
-  # Extracting the families
-  fam_list <- pull(family, !!as.symbol(pid))
+  # Close the connection 
+  if(progress) close(pb)  
   
-
-  
-  if(parallel){
-    
-    cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
-    
-    gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
-      
-      # Extract family members
-      fam <- unlist(fam_list[i])
-
-      # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                              sq.herit = sq.herits, phen_names = pheno_names)
-
-      if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
-      
-      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
-          
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
-      }
-      
-      # Extracting the thresholds for all family members 
-      # and all phenotypes
-      intermed_res = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
-      
-      for(pheno in pheno_names){
-        
-        if(which(pheno_names == pheno) == 1){
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno)))
-        
-        }else{
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno))) %>% 
-            bind_rows(fam_threshs,.)
-        }
-
-      }
-      rm(intermed_res)
-        
-      # Setting the variables needed for Gibbs sampler
-      fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
-      std_err <- rep(Inf, length(out))
-      names(std_err) <- c("genetic", "full")[out]
-      n_gibbs <- 1
-      
-      # Running Gibbs sampler
-      while(any(std_err > tol)){
-        
-        if(n_gibbs == 1){
-          
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, out = out, burn_in = 1000) %>% 
-            `colnames<-`(c("genetic", "full")[out]) %>% 
-            tibble::as_tibble()
-          
-        }else{
-          
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, out = out, burn_in = 1000) %>%
-            `colnames<-`(c("genetic", "full")[out]) %>%
-            tibble::as_tibble() %>% 
-            bind_rows(est_liabs)
-        }
-        
-        # Computing the standard error
-        std_err <- batchmeans::bmmat(est_liabs)[,2]
-        # Adding one to the counter
-        n_gibbs <- n_gibbs +1
-      }
-        
-      # If all standard errors are below the tolerance, 
-      # the estimated liabilities as well as the corresponding 
-      # standard error can be returned
-      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), ".", c("liab", "std_err"))))
-    
-      
-    }, future.seed = TRUE)
-    
-    
-  }else{
-    
-    gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
-      
-      # Extract family members
-      fam <- unlist(fam_list[i])
-      
-      # Constructing the covariance matrix
-      cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
-                              genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                              sq.herit = sq.herits, phen_names = pheno_names)
-
-      
-      if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
-        
-      }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
-        
-        cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
-      }
-      
-      # Extracting the thresholds for all family members 
-      # and all phenotypes
-      intermed_res = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
-      
-      for(pheno in pheno_names){
-        
-        if(which(pheno_names == pheno) == 1){
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno)))
-          
-        }else{
-          
-          fam_threshs <- select(intermed_res, !!as.symbol(pid), !!as.symbol(paste0("lower_", pheno)), !!as.symbol(paste0("upper_", pheno))) %>% 
-            rename(lower = !!as.symbol(paste0("lower_", pheno)), upper = !!as.symbol(paste0("upper_", pheno))) %>% 
-            bind_rows(fam_threshs,.)
-        }
-        
-      }
-      rm(intermed_res)
-      
-      # Setting the variables needed for Gibbs sampler
-      fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
-      std_err <- rep(Inf, length(out))
-      names(std_err) <- c("genetic", "full")[out]
-      n_gibbs <- 1
-      
-      # Running Gibbs sampler
-      while(any(std_err > tol)){
-        
-        if(n_gibbs == 1){
-          
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, out = out, burn_in = 1000) %>% 
-            `colnames<-`(c("genetic", "full")[out]) %>% 
-            tibble::as_tibble()
-          
-        }else{
-          
-          est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                      fixed = fixed, out = out, burn_in = 1000) %>%
-            `colnames<-`(c("genetic", "full")[out]) %>%
-            tibble::as_tibble() %>% 
-            bind_rows(est_liabs)
-        }
-        
-        # Computing the standard error
-        std_err <- batchmeans::bmmat(est_liabs)[,2]
-        # Adding one to the counter
-        n_gibbs <- n_gibbs +1
-      }
-      # If all standard errors are below the tolerance, 
-      # the estimated liabilities as well as the corresponding 
-      # standard error can be returned
-      return(stats::setNames(c(t(batchmeans::bmmat(est_liabs))), paste0(rep(c("Posterior_genetic", "Posterior_full")[out], each = 2), "_", c("liab", "std_err"))))
-      
-    })
-  }
-  
-
   # Finally, we can add all estimated liabilities as well
   # as their estimated standard errors to the tibble holding
   # the family information
-  family <- bind_cols(family, tibble::as_tibble(t(gibbs_res)))
-  
+  family <- bind_cols(family, gibbs_res)
+
   return(family)
 }

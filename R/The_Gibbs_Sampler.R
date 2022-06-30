@@ -63,7 +63,8 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper,
   if(n_sim <=0) stop("n_sim must be a positive number!")
   
   # Checking that covmat is valid
-  if(validate_correlation_matrix(covmat)){invisible()}
+  if(!is.numeric(covmat)) stop("The covariance matrix covmat must be numeric!")
+  if(!isSymmetric(covmat)) stop("The covariance matrix covmat must be symmetric")
   
   # Checking that the lower and upper cutoff points are valid
   if(!is.numeric(lower)) stop("The lower cutoff point(s) must be numeric!")

@@ -82,14 +82,14 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^m$")) { # Target individual's mother
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]") ) return(0.5*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*h2)
     if (str_detect(s2, "^c[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if (str_detect(s1, "^f$")) { # Target individual's father
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]") ) return(0.5*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*") ) return(0.5*h2)
     if (str_detect(s2, "^c[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
@@ -131,7 +131,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]")) return(0.25*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mhs[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
@@ -139,7 +139,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^pau[0-9]")) return(0.25*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^pau[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
@@ -147,7 +147,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]")) return(0.25*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
 
@@ -155,7 +155,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]")) return(0.25*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") |str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
@@ -346,8 +346,6 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     }
     n_fam <- table(sub("[0-9]*$", "", fam_vec))
   }
-  
-    
 
   # Now that we have a vector holding all desired family members,
   # we can create the covariance matrix
@@ -356,7 +354,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   rownames(covmat) <- colnames(covmat) <- fam_vec
     
   # Filling in all entries 
-  for(mem in fam) {
+  for(mem in fam_vec) {
     covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2)
   }
   
@@ -575,6 +573,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     
     # Checking that n_fam is named
     if(is.null(names(n_fam))) stop("n_fam must be a named vector")
+    
     # Checking that all family members are valid strings
     if(validate_relatives(names(n_fam))){invisible()}
     
@@ -635,24 +634,25 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     
   # Now that we have a vector holding the desired family
   # members, we can create the covariance matrix.
-  covmat <- matrix(NA, nrow = length(fam)*num_phen, ncol = length(fam)*num_phen)
+  covmat <- matrix(NA, nrow = length(fam_vec)*num_phen, ncol = length(fam_vec)*num_phen)
   # Changing the row and column names
-  rownames(covmat) <- colnames(covmat) <- paste0(fam,"_", rep(phen_names, each = length(fam)))
+  rownames(covmat) <- colnames(covmat) <- paste0(fam_vec,"_", rep(phen_names, each = length(fam_vec)))
   
   # Filling in all entries
   for(p1 in 1:num_phen){
     for(p2 in 1:num_phen){
-      for(mem in fam){
+      for(mem in fam_vec){
         
         if(p1==p2){
           
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, h2 = h2_vec[p1])
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2_vec[p1])
         }else{
          
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)] <- sapply(fam, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2])
-          diag(covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam) + 1:length(fam)]) <- c(genetic_corrmat[p1,p2], replicate(n= length(fam)-1, full_corrmat[p1,p2]))
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2])
         }
       }
+      
+      if(p1!=p2) diag(covmat[(p1-1)*length(fam_vec) + 1:length(fam_vec), (p2-1)*length(fam_vec) + 1:length(fam_vec)]) <- c(genetic_corrmat[p1,p2], replicate(n= length(fam_vec)-1, full_corrmat[p1,p2]))
     }
   }
   

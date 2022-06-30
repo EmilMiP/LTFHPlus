@@ -46,7 +46,7 @@ utils::globalVariables("tmp_names")
 #' 
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, 
 #' if it is of the required format, if the liability-scale heritability \code{h2} 
-#' is a number satisfying \eqn{0 \leq h^2}, \CODE{n_sim} is a strictly positive number,
+#' is a number satisfying \eqn{0 \leq h^2}, \code{n_sim} is a strictly positive number,
 #' and \code{pop_prev} is a positive number that is at most one, 
 #' then the output will be a list containing three tibbles. 
 #' The first tibble, \code{sim_obs}, holds the disease status and the current 
