@@ -296,7 +296,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   if(age<0) stop("The age must be non-negative!")
   
   # Checking that dist is either logistic or normal.
-  if(class(dist) == "character"){
+  if(is.character(dist)){
     
     dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
     
@@ -483,7 +483,7 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   if(!is.numeric(liability) && !is.integer(liability)) stop("The liability must be numeric!")
   
   # Checking that dist is either logistic or normal.
-  if(class(dist) == "character"){
+  if(is.character(dist)){
     
     dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
     

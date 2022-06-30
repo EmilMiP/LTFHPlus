@@ -126,7 +126,8 @@ estimate_liability_prevalence = function(status, h2_vec, genetic_corrmat, full_c
 
   
   # Now we can extract the number of phenotypes
-  n_pheno <- nrow(h2_vec)
+  n_pheno <- length(h2_vec)
+  
   if(ncol(status) != (n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
 The number of columns in status is not equal to the number of phenotypes specified in h2_vec...\
 Does all columns have the required names?")
