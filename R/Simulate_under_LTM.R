@@ -10,7 +10,7 @@ utils::globalVariables("tmp_names")
 
 #' Simulate under the liability threshold model.
 #'
-#' \code{simulate_under_LTM} simulates thresholds under
+#' \code{simulate_under_LTM} simulates families and thresholds under
 #' the liability threshold model for a given family
 #' structure.
 #'
@@ -19,48 +19,50 @@ utils::globalVariables("tmp_names")
 #' following list:
 #' - m (Mother)
 #' - f (Father)
+#' - c\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
-#' - mgp\[1-2\]* (Maternal grandparent)
 #' - pgm (Paternal grandmother)
 #' - pgf (Paternal grandfather)
-#' - pgp\[1-2\]* (Paternal grandparent)
 #' - s\[0-9\]* (Full siblings)
-#' - c\[0-9\]* (children)
 #' - mhs\[0-9\]* (Half-siblings - maternal side)
 #' - phs\[0-9\]* (Half-siblings - paternal side)
 #' - mau\[0-9\]* (Aunts/Uncles - maternal side)
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
-#' All names must be picked from the list mentioned above. Defaults to NULL.
+#' All names must be picked from the list mentioned above. Defaults to \code{NULL}.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
-#' liability for the underlying individual should be included in 
-#' the covariance matrix. Defaults to TRUE.
-#' @param h2 A number representing the heritability on liability scale
-#' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-#' the heritability must also be at most 1.
+#' liability for the underlying target individual should be included in 
+#' the covariance matrix. Defaults to \code{TRUE}.
+#' @param h2 A number representing the liability-scale heritability 
+#' for a single phenotype. Must be non-negative. Note that under 
+#' the liability threshold model, the heritability must also be at most 1.
 #' Defaults to 0.5.
 #' @param n_sim A positive number representing the number of simulations. Defaults to 1000.
 #' @param pop_prev A positive number representing the population prevalence, i.e. the 
 #' overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.
 #' 
-#' @return If either fam_vec or n_fam is used as the argument, if it is of the required format,
-#' if h2 is a number satisfying 0 <= h2, n_sim is a strictly positive number,
-#' and pop_prev is a positive number that is at most one, 
-#' then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
-#' holds the disease status and the current age/age of onset for all family members in each
-#' of the \code{n_sim} families. The second tibble, \code{thresholds}, holds the lower and upper thresholds 
+#' @return If either \code{fam_vec} or \code{n_fam} is used as the argument, 
+#' if it is of the required format, if the liability-scale heritability \code{h2} 
+#' is a number satisfying \eqn{0 \leq h^2}, \code{n_sim} is a strictly positive number,
+#' and \code{pop_prev} is a positive number that is at most one, 
+#' then the output will be a list containing three tibbles. 
+#' The first tibble, \code{sim_obs}, holds the disease status and the current 
+#' age/age-of-onset for all family members in each of the \code{n_sim} families. 
+#' The second tibble, \code{thresholds}, holds the lower and upper thresholds 
 #' for all individuals in all families. Note that this tibble has the format required in 
-#' \code{\link{estimate_liability}}. The last tibble, \code{fam_ID}, connects the personal identifiers
-#' for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID} has the format
-#' required in \code{\link{estimate_liability}}.
-#' Note that if neither fam_vec nor n_fam are specified, the function returns the disease status,
-#' the current age/age of onset, the lower and upper thresholds, as well as the personal identifier
-#' for a single individual, namely the individual under consideration (called 'o').
-#' If both fam_vec and n_fam are defined, the user is asked to decide on which 
-#' of the two vectors to use.
+#' \code{\link{estimate_liability}}. 
+#' The last tibble, \code{fam_ID}, connects the personal identifiers
+#' for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID} 
+#' has the format required in \code{\link{estimate_liability}}.
+#' Note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function 
+#' returns the disease status, the current age/age-of-onset, the lower and upper 
+#' thresholds, as well as the personal identifier for a single individual, namely 
+#' the individual under consideration (called \code{o}).
+#' If both \code{fam_vec} and \code{n_fam} are defined, the user is asked to '
+#' decide on which of the two vectors to use.
 #' 
 #' @examples
 #' simulate_under_LTM()
@@ -86,17 +88,18 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   
   # Turning add_ind into class logical
   add_ind <- as.logical(add_ind)
+  
   # Checking that the heritability is valid
-  if(!is.numeric(h2))stop("The heritability must be numeric!")
-  if(h2<0)stop("The heritability must be non-negative!")
-  if(h2>1)stop("Under the liability threshold model, the heritability must be smaller than or equal to 1!")
+  if(validate_proportion(h2)){invisible()}
+  
   # Checking that n_sim is a number
-  if(!is.numeric(n_sim)) stop("The number of simulations n_sim must be numeric!")
+  if(!is.numeric(n_sim) && !is.integer(n_sim)) stop("The number of simulations n_sim must be numeric!")
+  
   # Checking that n_sim is strictly positive
   if(n_sim <=0)stop("n_sim must be a positive number!")
+  
   # Checking that pop_prev is valid
-  if(!is.numeric(pop_prev)) stop("The population prevalence pop_prev must be numeric!")
-  if(pop_prev <=0 || pop_prev >=1) stop("The population prevalence pop_prev must be positive and at most 1!")
+  if(validate_proportion(pop_prev)){invisible()}
 
   # Computing the covariance matrix.
   # If both fam_vec and n_fam are empty, construct_covmat
@@ -206,89 +209,4 @@ simulate_under_LTM <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf")
   return(list(sim_obs = liabs, 
               thresholds = threshs, 
               fam_ID = fam_ID))
-}
-
-
-#' Constructing age of onset (aoo)
-#'
-#' \code{construct_aoo} constructs the age of onset (aoo)
-#' for a variable number of family members based on their 
-#' liability, disease status and current age.
-#'
-#' @param fam_mem A character vector holding all family members.
-#' @param .tbl A tibble holding the liability as well as age and
-#' disease status for the set of individuals in fam_mem.
-#' @param pop_prev A positive number representing the population prevalence, i.e. the 
-#' overall prevalence in the population.
-#' 
-#' @return A tibble holding all columns present in .tbl as well
-#' as the age of onset or the current age
-#' (depending on the disease status) for all individuals 
-#' given in fam_mem. 
-#' 
-#' @importFrom dplyr %>% rowwise select mutate bind_cols
-#' @importFrom rlang :=
-construct_aoo <- function(fam_mem,.tbl, pop_prev){
-  
-  # Removing the genetic component from the 
-  # set of family members, if it is present
-  i_ind <- setdiff(fam_mem, c("g"))
-  
-  # Looping over all family members ind i_ind
-  lapply(i_ind, function(i){
-    
-    # Selecting the liability, disease status and age for 
-    # individual i, in order to compute the age of onset.
-    select(.tbl, c(tidyselect::matches(paste0("^",i,"$")), tidyselect::matches(paste0("^",i,"_[as].*$")))) %>%
-      rowwise() %>% 
-      mutate(., !!as.symbol(paste0(i,"_aoo")) := ifelse(!!as.symbol(paste0(i,"_status")), 
-                                                        round(convert_liability_to_aoo(!!as.symbol(i), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
-                                                        !!as.symbol(paste0(i,"_age")))) %>%
-      select(., !!as.symbol(paste0(i,"_aoo")))
-  }
-  ) %>% do.call("bind_cols",.) %>% bind_cols(.tbl,.)
-}
-
-#' Computing thresholds
-#'
-#' \code{construct_thresholds} computes the upper and lower 
-#' thresholds for a variable number of family members based on their 
-#' disease status and current age or age of onset (depending on 
-#' the disease status).
-#'
-#' @param fam_mem A character vector holding all family members.
-#' @param .tbl A tibble holding the family ID, disease status as well
-#' as the age of onset or the current age
-#' (depending on the disease status).
-#' @param pop_prev A positive number representing the population prevalence, i.e. the 
-#' overall prevalence in the population.
-#' 
-#' @return A tibble holding the personal identifier (PID) as well as 
-#' the lower and the upper threshold for all individuals
-#' present in fam_mem.
-#' 
-#' @importFrom dplyr %>% rowwise select mutate bind_rows ungroup
-construct_thresholds <- function(fam_mem, .tbl, pop_prev){
-  
-  # Removing the genetic component from the 
-  # set of family members, if it is present
-  i_ind <- setdiff(fam_mem, c("g"))
-  
-  # Looping over all family members ind i_ind
-  lapply(seq_along(i_ind), function(nbr){
-    i = i_ind[nbr]
-
-    # Selecting the family ID, disease status and age/aoo for 
-    # individual i, in order to compute the thresholds.
-    select(.tbl, c(tidyselect::matches(paste0("^indiv_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
-      rowwise() %>% 
-      mutate(., fam_ID = paste0(indiv_ID,"_member", nbr), 
-             upper = convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
-             lower = ifelse(!!as.symbol(paste0(i,"_status")), 
-                            convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
-                            -Inf)) %>%
-      select(., fam_ID, lower, upper) %>% 
-      ungroup()
-    
-  }) %>% do.call("bind_rows",.)
 }

@@ -9,7 +9,7 @@ construct_covmat(
   fam_vec = c("m", "f", "s1", "mgm", "mgf", "pgm", "pgf"),
   n_fam = NULL,
   add_ind = TRUE,
-  sq.herit = 0.5,
+  h2 = 0.5,
   genetic_corrmat = NULL,
   full_corrmat = NULL,
   phen_names = NULL
@@ -22,14 +22,12 @@ following list:
 \itemize{
 \item m (Mother)
 \item f (Father)
+\item c[0-9]* (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -47,7 +45,7 @@ the covariance matrix. Defaults to TRUE.}
 
 \item{h2}{Either a number representing the heritability
 on liability scale for one single phenotype or a numeric vector representing
-the heritabilities on liability scale for a positive number of phenotypes.
+the liability-scale heritabilities for a positive number of phenotypes.
 All entries in h2 must be non-negative and at most 1.}
 
 \item{genetic_corrmat}{Either \code{NULL} or a numeric matrix holding the genetic correlations between the desired
@@ -67,12 +65,12 @@ Defaults to NULL.}
 }
 \value{
 If either \code{fam_vec} or \code{n_fam} is used as the argument, if it is of
-the required format, if \code{add_ind} is a logical scalar and \code{sq.herit} is a
-number satisfying \deqn{0 \leq sq.herit \leq 1}, then the function \code{construct_covmat}
+the required format, if \code{add_ind} is a logical scalar and \code{h2} is a
+number satisfying \deqn{0 \leq h2 \leq 1}, then the function \code{construct_covmat}
 will return a named covariance matrix, which row- and column-number
 corresponds to the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
-However, if \code{sq.herits} is a numeric vector satisfying
-\deqn{0 \leq sq.herits_i \leq 1} for all \deqn{i \in \{1,...,n_pheno\}} and if
+However, if \code{h2} is a numeric vector satisfying
+\deqn{0 \leq h2_i \leq 1} for all \deqn{i \in \{1,...,n_pheno\}} and if
 \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices
 satisfying that all diagonal entries are one and that all off-diagonal
 entries are between -1 and 1, then \code{construct_covmat} will return
@@ -88,23 +86,23 @@ phenotypes.
 If both \code{fam_vec} and \code{n_fam} are specified, the user is asked to
 decide on which of the two vectors to use.
 Note that the returned object has different attributes, such as
-\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
+\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{h2}.
 }
 \description{
 \code{construct_covmat} returns the covariance matrix for an
-underlying individual and a variable number of its family members
+underlying target individual and a variable number of its family members
 for a variable number of phenotypes. It is a wrapper around
 \code{\link{construct_covmat_single}} and \code{\link{construct_covmat_multi}}.
 }
 \details{
 This function can be used to construct a covariance matrix for
-a given number of family members. If h2 is a number,
+a given number of family members. If \code{h2} is a number,
 each entry in this covariance matrix equals the percentage
 of shared DNA between the corresponding individuals times
-the squared heritability \deqn{h^2}. However, if sq.herit is a numeric vector,
+the liability-scale heritability \deqn{h^2}. However, if \code{h2} is a numeric vector,
 and genetic_corrmat and full_corrmat are two symmetric correlation matrices,
 each entry equals either the percentage of shared DNA between the corresponding
-individuals times the squared heritability \deqn{h^2} or the
+individuals times the liability-scale heritability \deqn{h^2} or the
 percentage of shared DNA between the corresponding individuals times
 the correlation between the corresponding phenotypes. The family members
 can be specified using one of two possible formats.
@@ -117,9 +115,10 @@ construct_covmat(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"),
                  h2 = 0.5)
 construct_covmat(fam_vec = NULL, 
                  n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
-                 add_ind = FALSE, sq.herit = 0.3)
-construct_covmat(sq.herit = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
-full_corrmat = matrix(c(1,0.6,0.6,1), nrow = 2))
+                 add_ind = FALSE,
+                 h2 = 0.3)
+construct_covmat(h2 = c(0.5,0.5), genetic_corrmat = matrix(c(1,0.4,0.4,1), nrow = 2),
+                 full_corrmat = matrix(c(1,0.6,0.6,1), nrow = 2))
 
 }
 \seealso{

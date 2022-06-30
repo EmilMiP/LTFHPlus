@@ -19,8 +19,8 @@
 #' phenotype, respectively. It must be possible to tie each status variable
 #' to a specific phenotype uniquely. The function will use the column names to create
 #' phenotype names. 
-#' @param sq.herits A numeric vector representing the squared heritability on liability scale
-#' for all phenotypes. All entries in sq.herits must be non-negative and at most 1.
+#' @param h2_vec A numeric vector representing the heritabilites on liability scale
+#' for all phenotypes. All entries in \code{h2_vec} must be non-negative and at most 1.
 #' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
@@ -45,6 +45,9 @@
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param progress A logical scalar indicating whether the function should display
+#' a progress bar. Defaults to \code{FALSE}.
+#' 
 #' 
 #' @return If \code{status} is a matrix, list or data frame that can be converted into a
 #' tibble and that has a column named \code{PID} and if the heritabilities, corrmat, 
@@ -68,7 +71,7 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, full_corrmat,
+estimate_liability_prevalence = function(status, h2_vec, genetic_corrmat, full_corrmat,
                                          prevalences, pid = "PID", out = c(1), tol = 0.01, 
                                          parallel = FALSE, progress = FALSE){
   # Turning parallel into class logical
@@ -81,13 +84,13 @@ estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, ful
   if(!tibble::is_tibble(status)) status <- tibble::as_tibble(status)
   
   # Checking that the heritabilities are valid
-  if(check_proportion(sq.herits)){invisible()}
+  if(validate_proportion(h2_vec)){invisible()}
 
   # Checking that all correlations are valid
-  if(check_correlation_matrix(genetic_corrmat)){invisible()}
-  if(check_correlation_matrix(full_corrmat)){invisible()}
+  if(validate_correlation_matrix(genetic_corrmat)){invisible()}
+  if(validate_correlation_matrix(full_corrmat)){invisible()}
   # Checking that all prevalences are valid
-  if(check_proportion(prevalences)){invisible()}
+  if(validate_proportion(prevalences)){invisible()}
 
   # And that pid is also present in the tibble threshs
   if(!(pid %in% colnames(status))) stop(paste0("The column ", pid," does not exist in the tibble status"))
@@ -123,9 +126,10 @@ estimate_liability_prevalence = function(status, sq.herits, genetic_corrmat, ful
 
   
   # Now we can extract the number of phenotypes
-  n_pheno <- nrow(sq.herits)
+  n_pheno <- length(h2_vec)
+  
   if(ncol(status) != (n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of columns in status is not equal to the number of phenotypes specified in sq.herits...\
+The number of columns in status is not equal to the number of phenotypes specified in h2_vec...\
 Does all columns have the required names?")
   
   # As well as the phenotype names
@@ -173,7 +177,7 @@ Does all columns have the required names?")
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
                             genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                            sq.herit = sq.herits, phen_names = pheno_names)
+                            h2 = h2_vec, phen_names = pheno_names)
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(status), FUN = function(i){
       
@@ -229,7 +233,7 @@ Does all columns have the required names?")
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
                             genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                            sq.herit = sq.herits, phen_names = pheno_names)
+                            h2 = h2_vec, phen_names = pheno_names)
     
     gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
       

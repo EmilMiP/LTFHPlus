@@ -16,7 +16,7 @@ rtmvnorm.gibbs(
 }
 \arguments{
 \item{n_sim}{A positive number representing the number of draws from the
-Gibbs sampler after burn-in.. Defaults to 1e+05.}
+Gibbs sampler after burn-in.. Defaults to \code{1e+05}.}
 
 \item{covmat}{A symmetric and numeric matrix representing the covariance
 matrix for the multivariate normal distribution.}
@@ -34,18 +34,18 @@ Defaults to \code{Inf}.}
 
 \item{fixed}{A logical scalar or a logical vector indicating which
 variables to fix. If \code{fixed} is a vector, it must have the same length as
-lower and upper. Defaults to \code{TRUE} when \code{lowert} is equal to
+lower and upper. Defaults to \code{TRUE} when \code{lower} is equal to
 \code{upper} and \code{FALSE} otherwise.}
 
 \item{out}{An integer or numeric vector indicating which variables should be returned
-from the Gibbs sampler. If out = c(1), the first variable (usually the genetic
+from the Gibbs sampler. If \code{out = c(1)}, the first variable (usually the genetic
 component of the full liability of the first phenotype) is estimated and returned.
-If out = c(2), the second variable (usually full liability) is estimated and returned.
-If out = c(1,2), both the first and the second variable are estimated and returned.
-Defaults to c(1).}
+If \code{out = c(2)}, the second variable (usually full liability) is estimated and returned.
+If \code{out = c(1,2)}, both the first and the second variable are estimated and returned.
+Defaults to \code{c(1)}.}
 
 \item{burn_in}{A number of iterations that count as burn in for the Gibbs sampler.
-Must be non-negative. Defaults to 1000.}
+Must be non-negative. Defaults to \code{1000}.}
 }
 \value{
 If \code{covmat} is a symmetric and numeric matrix, if \code{n_sim} and
@@ -60,7 +60,7 @@ multivariate normal distribution with covariance matrix \code{covmat}.
 }
 \details{
 Given a covariance matrix \code{covmat} and lower and upper cutoff points,
-the function \code{rtmvnorm.gibbs} can be used to perform Gibbs sampler on a truncated
+the function \code{rtmvnorm.gibbs()} can be used to perform Gibbs sampler on a truncated
 multivariable normal distribution. It is possible to specify which variables
 to return from the Gibbs sampler, making it convenient to use when estimating
 only the full liability or the genetic component of the full liability.

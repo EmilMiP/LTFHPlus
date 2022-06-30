@@ -18,14 +18,12 @@ following list:
 \itemize{
 \item m (Mother)
 \item f (Father)
+\item c[0-9]* (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
 \item pgm (Paternal grandmother)
 \item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
 \item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
 \item mhs[0-9]* (Half-siblings - maternal side)
 \item phs[0-9]* (Half-siblings - paternal side)
 \item mau[0-9]* (Aunts/Uncles - maternal side)
@@ -41,14 +39,14 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{sq.herit}{A number representing the squared heritability on liability scale
+\item{h2}{A number representing the squared heritability on liability scale
 for a single phenotype. Must be non-negative and at most 1.
 Defaults to 0.5.}
 }
 \value{
 If either \code{fam_vec} or \code{n_fam} is used as the argument, if it
-is of the required format and \code{sq.herit} is a number satisfying
-\eqn{0 \leq sq.herit \leq 1}, then the output will be a named covariance matrix.
+is of the required format and \code{h2} is a number satisfying
+\eqn{0 \leq h2 \leq 1}, then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the length of \code{fam_vec}
 or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
 If both \code{fam_vec = c()/NULL} and \code{n_fam = c()/NULL}, the
@@ -58,17 +56,17 @@ the full liability for the individual. If both \code{fam_vec} and
 \code{n_fam} are given, the user is asked to decide on which
 of the two vectors to use.
 Note that the returned object has different attributes, such as
-\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{sq.herit}.
+\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{h2}.
 }
 \description{
 \code{construct_covmatc_single} returns the covariance matrix for an
-underlying individual and a variable number of its family members
+underlying target individual and a variable number of its family members
 }
 \details{
 This function can be used to construct a covariance matrix for
 a given number of family members. Each entry in this covariance
 matrix equals the percentage of shared DNA between the corresponding
-individuals times the heritability \eqn{h^2}. The family members
+individuals times the liability-scale heritability \eqn{h^2}. The family members
 can be specified using one of two possible formats.
 }
 \examples{

@@ -26,11 +26,13 @@ estimate_gen_liability = function(h2,
                                   ind = c(1),
                                   id_col = "ids",
                                   tol = 0.01) {
+  
+  warning("'estimate_gen_liability()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
+          Please consider using 'estimate_liability()' instead.\
+          The signature and semantics have changed, see '?estimate_liability'.")
+  
   phen$post_gen_liab <- NA
   phen$post_gen_liab_se <- NA
-  
-  
-
   
   
   ph = future.apply::future_lapply(X = 1:nrow(phen), FUN = function(i){
@@ -38,7 +40,7 @@ estimate_gen_liability = function(h2,
     full_fam = phen[[id_col]][[i]]
     n_sib = length(full_fam) - 3
     
-    cov = get_cov(h2 = h2, n_sib = n_sib)
+    cov = suppressWarnings(get_cov(h2 = h2, n_sib = n_sib))
     
     cur_indiv = thr[match(full_fam, thr[[1]]), ]
     lower = c(-Inf, cur_indiv$lower)

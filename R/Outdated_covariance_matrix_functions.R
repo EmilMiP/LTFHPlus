@@ -14,6 +14,11 @@
 #' @export
 #constructs covariance matrix with a baseline of 2 parents and n_sib siblings (with-in disorder):
 get_cov = function(h2, n_sib = 0) {
+  
+  warning("'get_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
+          Please consider using 'construct_covmat()' instead.\
+          The signature and semantics have changed, see '?construct_covmat'.")
+  
   cov <- matrix(h2/2, 4 + n_sib, 4 + n_sib)
   diag(cov) <- 1
   cov[3,4] <- cov[4,3] <- 0
@@ -37,6 +42,11 @@ get_cov = function(h2, n_sib = 0) {
 #' @export
 
 generate_cov_matrix_noFH = function(h2_vec, gen_cor_vec) {
+  
+  warning("'generate_cov_matrix_noFH()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
+          Please consider using 'construct_covmat()' instead.\
+          The signature and semantics have changed, see '?construct_covmat'.")
+  
   ntraits = length(h2_vec)
   
   #generates initial matrix
@@ -77,7 +87,12 @@ generate_cov_matrix_noFH = function(h2_vec, gen_cor_vec) {
 #' @export
 #gets the correlation between two disorders (between disorder)
 get_between_trait_cov <- function(h2_1, h2_2, rho, n_sib = 0) {
-  corr = get_cov(1, n_sib = n_sib)
+  
+  warning("'get_between_trait_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
+          Please consider using 'construct_covmat()' instead.\
+          The signature and semantics have changed, see '?construct_covmat'.")
+  
+  corr = suppressWarnings(get_cov(1, n_sib = n_sib))
   corr * sqrt(h2_1 * h2_2) * rho
 }
 
@@ -98,6 +113,10 @@ get_between_trait_cov <- function(h2_1, h2_2, rho, n_sib = 0) {
 #constructs the full covariate matrix based off of the provided.
 get_full_cov = function(corr_mat, n_sib = 0) {
   
+  warning("'get_full_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
+          Please consider using 'construct_covmat()' instead.\
+          The signature and semantics have changed, see '?construct_covmat'.")
+  
   n_trait = nrow(corr_mat)
   block_size = 4 + n_sib
   cov_size = block_size * n_trait
@@ -106,12 +125,12 @@ get_full_cov = function(corr_mat, n_sib = 0) {
   for (i in 1:n_trait) {
     for (j in 1:n_trait) {
       if (i == j) {
-        full_cov[(i - 1) * block_size + 1:block_size, (i - 1) * block_size + 1:block_size] = get_cov(corr_mat[i,i], n_sib = n_sib)
+        full_cov[(i - 1) * block_size + 1:block_size, (i - 1) * block_size + 1:block_size] = suppressWarnings(get_cov(corr_mat[i,i], n_sib = n_sib))  
       } else {
-        full_cov[(i - 1) * block_size + 1:block_size, (j - 1) * block_size + 1:block_size] = get_between_trait_cov(h2_1 = corr_mat[i,i],
-                                                                                                                   h2_2 = corr_mat[j,j],
-                                                                                                                   rho = corr_mat[i,j],
-                                                                                                                   n_sib = n_sib)
+        full_cov[(i - 1) * block_size + 1:block_size, (j - 1) * block_size + 1:block_size] = suppressWarnings(get_between_trait_cov(h2_1 = corr_mat[i,i],
+                                                                                                                                    h2_2 = corr_mat[j,j],
+                                                                                                                                    rho = corr_mat[i,j],
+                                                                                                                                    n_sib = n_sib))
       }
     }
   }
