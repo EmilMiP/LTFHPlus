@@ -9,7 +9,7 @@
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -27,7 +27,7 @@
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -62,7 +62,7 @@ validate_relatives <- function(relatives){
     
     stop(paste0(deparse(substitute(relatives)), " must be a string or character vector!"))
     
-  }else if(any(!(str_detect(relatives, "^[gomf]$") | str_detect(relatives, "^c[0-9]*")|
+  }else if(any(!(str_detect(relatives, "^[gomf]$") | str_detect(relatives, "^c[0-9]*.[0-9]*")|
                  str_detect(relatives, "^[mp]g[mf]$") | str_detect(relatives, "^s[0-9]*") | 
                  str_detect(relatives, "^[mp]hs[0-9]*")| str_detect(relatives, "^[mp]au[0-9]*")))){
     
@@ -71,7 +71,7 @@ validate_relatives <- function(relatives){
   - o (Full liability)\n
   - m (Mother)\n
   - f (Father)\n
-  - c[0-9]* (Children)\n
+  - c[0-9]*.[0-9]* (Children)\n
   - mgm (Maternal grandmother)\n
   - mgf (Maternal grandfather)\n
   - pgm (Paternal grandmother)\n
@@ -198,6 +198,9 @@ validate_correlation_matrix <- function(corrmat){
 #' disease status for the set of individuals in \code{fam_mem}.
 #' @param pop_prev A positive number representing the population prevalence, i.e. the 
 #' overall prevalence in the population.
+#' @param phen_name Either \code{NULL} or character vector holding the 
+#' phenotype name. Must be specified in the multi-trait case.
+#' Defaults to \code{NULL}.
 #' 
 #' @return A tibble holding all columns present in .tbl as well
 #' as the age of onset or the current age
@@ -206,25 +209,44 @@ validate_correlation_matrix <- function(corrmat){
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_cols
 #' @importFrom rlang :=
-construct_aoo <- function(fam_mem,.tbl, pop_prev){
+construct_aoo <- function(fam_mem,.tbl, pop_prev, phen_name = NULL){
   
   # Removing the genetic component from the 
   # set of family members, if it is present
   i_ind <- setdiff(fam_mem, c("g"))
   
-  # Looping over all family members ind i_ind
-  lapply(i_ind, function(i){
+  if(is.null(phen_name)){
     
-    # Selecting the liability, disease status and age for 
-    # individual i, in order to compute the age of onset.
-    select(.tbl, c(tidyselect::matches(paste0("^",i,"$")), tidyselect::matches(paste0("^",i,"_[as].*$")))) %>%
-      rowwise() %>% 
-      mutate(., !!as.symbol(paste0(i,"_aoo")) := ifelse(!!as.symbol(paste0(i,"_status")), 
-                                                        round(convert_liability_to_aoo(!!as.symbol(i), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
-                                                        !!as.symbol(paste0(i,"_age")))) %>%
-      select(., !!as.symbol(paste0(i,"_aoo")))
+    # Looping over all family members ind i_ind
+    lapply(i_ind, function(j){
+      
+      # Selecting the liability, disease status and age for 
+      # individual j, in order to compute the age of onset.
+      select(.tbl, c(tidyselect::matches(paste0("^",j,"$")), tidyselect::matches(paste0("^",j,"_[as].*$")))) %>%
+        rowwise() %>% 
+        mutate(., !!as.symbol(paste0(j,"_aoo")) := ifelse(!!as.symbol(paste0(j,"_status")), 
+                                                          round(convert_liability_to_aoo(!!as.symbol(j), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
+                                                          !!as.symbol(paste0(j,"_age")))) %>%
+        select(., !!as.symbol(paste0(j,"_aoo")))
+    }
+    ) %>% do.call("bind_cols",.) %>% bind_cols(.tbl,.)
+  
+  }else{
+    
+    # Looping over all family members ind i_ind
+    lapply(i_ind, function(j){
+      
+      # Selecting the liability, disease status and age for 
+      # individual j, in order to compute the age of onset.
+      select(.tbl, tidyselect::starts_with(paste0(j, "_"))) %>%
+        rowwise() %>% 
+        mutate(., !!as.symbol(paste0(j,"_", phen_name ,"_aoo")) := ifelse(!!as.symbol(paste0(j, "_", phen_name, "_status")), 
+                                                                          round(convert_liability_to_aoo(!!as.symbol(paste0(j, "_", phen_name)), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8)),
+                                                                          !!as.symbol(paste0(j,"_age")))) %>%
+        select(., !!as.symbol(paste0(j,"_", phen_name ,"_aoo")))
+    }
+    ) %>% do.call("bind_cols",.) %>% bind_cols(.tbl,.)
   }
-  ) %>% do.call("bind_cols",.) %>% bind_cols(.tbl,.)
 }
 
 
@@ -241,33 +263,65 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev){
 #' (depending on the disease status).
 #' @param pop_prev A positive number representing the population prevalence, i.e. the 
 #' overall prevalence in the population.
+#' @param phen_name Either \code{NULL} or character vector holding the 
+#' phenotype name. Must be specified in the multi-trait case.
+#' Defaults to \code{NULL}.
 #' 
 #' @return A tibble holding the personal identifier (PID) as well as 
 #' the lower and the upper threshold for all individuals
 #' present in \code{fam_mem}.
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_rows ungroup
-construct_thresholds <- function(fam_mem, .tbl, pop_prev){
+construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
   
   # Removing the genetic component from the 
   # set of family members, if it is present
   i_ind <- setdiff(fam_mem, c("g"))
   
-  # Looping over all family members ind i_ind
-  lapply(seq_along(i_ind), function(nbr){
-    i = i_ind[nbr]
+  if(!is.null(phen_name)){
     
-    # Selecting the family ID, disease status and age/aoo for 
-    # individual i, in order to compute the thresholds.
-    select(.tbl, c(tidyselect::matches(paste0("^indiv_ID$")), tidyselect::matches(paste0("^",i,"_status$")), tidyselect::matches(paste0("^",i,"_aoo$")))) %>%
-      rowwise() %>% 
-      mutate(., fam_ID = paste0(indiv_ID,"_member", nbr), 
-             upper = convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
-             lower = ifelse(!!as.symbol(paste0(i,"_status")), 
-                            convert_age_to_thresh(!!as.symbol(paste0(i,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
-                            -Inf)) %>%
-      select(., fam_ID, lower, upper) %>% 
-      ungroup()
+    # Looping over all family members ind i_ind
+    lapply(i_ind, function(j){
+      
+      nbr <- which(i_ind == j)
+      
+      # Selecting the family ID, disease status and age/aoo for 
+      # individual j, in order to compute the thresholds.
+      select(.tbl, c(fam_ID, 
+                     tidyselect::matches(paste0(j, "_", phen_name, "_status")), 
+                     tidyselect::matches(paste0(j, "_", phen_name, "_aoo")))) %>%
+        rowwise() %>% 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr, "_", j), 
+                  upper = convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
+                  lower = ifelse(!!as.symbol(paste0(j, "_", phen_name, "_status")), 
+                                  convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
+                                  -Inf)) %>%
+        select(., indiv_ID, lower, upper) %>% 
+        ungroup()
+      
+    }) %>% do.call("bind_rows",.)
     
-  }) %>% do.call("bind_rows",.)
+  }else{
+    
+    # Looping over all family members ind i_ind
+    lapply(i_ind, function(j){
+      
+      nbr <- which(i_ind == j)
+      
+      # Selecting the family ID, disease status and age/aoo for 
+      # individual i, in order to compute the thresholds.
+      select(.tbl, c(fam_ID, 
+                     tidyselect::matches(paste0("^",j,"_status$")), 
+                     tidyselect::matches(paste0("^",j,"_aoo$")))) %>%
+        rowwise() %>% 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr, "_", j), 
+                  upper = convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
+                  lower = ifelse(!!as.symbol(paste0(j,"_status")), 
+                                  convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
+                                  -Inf)) %>%
+        select(., indiv_ID, lower, upper) %>% 
+        ungroup()
+      
+    }) %>% do.call("bind_rows",.)
+  }
 }
