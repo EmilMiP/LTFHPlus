@@ -116,7 +116,6 @@ add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
 h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
 always_add = c("g","o"), progress = TRUE)
-
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
 h2 = 0.5, n_sim=10, pop_prev = .05)

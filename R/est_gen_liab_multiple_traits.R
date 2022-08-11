@@ -97,6 +97,7 @@
 #' 
 #' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
 #' @importFrom rlang :=
+#' @importFrom stringr str_detect
 #' 
 #' @export
 estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, full_corrmat,
@@ -139,7 +140,7 @@ estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, f
   if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   
   # Checking that tol is valid
-  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
+  if(!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   
   # Checking that always_add is a vector of strings
@@ -184,7 +185,7 @@ The number of pairs of lower and upper thresholds is not equal to the number of 
 Does all columns have the required names?")
   
   # As well as the phenotype names
-  pheno_names <- sub("lower_", "", colnames(threshs)[stringr::str_detect(colnames(threshs), "^lower_")], ignore.case = TRUE)
+  pheno_names <- sub("lower_", "", colnames(threshs)[str_detect(colnames(threshs), "^lower_")], ignore.case = TRUE)
   
   # Finally, we also check whether all lower thresholds are 
   # smaller than or equal to the upper thresholds
@@ -226,11 +227,11 @@ The lower and upper thresholds will be swapped...")
 
     if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
       
-      cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
+      cov <- cov[-which(str_detect(colnames(cov), "^g_")),-which(str_detect(colnames(cov), "^g_"))]
     
     }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
         
-      cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
+      cov <- cov[-which(str_detect(colnames(cov), "^o_")),-which(str_detect(colnames(cov), "^o_"))]
     }
     
     # Extracting the thresholds for all family members 
