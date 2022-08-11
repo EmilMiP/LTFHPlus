@@ -4,7 +4,7 @@
 \alias{construct_thresholds}
 \title{Computing thresholds}
 \usage{
-construct_thresholds(fam_mem, .tbl, pop_prev)
+construct_thresholds(fam_mem, .tbl, pop_prev, phen_name = NULL)
 }
 \arguments{
 \item{fam_mem}{A character vector holding all family members.}
@@ -15,6 +15,10 @@ as the age of onset or the current age
 
 \item{pop_prev}{A positive number representing the population prevalence, i.e. the
 overall prevalence in the population.}
+
+\item{phen_name}{Either \code{NULL} or character vector holding the
+phenotype name. Must be specified in the multi-trait case.
+Defaults to \code{NULL}.}
 }
 \value{
 A tibble holding the personal identifier (PID) as well as
