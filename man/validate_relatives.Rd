@@ -15,7 +15,7 @@ All strings must be chosen among the following abbreviations
 \item o (Full liability)
 \item m (Mother)
 \item f (Father)
-\item c[0-9]\emph{.[0-9]} (Children)
+\item c[0-9]\\emph{.[0-9]\} (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)
@@ -38,24 +38,7 @@ then the function will return TRUE. Otherwise, the function is aborted.
 by valid abbreviations.
 }
 \details{
-This function can be used to check whether relatives are represented
-by valid abbreviations. A valid abbreviation is one of the following:
-\itemize{
-\item g (Genetic component of full liability)
-\item o (Full liability)
-\item m (Mother)
-\item f (Father)
-\item c[0-9]\emph{.[0-9]} (Children)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item s[0-9]* (Full siblings)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
-}
+
 }
 \examples{
 \dontrun{

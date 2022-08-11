@@ -19,7 +19,7 @@ utils::globalVariables("tmp_names")
 #' following list:
 #' - \code{m} (Mother)
 #' - \code{f} (Father)
-#' - \code{c\[0-9\]*.\[0-9\]*} (Children)
+#' - \code{c\[0-9\]\*.\[0-9\]\*} (Children)
 #' - \code{mgm} (Maternal grandmother)
 #' - \code{mgf} (Maternal grandfather)
 #' - \code{pgm} (Paternal grandmother)
@@ -245,7 +245,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
 #' following list:
 #' - \code{m} (Mother)
 #' - \code{f} (Father)
-#' - \code{c\[0-9\]*.\[0-9\]*} (Children)
+#' - \code{c\[0-9\]\*.\[0-9\]\*} (Children)
 #' - \code{mgm} (Maternal grandmother)
 #' - \code{mgf} (Maternal grandfather)
 #' - \code{pgm} (Paternal grandmother)
@@ -562,7 +562,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
 #' following list:
 #' - \code{m} (Mother)
 #' - \code{f} (Father)
-#' - \code{c\[0-9\]*.\[0-9\]*} (Children)
+#' - \code{c\[0-9\]\*.\[0-9\]\*} (Children)
 #' - \code{mgm} (Maternal grandmother)
 #' - \code{mgf} (Maternal grandfather)
 #' - \code{pgm} (Paternal grandmother)

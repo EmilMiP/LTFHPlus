@@ -32,7 +32,7 @@ with _?, where ? is one of the following abbreviations
 \item o (full liability)
 \item m (Mother)
 \item f (Father)
--c[0-9]* (Children)
+\item c[0-9]\\emph{.[0-9]\} (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)

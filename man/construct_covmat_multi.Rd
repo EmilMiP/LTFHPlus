@@ -21,7 +21,7 @@ following list:
 \itemize{
 \item m (Mother)
 \item f (Father)
-\item c[0-9]\emph{.[0-9]} (Children)
+\item c[0-9]\\emph{.[0-9]\} (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)

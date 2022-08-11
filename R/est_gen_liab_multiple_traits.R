@@ -18,7 +18,7 @@
 #' - o (full liability)
 #' - m (Mother)
 #' - f (Father)
-#' -c\[0-9\]* (Children)
+#' - c\[0-9\]\*.\[0-9\]\* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
