@@ -14,7 +14,7 @@ The strings must be chosen from the following list of strings:
 \item o (Full liability)
 \item m (Mother)
 \item f (Father)
-\item c[0-9]* (Children)
+\item c[0-9]\emph{.[0-9]} (Children)
 \item mgm (Maternal grandmother)
 \item mgf (Maternal grandfather)
 \item pgm (Paternal grandmother)

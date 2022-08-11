@@ -13,7 +13,7 @@ utils::globalVariables("h2")
 #' - o (Full liability)
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -70,35 +70,35 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^g$")) return(1*h2)
-    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*") | str_detect(s2, "^s[0-9]*")) return(0.5*h2)
+    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*.[0-9]*") | str_detect(s2, "^s[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if (str_detect(s1, "^g$")) { # Target individual's genetic liability
     
     if (str_detect(s2, "^[go]$")) return(1*h2)
-    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*")| str_detect(s2, "^s[0-9]*") ) return(0.5*h2)
+    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*.[0-9]*")| str_detect(s2, "^s[0-9]*") ) return(0.5*h2)
     if (str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if (str_detect(s1, "^m$")) { # Target individual's mother
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*h2)
-    if (str_detect(s2, "^c[0-9]*")) return(0.25*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
     
   }else if (str_detect(s1, "^f$")) { # Target individual's father
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*") ) return(0.5*h2)
-    if (str_detect(s2, "^c[0-9]*")) return(0.25*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
-  }else if(str_detect(s1, "^c[0-9]*")) { # Target individual's children
+  }else if(str_detect(s1, "^c[0-9]*.[0-9]*")) { # Target individual's children
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^[go]$")) return(0.5*h2)
-    if (str_detect(s2, "^c[0-9]*") && (substring(s1,first = 2, last = 2) == substring(s2,first = 2, last = 2)) ) return(0.5*h2)
-    if (str_detect(s2, "^c[0-9]*") && (substring(s1,first = 2, last = 2) != substring(s2,first = 2, last = 2)) ) return(0.25*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*") && (gsub(".[0-9]*", "", s1) == gsub(".[0-9]*", "", s2)) ) return(0.5*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*") && (gsub(".[0-9]*", "", s1) != gsub(".[0-9]*", "", s2)) ) return(0.25*h2)
     if (str_detect(s2, "^[mf]$") |  str_detect(s2, "^s[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^[mp]g[mf]$") | str_detect(s2, "^[mp]au[0-9]*") | str_detect(s2, "^[mp]hs[0-9]*")) return(0.125*h2)
     
@@ -107,13 +107,13 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^s[0-9]*")) return(0.5*h2)
-    if (str_detect(s2, "^c[0-9]*") | str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*") | str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if (str_detect(s1, "^mg[mf]$")) { # Target individual's maternal grandmother/father
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^mg[mf]$")) return(0)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mau[0-9]*") ) return(0.5*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
@@ -122,7 +122,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^pg[mf]$")) return(0)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
@@ -130,7 +130,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^mhs[0-9]*")) { # Target individual's half siblings (maternal side)
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mhs[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
@@ -138,7 +138,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^phs[0-9]*")) { # Target individual's half siblings (paternal side)
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^pau[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
@@ -146,7 +146,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^mau[0-9]*")) { # Target individual's aunts and uncles (maternal side)
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^mhs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mau[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^phs[0-9]*") | str_detect(s2, "^pau[0-9]*")) return(0)
@@ -154,7 +154,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^pau[0-9]*")) { # Target individual's aunts and uncles (paternal side)
     
     if (s1 == s2) return(1)
-    if (str_detect(s2, "^c[0-9]*")) return(0.125*h2)
+    if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") |str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
@@ -181,7 +181,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' 
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -246,7 +246,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   # and the full liability for the individual.
   if(is.null(fam_vec) && is.null(n_fam)){
     
-    cat("Warning message: \n Neither fam_vec nor n_fam is specified...")
+    cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
     # Constructing the simple 2x2 matrix
     covmat <- matrix(c(h2,h2,h2,1), nrow = 2)
     # Naming the columns and rows
@@ -406,7 +406,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' following list:
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
@@ -515,7 +515,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   # for all phenotypes
   if(is.null(fam_vec) && is.null(n_fam)){
     
-    cat("Warning message: \n Neither fam_vec nor n_fam is specified...")
+    cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
     # Constructing a simple covariance matrix
     covmat <- matrix(NA, nrow = 2*num_phen, ncol = 2*num_phen)
     # Filling in all entries
@@ -693,7 +693,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' following list:
 #' - m (Mother)
 #' - f (Father)
-#' - c\[0-9\]* (Children)
+#' - c\[0-9\]*.\[0-9\]* (Children)
 #' - mgm (Maternal grandmother)
 #' - mgf (Maternal grandfather)
 #' - pgm (Paternal grandmother)
