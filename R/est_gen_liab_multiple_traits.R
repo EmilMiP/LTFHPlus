@@ -112,7 +112,7 @@ estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, f
   if(length(always_add) == 0) always_add <- NULL
   
   # Turning parallel into class logical
-  progress <- as.logical(progress)
+  # progress <- as.logical(progress)
 
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
@@ -210,18 +210,21 @@ The lower and upper thresholds will be swapped...")
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
   # If progress = TRUE, a progress bar will be displayed
-  if(progress){
-    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-    j <- 0
-  }
+  # if(progress){
+  #   pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+  #   j <- 0
+  # }
   
   gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
     
     # Extract family members
-    fam <- unlist(fam_list[i])
+    fam <- fam_list[[i]]
+    # Remove individual o and/or g from the set (if present)
+    fam <- setdiff(gsub("^.*_", "", fam), c("g","o"))
 
-    # Constructing the covariance matrix
-    cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
+    # Constructing the covariance matrix.
+    # If always_add holds "g" or "o", add_ind must be TRUE
+    cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(always_add), 
                             genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
                             h2 = h2_vec, phen_names = pheno_names)
 
@@ -286,11 +289,11 @@ The lower and upper thresholds will be swapped...")
       n_gibbs <- n_gibbs +1
     }
     
-    # If progress = TRUE, a progress bar will be displayed
-    if(progress){
-      j <- j+1
-      utils::setTxtProgressBar(pb, j)
-    }
+    # # If progress = TRUE, a progress bar will be displayed
+    # if(progress){
+    #   j <- j+1
+    #   utils::setTxtProgressBar(pb, j)
+    # }
     
     # If all standard errors are below the tolerance, 
     # the estimated liabilities as well as the corresponding 
