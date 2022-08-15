@@ -253,8 +253,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     colnames(covmat) <- rownames(covmat) <- c("g","o")
     
     # Adding attributes to covmat
-    attributes(covmat)$fam_vec <- NULL
-    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$fam_vec <- c("g","o")
+    attributes(covmat)$n_fam <- stats::setNames(c(1,1), c("g","o"))
     attributes(covmat)$add_ind <- add_ind
     attributes(covmat)$h2 <- h2
     attributes(covmat)$phenotype_names <- NULL
@@ -535,8 +535,8 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     colnames(covmat) <- rownames(covmat) <- paste0(c("g_", "o_"), rep(phen_names, each = 2))
     
     # Adding attributes to covmat
-    attributes(covmat)$fam_vec <- NULL
-    attributes(covmat)$n_fam <- NULL
+    attributes(covmat)$fam_vec <- c("g","o")
+    attributes(covmat)$n_fam <- stats::setNames(c(1,1), c("g","o"))
     attributes(covmat)$add_ind <- add_ind
     attributes(covmat)$h2 <- h2_vec
     attributes(covmat)$genetic_corrmat <- genetic_corrmat
