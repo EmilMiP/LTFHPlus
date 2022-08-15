@@ -66,8 +66,8 @@ utils::globalVariables("tmp_names")
 #' 
 #' @examples
 #' simulate_under_LTM_single()
-#' simulate_under_LTM_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-#' c("m","mgm","mgf","s","mhs")))
+#' simulate_under_LTM_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2), 
+#' c("m","mgm","mgf","mhs")))
 #' simulate_under_LTM_single(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
 #' h2 = 0.5, n_sim = 500, pop_prev = .05)
 #' simulate_under_LTM_single(fam_vec = c(), n_fam = NULL, add_ind = TRUE, h2 = 0.5, 
@@ -87,7 +87,6 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
                                       h2 = 0.5, 
                                       n_sim=1000, 
                                       pop_prev = .1){
-  
   # Making sure input is valid ----------------------------------------------
   
   # If fam_vec or n_fam is a vector of length zero, it is set to
@@ -119,7 +118,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   liabs <- tmvtnorm::rtmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
 
   # Adding the column names
-  colnames(liabs) <- colnames(covmat)
+  colnames(liabs) <- attributes(covmat)$fam_vec
   
   # Turning the matrix into a tibble and adding the family ID
   liabs <- tibble::as_tibble(liabs) %>%
@@ -214,10 +213,10 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   
   # Finally, we can add the age of onset for all individuals 
   # having the disease
-  liabs <- liabs %>% mutate(., construct_aoo(fam_mem = colnames(covmat), .tbl = ., pop_prev = pop_prev))
+  liabs <- liabs %>% mutate(., construct_aoo(fam_mem = attributes(covmat)$fam_vec, .tbl = ., pop_prev = pop_prev))
   
   # Constructing thresholds
-  threshs <- construct_thresholds(fam_mem = colnames(covmat), .tbl = liabs, pop_prev = pop_prev)
+  threshs <- construct_thresholds(fam_mem = attributes(covmat)$fam_vec, .tbl = liabs, pop_prev = pop_prev)
   
   # Constructing the personal identifiers for all
   # family members in each family.

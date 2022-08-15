@@ -79,8 +79,8 @@ phenotype.
 }
 \examples{
 simulate_under_LTM_single()
-simulate_under_LTM_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
-c("m","mgm","mgf","s","mhs")))
+simulate_under_LTM_single(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2), 
+c("m","mgm","mgf","mhs")))
 simulate_under_LTM_single(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
 h2 = 0.5, n_sim = 500, pop_prev = .05)
 simulate_under_LTM_single(fam_vec = c(), n_fam = NULL, add_ind = TRUE, h2 = 0.5, 
