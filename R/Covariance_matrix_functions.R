@@ -9,20 +9,20 @@ utils::globalVariables("h2")
 #'
 #' @param s1,s2 Strings representing the two family members.
 #' The strings must be chosen from the following list of strings:
-#' - g (Genetic component of full liability)
-#' - o (Full liability)
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' @param h2 A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1. Defaults to 0.5
 #' 
@@ -178,22 +178,20 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' @param fam_vec A vector of strings holding the different 
 #' family members. All family members must be represented by strings from the 
 #' following list:
-#' 
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
-#'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' @param n_fam A named vector holding the desired number of family members.
-#' See \code{\link{stats::setNames}}.
+#' See \code{\link[stats]{setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
@@ -405,21 +403,21 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' @param fam_vec A vector of strings holding the different 
 #' family members. All family members must be represented by strings from the 
 #' following list:
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
-#' See \code{\link{stats::setNames}}.
+#' See \code{\link[stats]{setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
@@ -693,21 +691,21 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' @param fam_vec A vector of strings holding the different 
 #' family members. All family members must be represented by strings from the 
 #' following list:
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
-#' See \code{\link{stats::setNames}}.
+#' See \code{\link[stats]{setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
