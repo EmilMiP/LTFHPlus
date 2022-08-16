@@ -20,20 +20,21 @@ following list:
 \itemize{
 \item \code{m} (Mother)
 \item \code{f} (Father)
-\item \code{c\[0-9\]\*.\[0-9\]\*} (Children)
+\item \code{c[0-9]*.[0-9]\*} (Children)
 \item \code{mgm} (Maternal grandmother)
 \item \code{mgf} (Maternal grandfather)
 \item \code{pgm} (Paternal grandmother)
 \item \code{pgf} (Paternal grandfather)
-\item \code{s\[0-9\]*} (Full siblings)
-\item \code{mhs\[0-9\]*} (Half-siblings - maternal side)
-\item \code{phs\[0-9\]*} (Half-siblings - paternal side)
-\item \code{mau\[0-9\]*} (Aunts/Uncles - maternal side)
-\item \code{pau\[0-9\]*} (Aunts/Uncles - paternal side).
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 Defaults to \code{c("m","f","s1","mgm","mgf","pgm","pgf")}.
 }}
 
 \item{n_fam}{A named vector holding the desired number of family members.
+See  \code{\link[stats]{setNames}}.
 All names must be picked from the list mentioned above. Defaults to \code{NULL}.}
 
 \item{add_ind}{A logical scalar indicating whether the genetic
@@ -56,16 +57,14 @@ If either \code{fam_vec} or \code{n_fam} is used as the argument,
 if it is of the required format, if the liability-scale heritability \code{h2}
 is a number satisfying \eqn{0 \leq h^2}, \code{n_sim} is a strictly positive number,
 and \code{pop_prev} is a positive number that is at most one,
-then the output will be a list containing three tibbles.
-The first tibble, \code{sim_obs}, holds the disease status and the current
-age/age-of-onset for all family members in each of the \code{n_sim} families.
-The second tibble, \code{thresholds}, holds the lower and upper thresholds
-for all individuals in all families. Note that this tibble has the format required in
-\code{\link{estimate_liability}}.
-The last tibble, \code{fam_ID}, connects the personal identifiers
-for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID}
-has the format required in \code{\link{estimate_liability}}.
-Note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function
+then the output will be a list holding two tibbles.
+The first tibble, \code{sim_obs}, holds the simulated liabilities, the disease
+status and the current age/age-of-onset for all family members in each of the
+\code{n_sim} families.
+The second tibble, \code{thresholds}, holds the family identifier, the personal
+identifier and the lower and upper thresholds for all individuals in all families.
+Note that this tibble has the format required in \code{\link{estimate_liability}}.
+In addition, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function
 returns the disease status, the current age/age-of-onset, the lower and upper
 thresholds, as well as the personal identifier for a single individual, namely
 the individual under consideration (called \code{o}).
@@ -75,7 +74,8 @@ decide on which of the two vectors to use.
 \description{
 \code{simulate_under_LTM_single} simulates families and thresholds under
 the liability threshold model for a given family structure and a single
-phenotype.
+phenotype. Please note that it is not possible to simulate different
+family structures.
 }
 \examples{
 simulate_under_LTM_single()
