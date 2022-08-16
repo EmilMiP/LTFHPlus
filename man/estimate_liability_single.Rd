@@ -5,6 +5,7 @@
 \title{Estimating the genetic or full liability}
 \usage{
 estimate_liability_single(
+  .tbl,
   family,
   threshs,
   h2 = 0.5,
@@ -17,6 +18,8 @@ estimate_liability_single(
 )
 }
 \arguments{
+\item{.tbl}{A tibble containing the}
+
 \item{family}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least two columns that hold the family identifier and the corresponding
 personal identifiers, respectively. That is, for each family in \code{fam_id} there should
@@ -24,20 +27,20 @@ be a list holding all individuals belonging to that family in \code{pid}. Note t
 personal identifiers for all individuals must have a special format. It must end
 on \code{_?}, where \code{?} is one of the following abbreviations
 \itemize{
-\item g (Genetic component of the full liability)
-\item o (Full liability)
-\item m (Mother)
-\item f (Father)
-\item c[0-9]* (Children)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item s[0-9]* (Full siblings)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]\*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 See also \code{\link{construct_covmat}}.
 }}
 
@@ -107,7 +110,7 @@ on their family history.
 }
 \details{
 This function can be used to estimate either the genetic component of the
-full liability, the full liability or both.
+full liability, the full liability or both. It is possible to input either
 }
 \examples{
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
@@ -116,7 +119,6 @@ add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
 h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
 always_add = c("g","o"), progress = TRUE)
-
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
 h2 = 0.5, n_sim=10, pop_prev = .05)

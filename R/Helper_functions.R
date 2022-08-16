@@ -421,7 +421,10 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
     return(NA)
   }else{
     
-    return(mid_point - log(pop_prev/cir - 1)* 1/slope)
+    res <- mid_point - log(pop_prev/cir - 1)* 1/slope
+    
+    if(res > 0) return(res)
+    if(res <= 0) return(0)
   }
 }
 
@@ -521,7 +524,11 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
     if(stats::pnorm(liability, lower.tail = F) >= pop_prev){
       return(NA)
     }else{
-      return(mid_point - log(pop_prev/stats::pnorm(liability, lower.tail = F) - 1)* 1/slope)
+       
+      res <- mid_point - log(pop_prev/stats::pnorm(liability, lower.tail = F) - 1)* 1/slope
+      
+      if(res > 0) return(res)
+      if(res <= 0) return(0)
     }
   }
   
@@ -555,7 +562,10 @@ The upper and lower cutoff points will be swapped...")
     }
     
     # Computing the age of onset
-    return((1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo)
+    res <- (1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo
+    
+    if(res > 0) return(res)
+    if(res <= 0) return(0)
   }
 }
 

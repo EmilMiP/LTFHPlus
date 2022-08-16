@@ -1,3 +1,4 @@
+utils::globalVariables("pb")
 #' Estimating the genetic or full liability for multiple phenotypes
 #' FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
 #' 
@@ -14,20 +15,20 @@
 #' be a list holding all individuals belonging to that family in pid. Note that the 
 #' personal identifiers for all individuals must have a special format. It must be end
 #' with _?, where ? is one of the following abbreviations 
-#' - g (Genetic component of the full liability)
-#' - o (full liability)
-#' - m (Mother)
-#' - f (Father)
-#' -c\[0-9\]* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least five columns; one holding the personal identifier for all individuals,
@@ -97,6 +98,8 @@
 #' 
 #' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
 #' @importFrom rlang :=
+#' @importFrom stringr str_detect
+#' @importFrom tidyselect starts_with
 #' 
 #' @export
 estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, full_corrmat,
@@ -111,7 +114,7 @@ estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, f
   if(length(always_add) == 0) always_add <- NULL
   
   # Turning parallel into class logical
-  progress <- as.logical(progress)
+  # progress <- as.logical(progress)
 
   # Turning pid and fam_id into strings
   pid <- as.character(pid)
@@ -139,7 +142,7 @@ estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, f
   if(any(!c("lower","upper") %in% sub("_.*$","",colnames(threshs)))) stop("The tibble threshs must include two columns named 'lower' and 'upper'!")
   
   # Checking that tol is valid
-  if(!is.numeric(tol)) stop("The tolerance must be numeric!")
+  if(!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
   if(tol <= 0) stop("The tolerance must be strictly positive!")
   
   # Checking that always_add is a vector of strings
@@ -175,7 +178,7 @@ estimate_liability_multi <- function(family, threshs, h2_vec, genetic_corrmat, f
   # If the tibble consists of more than the required columns, 
   # we select only the relevant ones.
   family <- select(family, !!as.symbol(fam_id), !!as.symbol(pid))
-  threshs <- select(threshs, !!as.symbol(pid), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
+  threshs <- select(threshs, !!as.symbol(pid), starts_with("lower"), starts_with("upper"))
   
   # Now we can extract the number of phenotypes
   n_pheno <- length(h2_vec)
@@ -184,7 +187,7 @@ The number of pairs of lower and upper thresholds is not equal to the number of 
 Does all columns have the required names?")
   
   # As well as the phenotype names
-  pheno_names <- sub("lower_", "", colnames(threshs)[stringr::str_detect(colnames(threshs), "^lower_")], ignore.case = TRUE)
+  pheno_names <- sub("lower_", "", colnames(threshs)[str_detect(colnames(threshs), "^lower_")], ignore.case = TRUE)
   
   # Finally, we also check whether all lower thresholds are 
   # smaller than or equal to the upper thresholds
@@ -209,28 +212,31 @@ The lower and upper thresholds will be swapped...")
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
   # If progress = TRUE, a progress bar will be displayed
-  if(progress){
-    pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-    j <- 0
-  }
+  # if(progress){
+  #   pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
+  #   j <- 0
+  # }
   
   gibbs_res <- future.apply::future_sapply(X= 1:nrow(family), FUN = function(i){
     
     # Extract family members
-    fam <- unlist(fam_list[i])
+    fam <- fam_list[[i]]
+    # Remove individual o and/or g from the set (if present)
+    fam <- setdiff(gsub("^.*_", "", fam), c("g","o"))
 
-    # Constructing the covariance matrix
-    cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))), 
+    # Constructing the covariance matrix.
+    # If always_add holds "g" or "o", add_ind must be TRUE
+    cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(always_add), 
                             genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
                             h2 = h2_vec, phen_names = pheno_names)
 
     if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "g"){
       
-      cov <- cov[-which(stringr::str_detect(colnames(cov), "^g_")),-which(stringr::str_detect(colnames(cov), "^g_"))]
+      cov <- cov[-which(str_detect(colnames(cov), "^g_")),-which(str_detect(colnames(cov), "^g_"))]
     
     }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam), c("g","o"))) == "o"){
         
-      cov <- cov[-which(stringr::str_detect(colnames(cov), "^o_")),-which(stringr::str_detect(colnames(cov), "^o_"))]
+      cov <- cov[-which(str_detect(colnames(cov), "^o_")),-which(str_detect(colnames(cov), "^o_"))]
     }
     
     # Extracting the thresholds for all family members 
@@ -285,11 +291,11 @@ The lower and upper thresholds will be swapped...")
       n_gibbs <- n_gibbs +1
     }
     
-    # If progress = TRUE, a progress bar will be displayed
-    if(progress){
-      j <- j+1
-      utils::setTxtProgressBar(pb, j)
-    }
+    # # If progress = TRUE, a progress bar will be displayed
+    # if(progress){
+    #   j <- j+1
+    #   utils::setTxtProgressBar(pb, j)
+    # }
     
     # If all standard errors are below the tolerance, 
     # the estimated liabilities as well as the corresponding 

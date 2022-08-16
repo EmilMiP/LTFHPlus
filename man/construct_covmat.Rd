@@ -20,22 +20,23 @@ construct_covmat(
 family members. All family members must be represented by strings from the
 following list:
 \itemize{
-\item m (Mother)
-\item f (Father)
-\item c[0-9]* (Children)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item s[0-9]* (Full siblings)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 }}
 
 \item{n_fam}{A named vector holding the desired number of family members.
+See \code{\link[stats]{setNames}}.
 All names must be picked from the list mentioned above. Defaults to NULL.}
 
 \item{add_ind}{A logical scalar indicating whether the genetic

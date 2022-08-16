@@ -4,7 +4,7 @@
 \alias{construct_aoo}
 \title{Constructing age of onset (aoo)}
 \usage{
-construct_aoo(fam_mem, .tbl, pop_prev)
+construct_aoo(fam_mem, .tbl, pop_prev, phen_name = NULL)
 }
 \arguments{
 \item{fam_mem}{A character vector holding all family members.}
@@ -14,6 +14,10 @@ disease status for the set of individuals in \code{fam_mem}.}
 
 \item{pop_prev}{A positive number representing the population prevalence, i.e. the
 overall prevalence in the population.}
+
+\item{phen_name}{Either \code{NULL} or character vector holding the
+phenotype name. Must be specified in the multi-trait case.
+Defaults to \code{NULL}.}
 }
 \value{
 A tibble holding all columns present in .tbl as well

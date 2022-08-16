@@ -28,20 +28,20 @@ be a list holding all individuals belonging to that family in pid. Note that the
 personal identifiers for all individuals must have a special format. It must be end
 with _?, where ? is one of the following abbreviations
 \itemize{
-\item g (Genetic component of the full liability)
-\item o (full liability)
-\item m (Mother)
-\item f (Father)
--c[0-9]* (Children)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item s[0-9]* (Full siblings)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 See also \code{\link{construct_covmat}}.
 }}
 
