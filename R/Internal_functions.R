@@ -5,38 +5,38 @@
 #'
 #' This function can be used to check whether relatives are represented
 #' by valid abbreviations. A valid abbreviation is one of the following:
-#' - g (Genetic component of full liability)
-#' - o (Full liability)
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]\*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #'
 #' @param relatives A string or character vector representing 
 #' the relatives.
 #' All strings must be chosen among the following abbreviations
-#' - g (Genetic component of full liability)
-#' - o (Full liability)
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side)
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]\*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side)
 #' for the function to return TRUE.
 #' 
 #' @return If \code{relatives} is a string or character vector such that
@@ -55,7 +55,6 @@
 #' }
 #' 
 #' @importFrom stringr str_detect
-#' 
 validate_relatives <- function(relatives){
   
   if(!is.character(relatives)){
@@ -291,12 +290,12 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0(j, "_", phen_name, "_status")), 
                      tidyselect::matches(paste0(j, "_", phen_name, "_aoo")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", nbr, "_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j, "_", phen_name, "_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., indiv_ID, lower, upper) %>% 
+        select(., fam_ID, indiv_ID, lower, upper) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)
@@ -314,12 +313,12 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0("^",j,"_status$")), 
                      tidyselect::matches(paste0("^",j,"_aoo$")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", nbr, "_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j,"_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., indiv_ID, lower, upper) %>% 
+        select(., fam_ID, indiv_ID, lower, upper) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)
