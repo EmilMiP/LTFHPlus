@@ -1,5 +1,6 @@
 utils::globalVariables("lower")
 utils::globalVariables("upper")
+utils::globalVariables("pb")
 
 #' Estimating the genetic or full liability 
 #'
@@ -8,28 +9,29 @@ utils::globalVariables("upper")
 #' on their family history.
 #'
 #' This function can be used to estimate either the genetic component of the 
-#' full liability, the full liability or both. 
-#'
+#' full liability, the full liability or both. It is possible to input either 
+#' 
+#' @param .tbl A tibble containing the 
 #' @param family A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least two columns that hold the family identifier and the corresponding
 #' personal identifiers, respectively. That is, for each family in \code{fam_id} there should
 #' be a list holding all individuals belonging to that family in \code{pid}. Note that the 
 #' personal identifiers for all individuals must have a special format. It must end
 #' on \code{_?}, where \code{?} is one of the following abbreviations 
-#' - g (Genetic component of the full liability)
-#' - o (Full liability)
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\*(Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]\*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least three columns, one holding the personal identifier for all individuals,
@@ -104,7 +106,7 @@ utils::globalVariables("upper")
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_single <- function(family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
+estimate_liability_single <- function(.tbl, family, threshs, h2 = 0.5, pid = "PID", fam_id = "fam_ID", out = c(1), 
                                tol = 0.01, always_add = c("g","o"), progress = FALSE){
   
 # Making sure input is valid ----------------------------------------------
@@ -193,6 +195,7 @@ estimate_liability_single <- function(family, threshs, h2 = 0.5, pid = "PID", fa
 
   # Extracting the families
   fam_list <- pull(family, !!as.symbol(pid))
+  fam_id_list <- pull(family, !!as.symbol(fam_id))
   
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
@@ -209,41 +212,35 @@ estimate_liability_single <- function(family, threshs, h2 = 0.5, pid = "PID", fa
     # Remove individual o and/or g from the set (if present)
     fam <- setdiff(gsub("^.*_", "", fam), c("g","o"))
     
-    # Constructing the covariance matrix
+    # Constructing the covariance matrix.
     # If always_add holds "g" or "o", add_ind must be TRUE
     cov <- construct_covmat(fam_vec = fam, n_fam = NULL, add_ind = length(always_add), h2 = h2)
     
-    # Extracting the thresholds for all family members 
-    # and all phenotypes
-    fam_threshs = threshs[match(fam_list[[i]][!gsub("^.*_", "", fam_list[[i]]) %in% always_add], pull(threshs,!!as.symbol(pid))), ]
-    
-    ##################################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if(setdiff(always_add, intersect(gsub(paste0("^.*_"), "", fam_list[[i]]), always_add)) == "g"){
+    # Extracting the thresholds for all family members
+    # including the thresholds for o and/or g, depending
+    # on always_add
+    if(length(always_add) > 0){
       
-      cov <- cov[-which(str_detect(colnames(cov), "^g")),-which(str_detect(colnames(cov), "^g"))]
+      fam <- union(fam_list[[i]][!gsub("^.*_", "", fam_list[[i]]) %in% c("g","o")],
+                   paste0(fam_id_list[i],"_", always_add))
+    }else{
       
-    }else if(setdiff(c("g","o"), intersect(gsub(paste0("^.*_"), "", fam_list[[i]]), c("g","o"))) == "o"){
-      
-      cov <- cov[-which(str_detect(colnames(cov), "^o")),-which(str_detect(colnames(cov), "^o"))]
+      fam <- fam_list[[i]][!gsub("^.*_", "", fam_list[[i]]) %in% c("g","o")]
     }
     
-    # Adding the individuals present in always_add
-    thr <- threshs %>% filter(!!as.symbol(fam_id) %in% fam_list[[i]][gsub("^.*_", "", fam_list[[i]]) %in% always_add])
+    fam_threshs = threshs[match(fam, pull(threshs,!!as.symbol(pid))), ]
     
-    if (nrow(thr) == 2) {
-      fam_threshs <- bind_rows(thr, fam_threshs)
-    } else if (nrow(thr) == 0) {
-      fam_threshs <- bind_rows(tibble::tibble(!!as.symbol(fam_id) := c("g","o"), lower = c(-Inf,-Inf), upper = c(Inf, Inf)), 
-                               fam_threshs)
-    } else if (any(str_ends(pull(thr,!!as.symbol(fam_id)) %>% str_subset(fam, .),"_g"))) {
-      
-      fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(fam_id) := "o", lower = -Inf, upper = Inf),
-                               fam_threshs)
-    } else if (any(str_ends(pull(thr,!!as.symbol(fam_id)) %>% str_subset(fam, .),"_o"))){
-      
-      fam_threshs <- bind_rows(tibble::add_row(thr, !!as.symbol(fam_id) := "g", lower = -Inf, upper = Inf, .before = 1),
-                               fam_threshs)
-    }
+    
+    # Adding all missing thresholds:
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     # Setting the variables needed for Gibbs sampler
     fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
@@ -322,20 +319,20 @@ estimate_liability_single <- function(family, threshs, h2 = 0.5, pid = "PID", fa
 #' be a list holding all individuals belonging to that family in pid. Note that the 
 #' personal identifiers for all individuals must have a special format. It must be end
 #' with _?, where ? is one of the following abbreviations 
-#' - g (Genetic component of the full liability)
-#' - o (full liability)
-#' - m (Mother)
-#' - f (Father)
-#' - c\[0-9\]\*.\[0-9\]\* (Children)
-#' - mgm (Maternal grandmother)
-#' - mgf (Maternal grandfather)
-#' - pgm (Paternal grandmother)
-#' - pgf (Paternal grandfather)
-#' - s\[0-9\]* (Full siblings)
-#' - mhs\[0-9\]* (Half-siblings - maternal side)
-#' - phs\[0-9\]* (Half-siblings - paternal side)
-#' - mau\[0-9\]* (Aunts/Uncles - maternal side)
-#' - pau\[0-9\]* (Aunts/Uncles - paternal side).
+#' - \code{g} (Genetic component of full liability)
+#' - \code{o} (Full liability)
+#' - \code{m} (Mother)
+#' - \code{f} (Father)
+#' - \code{c[0-9]*.[0-9]\*} (Children)
+#' - \code{mgm} (Maternal grandmother)
+#' - \code{mgf} (Maternal grandfather)
+#' - \code{pgm} (Paternal grandmother)
+#' - \code{pgf} (Paternal grandfather)
+#' - \code{s[0-9]*} (Full siblings)
+#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
+#' - \code{phs[0-9]*} (Half-siblings - paternal side)
+#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' See also \code{\link{construct_covmat}}.
 #' @param threshs A matrix, list or data frame that can be converted into a tibble.
 #' Must have at least five columns; one holding the personal identifier for all individuals,
