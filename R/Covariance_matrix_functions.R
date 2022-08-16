@@ -193,6 +193,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
+#' See \code{\link{stats::setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
@@ -418,6 +419,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
+#' See \code{\link{stats::setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
@@ -705,6 +707,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 #' - pau\[0-9\]* (Aunts/Uncles - paternal side).
 #'  Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 #' @param n_fam A named vector holding the desired number of family members.
+#' See \code{\link{stats::setNames}}.
 #' All names must be picked from the list mentioned above. Defaults to NULL.
 #' @param add_ind A logical scalar indicating whether the genetic 
 #' component of the full liability as well as the full
