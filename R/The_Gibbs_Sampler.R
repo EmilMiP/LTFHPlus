@@ -4,13 +4,13 @@
 #' multivariate normal distribution with covariance matrix \code{covmat}.
 #' 
 #' Given a covariance matrix \code{covmat} and lower and upper cutoff points,
-#' the function \code{rtmvnorm.gibbs} can be used to perform Gibbs sampler on a truncated 
+#' the function \code{rtmvnorm.gibbs()} can be used to perform Gibbs sampler on a truncated 
 #' multivariable normal distribution. It is possible to specify which variables 
 #' to return from the Gibbs sampler, making it convenient to use when estimating
 #' only the full liability or the genetic component of the full liability.
 #'
 #' @param n_sim A positive number representing the number of draws from the 
-#' Gibbs sampler after burn-in.. Defaults to 1e+05.
+#' Gibbs sampler after burn-in.. Defaults to \code{1e+05}.
 #' @param covmat A symmetric and numeric matrix representing the covariance
 #' matrix for the multivariate normal distribution.
 #' @param lower A number or numeric vector representing the lower cutoff point(s) for the 
@@ -24,16 +24,16 @@
 #' Defaults to \code{Inf}.
 #' @param fixed A logical scalar or a logical vector indicating which
 #' variables to fix. If \code{fixed} is a vector, it must have the same length as 
-#' lower and upper. Defaults to \code{TRUE} when \code{lowert} is equal to 
+#' lower and upper. Defaults to \code{TRUE} when \code{lower} is equal to 
 #' \code{upper} and \code{FALSE} otherwise.
 #' @param out An integer or numeric vector indicating which variables should be returned
-#' from the Gibbs sampler. If out = c(1), the first variable (usually the genetic 
+#' from the Gibbs sampler. If \code{out = c(1)}, the first variable (usually the genetic 
 #' component of the full liability of the first phenotype) is estimated and returned. 
-#' If out = c(2), the second variable (usually full liability) is estimated and returned. 
-#' If out = c(1,2), both the first and the second variable are estimated and returned. 
-#' Defaults to c(1).
+#' If \code{out = c(2)}, the second variable (usually full liability) is estimated and returned. 
+#' If \code{out = c(1,2)}, both the first and the second variable are estimated and returned. 
+#' Defaults to \code{c(1)}.
 #' @param burn_in A number of iterations that count as burn in for the Gibbs sampler.
-#' Must be non-negative. Defaults to 1000.
+#' Must be non-negative. Defaults to \code{1000}.
 #'
 #' @return If \code{covmat} is a symmetric and numeric matrix, if \code{n_sim} and 
 #' \code{burn_in} are positive/non-negative numbers, if \code{out} is a numeric vector and 
@@ -55,16 +55,17 @@
 #' samp <- rtmvnorm.gibbs(10e3, covmat = matrix(c(1, 0.2, 0.2, 0.5), 2),
 #'                        lower = c(-Inf, 0), upper = c(0, Inf), out = 1:2)
 #' @export
-rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, fixed = (lower == upper), out = c(1), burn_in = 1000) {
+rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper, 
+                           fixed = (lower == upper), out = c(1), burn_in = 1000) {
   
-  # Checking that n_sim is a number
+  # Checking that n_sim is a strictly positive number
   if(!is.numeric(n_sim)) stop("The number of simulations n_sim must be numeric!")
-  # Checking that n_sim is strictly positive
-  if(n_sim <=0)stop("n_sim must be a positive number!")
-  # Checking that covmat is symmetric
-  if(!isSymmetric.matrix(covmat)) stop("The covariance matrix covmat must be symmetric!")
-  # and numeric
+  if(n_sim <=0) stop("n_sim must be a positive number!")
+  
+  # Checking that covmat is valid
   if(!is.numeric(covmat)) stop("The covariance matrix covmat must be numeric!")
+  if(!isSymmetric(covmat)) stop("The covariance matrix covmat must be symmetric")
+  
   # Checking that the lower and upper cutoff points are valid
   if(!is.numeric(lower)) stop("The lower cutoff point(s) must be numeric!")
   if(!is.numeric(upper)) stop("The upper cutoff point(s) must be numeric!")

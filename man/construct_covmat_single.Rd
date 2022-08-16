@@ -16,24 +16,22 @@ construct_covmat_single(
 family members. All family members must be represented by strings from the
 following list:
 \itemize{
-\item m (Mother)
-\item f (Father)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
-\item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
-Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 }}
 
 \item{n_fam}{A named vector holding the desired number of family members.
+See \code{\link[stats]{setNames}}.
 All names must be picked from the list mentioned above. Defaults to NULL.}
 
 \item{add_ind}{A logical scalar indicating whether the genetic
@@ -41,33 +39,34 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{h2}{A number representing the heritability on liability scale
-for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-the heritability must also be at most 1.
+\item{h2}{A number representing the squared heritability on liability scale
+for a single phenotype. Must be non-negative and at most 1.
 Defaults to 0.5.}
 }
 \value{
-If either fam_vec or n_fam is used as the argument, if it is of the required format and h2 is a number
-satisfying 0 <= h2, then the output will be a named covariance matrix. The number of rows and columns
-correspond to the length of fam_vec or n_fam (+ 2 if add_ind=T).
-If both fam_vec = c()/NULL and n_fam = c()/NULL, the
+If either \code{fam_vec} or \code{n_fam} is used as the argument, if it
+is of the required format and \code{h2} is a number satisfying
+\eqn{0 \leq h2 \leq 1}, then the output will be a named covariance matrix.
+The number of rows and columns corresponds to the length of \code{fam_vec}
+or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
+If both \code{fam_vec = c()/NULL} and \code{n_fam = c()/NULL}, the
 function returns a \eqn{2 \times 2} matrix holding only the correlation
 between the genetic component of the full liability and
-the full liability for the individual. If both fam_vec and
-n_fam are given, the user is asked to decide on which
+the full liability for the individual. If both \code{fam_vec} and
+\code{n_fam} are given, the user is asked to decide on which
 of the two vectors to use.
 Note that the returned object has different attributes, such as
-fam_vec, n_fam, add_ind, h2 and phenotype_names.
+\code{fam_vec}, \code{n_fam}, \code{add_ind} and \code{h2}.
 }
 \description{
 \code{construct_covmatc_single} returns the covariance matrix for an
-underlying individual and a variable number of its family members
+underlying target individual and a variable number of its family members
 }
 \details{
 This function can be used to construct a covariance matrix for
 a given number of family members. Each entry in this covariance
 matrix equals the percentage of shared DNA between the corresponding
-individuals times the heritability \eqn{h^2}. The family members
+individuals times the liability-scale heritability \eqn{h^2}. The family members
 can be specified using one of two possible formats.
 }
 \examples{

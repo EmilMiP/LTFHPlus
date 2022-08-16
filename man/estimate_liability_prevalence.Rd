@@ -7,13 +7,15 @@ using prevalence information}
 \usage{
 estimate_liability_prevalence(
   status,
-  h2s,
-  corrmat,
+  h2_vec,
+  genetic_corrmat,
+  full_corrmat,
   prevalences,
   pid = "PID",
   out = c(1),
   tol = 0.01,
-  parallel = FALSE
+  parallel = FALSE,
+  progress = FALSE
 )
 }
 \arguments{
@@ -24,14 +26,18 @@ phenotype, respectively. It must be possible to tie each status variable
 to a specific phenotype uniquely. The function will use the column names to create
 phenotype names.}
 
-\item{h2s}{A numeric vector representing the heritability on liability scale
-for all phenotypes. All entries in h2 must be non-negative and at most 1.}
+\item{h2_vec}{A numeric vector representing the heritabilites on liability scale
+for all phenotypes. All entries in \code{h2_vec} must be non-negative and at most 1.}
 
-\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
-number of phenotypes as well as the full correlation.
-The full correlations must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All correlations must be between -1 and 1.}
+\item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
+
+\item{full_corrmat}{A  numeric matrix holding the full correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.
+Defaults to NULL.}
 
 \item{prevalences}{A numeric, non-negative vector holding the prevalences.
 All prevalences must be at most one.}
@@ -53,6 +59,9 @@ standard error of the mean is below 0.2. Defaults to 0.01.}
 \item{parallel}{A logical scalar indicating whether computations should be performed parallel.
 In order for this to be possible, the user must install the library "future.apply" and create a plan
 (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
+
+\item{progress}{A logical scalar indicating whether the function should display
+a progress bar. Defaults to \code{FALSE}.}
 }
 \value{
 If \code{status} is a matrix, list or data frame that can be converted into a

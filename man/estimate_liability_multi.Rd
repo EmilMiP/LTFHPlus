@@ -3,21 +3,21 @@
 \name{estimate_liability_multi}
 \alias{estimate_liability_multi}
 \title{Estimating the genetic or full liability for multiple phenotypes
-FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
-\code{estimate_liability_multi} estimates the genetic component of the full
-liability and/or the full liability for a number of individuals based
-on their family history for a variable number of phenotypes.}
+FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.}
 \usage{
 estimate_liability_multi(
   family,
   threshs,
-  h2s,
-  corrmat,
+  h2_vec,
+  genetic_corrmat,
+  full_corrmat,
+  phen_names = NULL,
+  always_add,
   pid = "PID",
   fam_id = "fam_ID",
   out = c(1),
   tol = 0.01,
-  parallel = FALSE
+  progress = FALSE
 )
 }
 \arguments{
@@ -28,19 +28,20 @@ be a list holding all individuals belonging to that family in pid. Note that the
 personal identifiers for all individuals must have a special format. It must be end
 with _?, where ? is one of the following abbreviations
 \itemize{
-\item g (Genetic component of the full liability)
-\item o (full liability)
-\item m (Mother)
-\item f (Father)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item s[0-9]* (Full siblings)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 See also \code{\link{construct_covmat}}.
 }}
 
@@ -52,14 +53,27 @@ to a specific phenotype uniquely. This is done easily by adding _{name_of_phenot
 the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
 thresholds corresponding to the first phenotype.}
 
-\item{h2s}{A numeric vector representing the heritability on liability scale
-for all phenotypes. All entries in h2s must be non-negative and at most 1.}
+\item{h2_vec}{A numeric vector representing the liability-scale heritabilities
+for all phenotypes. All entries in h2_vec must be non-negative and at most 1.}
 
-\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
-number of phenotypes as well as the full correlation.
-The full correlations must be given on the diagonal,
-while the off-diagonal entries must hold the correlation between phenotypes.
-All correlations must be between -1 and 1.}
+\item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.}
+
+\item{full_corrmat}{A numeric matrix holding the full correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.}
+
+\item{phen_names}{A character vector holding the phenotype names. These names
+will be used to create the row and column names for the covariance matrix.
+If it is not specified, the names will default to phenotype1, phenotype2, etc.
+Defaults to NULL.}
+
+\item{always_add}{A character vector or \code{NULL}. If \code{always_add = c("g","o")}, both the genetic component
+of the full liability as well as the full liability will be added to the list of family members.
+If always_add equals \code{"g"} or \code{"o"}, the genetic component of the full liability or the full liability
+will be added, respectively. If \code{always_add = NULL}, no component will be added.
+Defaults to \code{c("g","o")}.}
 
 \item{pid}{A string holding the name of the column in \code{family} and
 \code{threshs} that hold the personal identifier(s). Defaults to "PID".}
@@ -68,39 +82,50 @@ All correlations must be between -1 and 1.}
 holds the family identifier. Defaults to "fam_ID".}
 
 \item{out}{A character or numeric vector indicating whether the genetic component
-of the full liability, the full liability or both should be returned. If out = c(1) or
-out = c("genetic"), the genetic liability is estimated and returned. If out = c(2) or
-out = c("full"), the full liability is estimated and returned. If out = c(1,2) or
-out = c("genetic", "full"), both components are estimated and returned.
-Defaults to c(1).}
+of the full liability, the full liability or both should be returned. If \code{out = c(1)} or
+\code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or
+\code{out = c("full")}, the full liability is estimated and returned. If \code{out = c(1,2)} or
+\code{out = c("genetic", "full")}, both components are estimated and returned.
+Defaults to \code{c(1)}.}
 
 \item{tol}{A number that is used as the convergence criterion for the Gibbs sampler.
 Equals the standard error of the mean. That is, a tolerance of 0.2 means that the
 standard error of the mean is below 0.2. Defaults to 0.01.}
 
-\item{parallel}{A logical scalar indicating whether computations should be performed parallel.
-In order for this to be possible, the user must install the library "future.apply" and create a plan
-(see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.}
+\item{progress}{A logical scalar indicating whether the function should display
+a progress bar. Defaults to \code{FALSE}.}
 }
 \value{
-If family and threshs are two matrices, lists or data frames that can be converted into
-tibbles, if family has two columns named like the strings represented in pid and fam_id, if
-threshs has a column named like the string given in pid as well as a column named "lower" and
-a column named "upper" and if the heritabilities, corrmat, out and tol are of the required form,
-then the function returns a tibble with at least six columns (depending on the length of out).
-The first two columns correspond to the columns fam_id and pid from family.
-If out is equal to c(1) or c("genetic"), the third and fourth columns hold the estimated genetic
-liability as well as the corresponding standard error for the first phenotype, respectively.
-If out equals c(2) or c("full"), the third and fourth columns hold the estimated full liability
-as well as the corresponding standard error for the first phenotype, respectively.
-If out is equal to c(1,2) or c("genetic","full"), the third and fourth columns hold the estimated
-genetic liability as well as the corresponding standard error for the first phenotype, respectively,
-while the fifth and sixth columns hold the estimated full liability as well as the corresponding standard error
-for the first phenotype, respectively.
-The remaining columns hold the estimated genetic liabilities and/or the estimated full liabilities
-as well as the corresponding standard errors for the remaining phenotypes.
+If \code{family} and \code{threshs} are two matrices, lists or data frames
+that can be converted into tibbles, if \code{family} has two columns named like
+the strings represented in \code{pid} and \code{fam_id}, if \code{threshs} has a
+column named like the string given in \code{pid} as well as a column named \code{"lower"}
+and a column named \code{"upper"} and if the liability-scale heritabilities in \code{h2_vec},
+\code{genetic_corrmat}, \code{full_corrmat}, \code{out} and \code{tol} are of the
+required form, then the function returns a tibble with at least six columns (depending
+on the length of out).
+The first two columns correspond to the columns \code{fam_id} and \code{pid} present in
+the tibble \code{family}.
+If \code{out} is equal to \code{c(1)} or \code{c("genetic")}, the third and fourth columns
+hold the estimated genetic liability as well as the corresponding standard error for the
+first phenotype, respectively.
+If \code{out} equals \code{c(2)} or \code{c("full")}, the third and fourth columns hold
+the estimated full liability as well as the corresponding standard error for the first
+phenotype, respectively.
+If \code{out} is equal to \code{c(1,2)} or \code{c("genetic","full")}, the third and
+fourth columns hold the estimated genetic liability as well as the corresponding standard
+error for the first phenotype, respectively, while the fifth and sixth columns hold the
+estimated full liability as well as the corresponding standard error for the first
+phenotype, respectively.
+The remaining columns hold the estimated genetic liabilities and/or the estimated full
+liabilities as well as the corresponding standard errors for the remaining phenotypes.
 }
 \description{
+\code{estimate_liability_multi} estimates the genetic component of the full
+liability and/or the full liability for a number of individuals based
+on their family history for a variable number of phenotypes.
+}
+\details{
 This function can be used to estimate either the genetic component of the
 full liability, the full liability or both for a variable number of traits.
 }

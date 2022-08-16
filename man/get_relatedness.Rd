@@ -8,56 +8,54 @@ get_relatedness(s1, s2, h2 = 0.5)
 }
 \arguments{
 \item{s1, s2}{Strings representing the two family members.
-The string must be one of the following:
+The strings must be chosen from the following list of strings:
 \itemize{
-\item g (Genetic component of full liability)
-\item o (Full liability)
-\item m (Mother)
-\item f (Father)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
-\item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 }}
 
-\item{h2}{A number representing the heritability on liability scale.
-Must be non-negative. Note that under the liability threshold model,
-the heritability must also be at most 1.}
+\item{h2}{A number representing the squared heritability on liability scale.
+Must be non-negative and at most 1. Defaults to 0.5}
 }
 \value{
-If both s1 and s2 are strings chosen from the mentioned list of strings and h2 is a number
-satisfying 0 <= h2, then the output will be a number that equals the percentage of shared
-DNA between \code{s1} and \code{s2} times the heritability \code{h2}.
+If both \code{s1} and \code{s2} are strings chosen from the mentioned
+list of strings and \code{h2} is a number satisfying \eqn{0 \leq h2 \leq 1},
+then the output will be a number that equals the percentage of shared
+DNA between \code{s1} and \code{s2} times the squared heritability \code{h2}.
 }
 \description{
 \code{get_relatedness} returns the relatedness times the
-heritability for a pair of family members
+liability-scale heritability for a pair of family members
 }
 \details{
 This function can be used to get the percentage of shared
-DNA times the heritability \eqn{h^2} for two family members.
+DNA times the liability-scale heritability \eqn{h^2} for two family members.
 }
 \note{
 If you are only interested in the percentage of shared DNA, set \code{h2 = 1}.
 }
 \examples{
 get_relatedness("g","o")
-get_relatedness("g","f",h2 = 1)
-get_relatedness("o","s",h2 = 0.3)
+get_relatedness("g","f", h2 = 1)
+get_relatedness("o","s", h2 = 0.3)
 
 
 \dontrun{
 # This will result in errors:
 get_relatedness("a","b")
-get_relatedness(m,mhs)
+get_relatedness(m, mhs)
 }
 
 }

@@ -8,8 +8,9 @@ construct_covmat_multi(
   fam_vec = c("m", "f", "s1", "mgm", "mgf", "pgm", "pgf"),
   n_fam = NULL,
   add_ind = TRUE,
-  corrmat,
-  h2s,
+  genetic_corrmat,
+  full_corrmat,
+  h2_vec,
   phen_names = NULL
 )
 }
@@ -18,24 +19,23 @@ construct_covmat_multi(
 family members. All family members must be represented by strings from the
 following list:
 \itemize{
-\item m (Mother)
-\item f (Father)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
-\item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
 }}
 
 \item{n_fam}{A named vector holding the desired number of family members.
+See \code{\link[stats]{setNames}}.
 All names must be picked from the list mentioned above. Defaults to NULL.}
 
 \item{add_ind}{A logical scalar indicating whether the genetic
@@ -43,14 +43,16 @@ component of the full liability as well as the full
 liability for the underlying individual should be included in
 the covariance matrix. Defaults to TRUE.}
 
-\item{corrmat}{A numeric matrix holding the genetic correlation between the desired
-number of phenotypes as well as the full correlation.
-The full correlations must be given on the diagonal,
-while the off-diagonal entries must hold the genetic correlations between phenotypes.
-All correlations must be between -1 and 1.}
+\item{genetic_corrmat}{A numeric matrix holding the genetic correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.}
 
-\item{h2s}{A numeric vector representing the heritability on liability scale
-for all phenotypes. All entries in h2s must be non-negative and at most 1.}
+\item{full_corrmat}{A numeric matrix holding the full correlations between the desired
+phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries
+must be between -1 and 1. In addition, the matrix must be symmetric.}
+
+\item{h2_vec}{A numeric vector representing the liability-scale heritabilities
+for all phenotypes. All entries in h2_vec must be non-negative and at most 1.}
 
 \item{phen_names}{A character vector holding the phenotype names. These names
 will be used to create the row and column names for the covariance matrix.
@@ -58,50 +60,75 @@ If it is not specified, the names will default to phenotype1, phenotype2, etc.
 Defaults to NULL.}
 }
 \value{
-If either fam_vec or n_fam is used as the argument, if it is of the
-required format and h2 is a numeric matrix satisfying that all
-diagonal entries are non-negative and that all off-diagonal
-entries are between -1 and 1, then the output will be a named covariance matrix.
+If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the
+required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices
+satisfying that all diagonal entries are one and that all off-diagonal
+entries are between -1 and 1, and if \code{h2_vec} is a numeric vector satisfying
+\eqn{0 \leq h2_i \leq 1} for all \eqn{i \in \{1,...,n_pheno\}},
+then the output will be a named covariance matrix.
 The number of rows and columns corresponds to the number of phenotypes times
-the length of fam_vec or n_fam (+ 2 if add_ind=T).
-If both fam_vec and n_fam are equal to c() or NULL, the function returns
-a \eqn{(2 \times number of phenotypes) \times (2\times number of phenotypes)}{ (2 X number of phenotypes) X (2 X number of phenotypes)}
+the length of \code{fam_vec} or \code{n_fam} (+ 2 if \code{add_ind=TRUE}).
+If both \code{fam_vec} and \code{n_fam} are equal to \code{c()} or \code{NULL},
+the function returns a \eqn{(2 \times n_pheno) \times (2\times n_pheno)}
 matrix holding only the correlation between the genetic component of the full
 liability and the full liability for the underlying individual for all
-phenotypes. If both fam_vec and n_fam are specified, the user is asked to
+phenotypes. If both \code{fam_vec} and \code{n_fam} are specified, the user is asked to
 decide on which of the two vectors to use.
-Note that the returned object has different attributes, such as
-fam_vec, n_fam, add_ind, h2 and phenotype_names.
+Note that the returned object has a number different attributes,namely
+\code{fam_vec}, \code{n_fam}, \code{add_ind}, \code{genetic_corrmat}, \code{full_corrmat},
+\code{h2} and \code{phenotype_names}.
 }
 \description{
 \code{construct_covmat_multi} returns the covariance matrix for an
-underlying individual and a variable number of its family members
+underlying target individual and a variable number of its family members
 for multiple phenotypes.
 }
 \details{
 This function can be used to construct a covariance matrix for
 a given number of family members. Each entry in this covariance
 matrix equals either the percentage of shared DNA between the corresponding
-individuals times the heritability \eqn{h^2} or the
+individuals times the liability-scale heritability \eqn{h^2} or the
 percentage of shared DNA between the corresponding individuals times
-the correlation between the corresponding phenotypes. The family members
-can be specified using one of two possible formats.
+the correlation between the corresponding phenotypes.
+That is, for the same phenotype, the covariance between all
+combinations of the genetic component of the full liability
+and the full liability is given by
+\deqn{\text{Cov}\left( l_g, l_g \right) = h^2,}
+\deqn{\text{Cov}\left( l_g, l_o \right) = h^2,}
+\deqn{\text{Cov}\left( l_o, l_g \right) = h^2}
+and
+\deqn{\text{Cov}\left( l_o, l_o \right) = 1.}
+For two different phenotypes, the covariance is given by
+\deqn{\text{Cov}\left( l_g^1, l_g^2 \right) = \rho_g^{1,2},}
+\deqn{\text{Cov}\left( l_g^1, l_o^2 \right) = \rho_g^{1,2},}
+\deqn{\text{Cov}\left( l_o^1, l_g^2 \right) = \rho_g^{1,2}}
+and
+\deqn{\text{Cov}\left( l_o^1, l_o^2 \right) = \rho_g^{1,2} + \rho_e^{1,2},}
+where \eqn{l_g^i} and \eqn{l_o^i} are the genetic component
+of the full liability and the full liability for phenotype \eqn{i},
+respectively, \eqn{\rho_g^{i,j}} is the genetic correlation between
+phenotype \eqn{i} and \eqn{j} and \eqn{\rho_e^{1,2}} is the
+environmental correlation between phenotype \eqn{i} and \eqn{j}.
+The family members can be specified using one of two possible formats.
 }
 \examples{
 construct_covmat_multi(fam_vec = NULL, 
-                       corrmat = matrix(c(0.9, 0.5, 0.5, 0.8), nrow = 2), 
-                       h2s = c(0.37,0.44),
+                       genetic_corrmat = matrix(c(1, 0.5, 0.5, 1), nrow = 2),
+                       full_corrmat = matrix(c(1, 0.55, 0.55, 1), nrow = 2),
+                       h2_vec = c(0.37,0.44),
                        phen_names = c("p1","p2"))
 construct_covmat_multi(fam_vec = c("m","mgm","mgf","mhs1","mhs2","mau1"), 
                        n_fam = NULL, 
                        add_ind = TRUE,
-                       corrmat = diag(3),
-                       h2s = c(0.8, 0.65))
+                       genetic_corrmat = diag(3),
+                       full_corrmat = diag(3),
+                       h2_vec = c(0.8, 0.65))
 construct_covmat_multi(fam_vec = NULL, 
                        n_fam = stats::setNames(c(1,1,1,2,2), c("m","mgm","mgf","s","mhs")), 
                        add_ind = FALSE,
-                       corrmat = diag(2),
-                       h2s = c(0.75,0.85))
+                       genetic_corrmat = diag(2),
+                       full_corrmat = diag(2),
+                       h2_vec = c(0.75,0.85))
 
 }
 \seealso{

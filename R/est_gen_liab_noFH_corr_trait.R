@@ -19,13 +19,16 @@
 #' phenotype, respectively. It must be possible to tie each status variable
 #' to a specific phenotype uniquely. The function will use the column names to create
 #' phenotype names. 
-#' @param h2s A numeric vector representing the heritability on liability scale
-#' for all phenotypes. All entries in h2 must be non-negative and at most 1.
-#' @param corrmat A numeric matrix holding the genetic correlation between the desired 
-#' number of phenotypes as well as the full correlation. 
-#' The full correlations must be given on the diagonal,
-#' while the off-diagonal entries must hold the correlation between phenotypes.
-#' All correlations must be between -1 and 1.
+#' @param h2_vec A numeric vector representing the heritabilites on liability scale
+#' for all phenotypes. All entries in \code{h2_vec} must be non-negative and at most 1.
+#' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
+#' @param full_corrmat A  numeric matrix holding the full correlations between the desired 
+#' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
+#' must be between -1 and 1. In addition, the matrix must be symmetric.
+#' Defaults to NULL.
 #' @param prevalences A numeric, non-negative vector holding the prevalences. 
 #' All prevalences must be at most one. 
 #' @param  pid A string holding the name of the column in \code{status} that hold 
@@ -42,6 +45,9 @@
 #' @param parallel A logical scalar indicating whether computations should be performed parallel.
 #' In order for this to be possible, the user must install the library "future.apply" and create a plan
 #' (see \code{\link[future.apply]{future_apply}}). Defaults to FALSE.
+#' @param progress A logical scalar indicating whether the function should display
+#' a progress bar. Defaults to \code{FALSE}.
+#' 
 #' 
 #' @return If \code{status} is a matrix, list or data frame that can be converted into a
 #' tibble and that has a column named \code{PID} and if the heritabilities, corrmat, 
@@ -65,9 +71,9 @@
 #' @importFrom rlang :=
 #' 
 #' @export
-estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid = "PID", out = c(1), tol = 0.01, 
-                                         parallel = FALSE){
-  
+estimate_liability_prevalence = function(status, h2_vec, genetic_corrmat, full_corrmat,
+                                         prevalences, pid = "PID", out = c(1), tol = 0.01, 
+                                         parallel = FALSE, progress = FALSE){
   # Turning parallel into class logical
   parallel <- as.logical(parallel)
 
@@ -77,21 +83,14 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
   # Turning threshs into a 
   if(!tibble::is_tibble(status)) status <- tibble::as_tibble(status)
   
-  # Checking that the heritability is valid
-  if(is.null(h2s)) stop("The heritabilities must be specified!")
-  if(!is.numeric(h2s) && !is.integer(h2s) )stop("The heritability must be numeric!")
-  if(any(h2s<0))stop("The heritabilities must be non-negative!")
-  if(any(h2s>1))stop("Under the liability threshold model, the heritabilities must be smaller than or equal to 1!")
+  # Checking that the heritabilities are valid
+  if(validate_proportion(h2_vec)){invisible()}
+
   # Checking that all correlations are valid
-  if(is.null(corrmat)) stop("The correlation matrix corrmat must be specified!")
-  if(any(abs(corrmat)>1)) stop("All correlations in cormat must be between -1 and 1!")
-  # In addition, corrmat must be symmetric
-  if(!isSymmetric.matrix(corrmat)) stop("The matrix corrmat must be symmetric!")
+  if(validate_correlation_matrix(genetic_corrmat)){invisible()}
+  if(validate_correlation_matrix(full_corrmat)){invisible()}
   # Checking that all prevalences are valid
-  if(is.null(prevalences)) stop("The prevalences must be specified!")
-  if(!is.numeric(prevalences)) stop("The tolerance must be numeric!")
-  if(any(prevalences<0))stop("The prevalences must be non-negative!")
-  if(any(prevalences>1))stop("The prevalences must be smaller than or equal to 1!")
+  if(validate_proportion(prevalences)){invisible()}
 
   # And that pid is also present in the tibble threshs
   if(!(pid %in% colnames(status))) stop(paste0("The column ", pid," does not exist in the tibble status"))
@@ -127,9 +126,10 @@ estimate_liability_prevalence = function(status, h2s, corrmat, prevalences, pid 
 
   
   # Now we can extract the number of phenotypes
-  n_pheno <- nrow(corrmat)
+  n_pheno <- length(h2_vec)
+  
   if(ncol(status) != (n_pheno + 1)) stop("Something is wrong with the number of phenotypes... \n 
-The number of columns in status is not equal to the number of phenotypes specified in corrmat...\
+The number of columns in status is not equal to the number of phenotypes specified in h2_vec...\
 Does all columns have the required names?")
   
   # As well as the phenotype names
@@ -176,7 +176,8 @@ Does all columns have the required names?")
     # all families
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-                            corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
+                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                            h2 = h2_vec, phen_names = pheno_names)
     
     gibbs_res <- future.apply::future_sapply(X= 1:nrow(status), FUN = function(i){
       
@@ -231,7 +232,8 @@ Does all columns have the required names?")
     # all families
     # Constructing the covariance matrix
     cov <- construct_covmat(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
-                            corrmat = corrmat, h2 = h2s, phen_names = pheno_names)
+                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                            h2 = h2_vec, phen_names = pheno_names)
     
     gibbs_res <- sapply(X = 1:nrow(family), FUN = function(i){
       

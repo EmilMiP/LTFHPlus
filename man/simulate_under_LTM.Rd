@@ -9,6 +9,9 @@ simulate_under_LTM(
   n_fam = NULL,
   add_ind = TRUE,
   h2 = 0.5,
+  genetic_corrmat = NULL,
+  full_corrmat = NULL,
+  phen_names = NULL,
   n_sim = 1000,
   pop_prev = 0.1
 )
@@ -18,73 +21,152 @@ simulate_under_LTM(
 family members. All family members must be represented by strings from the
 following list:
 \itemize{
-\item m (Mother)
-\item f (Father)
-\item mgm (Maternal grandmother)
-\item mgf (Maternal grandfather)
-\item mgp[1-2]* (Maternal grandparent)
-\item pgm (Paternal grandmother)
-\item pgf (Paternal grandfather)
-\item pgp[1-2]* (Paternal grandparent)
-\item s[0-9]* (Full siblings)
-\item c[0-9]* (children)
-\item mhs[0-9]* (Half-siblings - maternal side)
-\item phs[0-9]* (Half-siblings - paternal side)
-\item mau[0-9]* (Aunts/Uncles - maternal side)
-\item pau[0-9]* (Aunts/Uncles - paternal side).
-Defaults to c("m","f","s1","mgm","mgf","pgm","pgf").
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]\*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
+Defaults to \code{c("m","f","s1","mgm","mgf","pgm","pgf")}.
 }}
 
 \item{n_fam}{A named vector holding the desired number of family members.
-All names must be picked from the list mentioned above. Defaults to NULL.}
+See  \code{\link[stats]{setNames}}.
+All names must be picked from the list mentioned above. Defaults to \code{NULL}.}
 
 \item{add_ind}{A logical scalar indicating whether the genetic
 component of the full liability as well as the full
-liability for the underlying individual should be included in
-the covariance matrix. Defaults to TRUE.}
+liability for the underlying target individual should be included in
+the covariance matrix. Defaults to \code{TRUE}.}
 
-\item{h2}{A number representing the heritability on liability scale
-for a single phenotype. Must be non-negative. Note that under the liability threshold model,
-the heritability must also be at most 1.
-Defaults to 0.5.}
+\item{h2}{Either a number or a numeric vector holding the liability-scale
+heritability(ies) for one or more phenotypes. All entries in \code{h2} must
+be non-negative. Note that under the liability threshold model, the
+heritabilities must also be at most 1. Defaults to 0.5.}
+
+\item{genetic_corrmat}{Either \code{NULL} or a numeric matrix holding the
+genetic correlations between the desired phenotypes. Must be specified, if
+\code{length(h2)}\eqn{>0}, and will be ignored if \code{h2} is a number.
+All diagonal entries in \code{genetic_corrmat} must be equal to one,
+while all off-diagonal entries must be between -1 and 1. In addition,
+the matrix must be symmetric.
+Defaults to \code{NULL}.}
+
+\item{full_corrmat}{Either \code{NULL} or a numeric matrix holding the
+full correlations between the desired phenotypes. Must be specified, if
+\code{length(h2)}\eqn{>0}, and will be ignored if \code{h2} is a number.
+All diagonal entries in \code{full_corrmat} must be equal to one, while
+all off-diagonal entries must be between -1 and 1. In addition, the
+matrix must be symmetric.
+Defaults to \code{NULL}.}
+
+\item{phen_names}{Either \code{NULL} or character vector holding the
+phenotype names. These names will be used to create the row and column
+names for the covariance matrix. Must be specified, if \code{length(h2)}
+\eqn{> 0}, and will be ignored if \code{h2} is a number.
+If it is not specified, the names will default to phenotype1, phenotype2, etc.
+Defaults to \code{NULL}.}
 
 \item{n_sim}{A positive number representing the number of simulations. Defaults to 1000.}
 
-\item{pop_prev}{A positive number representing the population prevalence, i.e. the
-overall prevalence in the population. Must be smaller than 1. Defaults to 0.1.}
+\item{pop_prev}{Either a number or a numeric vector holding the population
+prevalence(s), i.e. the overall prevalence(s) in the population.
+All entries in \code{pop_prev} must be positive
+and smaller than 1. Defaults to 0.1.}
 }
 \value{
-If either fam_vec or n_fam is used as the argument, if it is of the required format,
-if h2 is a number satisfying 0 <= h2, n_sim is a strictly positive number,
-and pop_prev is a positive number that is at most one,
-then the output will be a list containing three tibbles. The first tibble, \code{sim_obs},
-holds the disease status and the current age/age of onset for all family members in each
-of the \code{n_sim} families. The second tibble, \code{thresholds}, holds the lower and upper thresholds
-for all individuals in all families. Note that this tibble has the format required in
-\code{\link{estimate_liability}}. The last tibble, \code{fam_ID}, connects the personal identifiers
-for all individuals to the family identifiers. As \code{thresholds}, \code{fam_ID} has the format
-required in \code{\link{estimate_liability}}.
-Note that if neither fam_vec nor n_fam are specified, the function returns the disease status,
-the current age/age of onset, the lower and upper thresholds, as well as the personal identifier
-for a single individual, namely the individual under consideration (called 'o').
-If both fam_vec and n_fam are defined, the user is asked to decide on which
-of the two vectors to use.
+If either \code{fam_vec} or \code{n_fam} is used as the argument,
+if it is of the required format, if the liability-scale heritability \code{h2}
+is a number satisfying \eqn{0 \leq h^2}, \code{n_sim} is a strictly positive number,
+and \code{pop_prev} is a positive number that is at most one,
+then the output will be a list containing two tibbles.
+The first tibble, \code{sim_obs}, holds the simulated liabilities, the disease
+status and the current age/age-of-onset for all family members in each of the
+\code{n_sim} families.
+The second tibble, \code{thresholds}, holds the family identifier, the personal
+identifier and the lower and upper thresholds for all individuals in all families.
+Note that this tibble has the format required in \code{\link{estimate_liability}}.
+If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the
+required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric
+and symmetric matrices satisfying that all diagonal entries are one and that all
+off-diagonal entries are between -1 and 1, if the liability-scale heritabilities in
+\code{h2_vec} are numbers satisfying \eqn{0 \leq h^2_i} for all \eqn{i \in \{1,...,n_pheno\}},
+\code{n_sim} is a strictly positive number, and \code{pop_prev} is a positive numeric
+vector such that all entries are at most one, then the output will be a list containing
+the following lists.
+The first outer list, which is named after the first phenotype in \code{phen_names},
+holds two tibbles, namely \code{sim_obs}, which holds the simulated liabilities, the
+disease status and the current age/age-of-onset for all family members in each of the \code{n_sim}
+families for the first phenotype. The second tibble, \code{thresholds}, holds
+the family identifier, the personal identifier and the lower and upper thresholds
+for all individuals in all families, again for the first phenotype. Note that this
+tibble has the format required in \code{\link{estimate_liability}}.
+As the first outer list, the second outer list, which is named after the second
+phenotype in \code{phen_names}, holds two tibbles. \code{sim_obs}, which holds
+the  simulated liabilities, the disease status and the current age/age-of-onset
+for all family members in each of the \code{n_sim} families for the second phenotype,
+and \code{thresholds}, which holds the family identifier, the personal
+identifier and the lower and upper thresholds for all individuals in all families
+for the second phenotype.
+Once more, note that this tibble has the format required in
+\code{\link{estimate_liability}}.
+There is a list containing \code{sim_obs} and \code{thresholds} for each
+phenotype in \code{phen_names}.
+Finally, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function
+returns the disease status, the current age/age-of-onset, the lower and upper
+thresholds, as well as the personal identifier for a single individual, namely
+the individual under consideration (called \code{o}).
+If both \code{fam_vec} and \code{n_fam} are defined, the user is asked to '
+decide on which of the two vectors to use.
 }
 \description{
-\code{simulate_under_LTM} simulates thresholds under
-the liability threshold model for a given family
-structure.
+\code{simulate_under_LTM} simulates families and thresholds under
+the liability threshold model for a given family structure and a
+variable number of phenotypes.Please note that it is not possible
+to simulate different family structures.
+}
+\details{
+This function can be used to simulate the case-control status, the current
+age and age-of-onset as well as the lower and upper thresholds for
+a variable number of phenotypes for all family members in each of
+the \code{n_sim} families.
+If \code{h2} is a number, \code{simulate_under_LTM} simulates the case-
+control status, the current age and age-of-onset as well as thresholds
+for a single phenotype.
+However, if \code{h2} is a numeric vector, if \code{genetic_corrmat} and
+\code{full_corrmat} are two symmetric correlation matrices, and if
+\code{phen_names} and \code{pop_prev} are to numeric vectors holding
+the phenotype names and the population prevalences, respectively, then
+\code{simulate_under_LTM} simulates the case-control status, the current
+age and age-of-onset as well as thresholds for two or more (correlated)
+phenotypes.
+The family members can be specified using one of two possible formats.
 }
 \examples{
 simulate_under_LTM()
+
+genetic_corrmat <- matrix(0.4, 3, 3)
+diag(genetic_corrmat) <- 1
+full_corrmat <- matrix(0.6, 3, 3)
+diag(full_corrmat) <- 1
+
 simulate_under_LTM(fam_vec = NULL, n_fam = stats::setNames(c(1,1,1,2,2), 
 c("m","mgm","mgf","s","mhs")))
+
 simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = FALSE, 
-h2 = 0.5, n_sim = 500, pop_prev = .05)
+genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat, n_sim = 200)
+
 simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, h2 = 0.5, 
 n_sim = 200, pop_prev = 0.05)
 
 }
 \seealso{
-\code{\link{construct_covmat}}
+\code{\link{construct_covmat}} \code{\link{simulate_under_LTM_single}}
+\code{\link{simulate_under_LTM_multi}}
 }
