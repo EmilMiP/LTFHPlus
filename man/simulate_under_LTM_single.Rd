@@ -20,7 +20,7 @@ following list:
 \itemize{
 \item \code{m} (Mother)
 \item \code{f} (Father)
-\item \code{c[0-9]*.[0-9]\*} (Children)
+\item \code{c[0-9]*.[0-9]*} (Children)
 \item \code{mgm} (Maternal grandmother)
 \item \code{mgf} (Maternal grandfather)
 \item \code{pgm} (Paternal grandmother)
