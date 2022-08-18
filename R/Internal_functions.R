@@ -1,3 +1,4 @@
+utils::globalVariables("role")
 #' Checking that relatives are represented by valid strings
 #'
 #' \code{validate_relatives} checks whether relatives are represented
@@ -290,12 +291,14 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0(j, "_", phen_name, "_status")), 
                      tidyselect::matches(paste0(j, "_", phen_name, "_aoo")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr),
+                  role = paste0(j),
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j, "_", phen_name, "_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., fam_ID, indiv_ID, lower, upper) %>% 
+        rename(., !!as.symbol(paste0("lower_", phen_name)) := lower, !!as.symbol(paste0("upper_", phen_name)) := upper) %>% 
+        select(., fam_ID, indiv_ID, role, starts_with("lower"), starts_with("upper")) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)
@@ -313,12 +316,13 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0("^",j,"_status$")), 
                      tidyselect::matches(paste0("^",j,"_aoo$")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr),
+                  role = paste0(j),
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j,"_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., fam_ID, indiv_ID, lower, upper) %>% 
+        select(., fam_ID, indiv_ID, role, starts_with("lower"), starts_with("upper")) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)

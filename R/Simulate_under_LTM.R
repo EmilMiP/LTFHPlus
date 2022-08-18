@@ -55,7 +55,8 @@ utils::globalVariables("tmp_names")
 #' status and the current age/age-of-onset for all family members in each of the 
 #' \code{n_sim} families. 
 #' The second tibble, \code{thresholds}, holds the family identifier, the personal
-#' identifier and the lower and upper thresholds for all individuals in all families. 
+#' identifier, the role (specified in fam_vec or n_fam) as well as
+#' the lower and upper thresholds for all individuals in all families. 
 #' Note that this tibble has the format required in \code{\link{estimate_liability}}. 
 #' In addition, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function 
 #' returns the disease status, the current age/age-of-onset, the lower and upper 
@@ -286,23 +287,18 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
 #' vector such that all entries are at most one,
 #' then the output will be a list containing lists for each phenotype.
 #' The first outer list, which is named after the first phenotype in \code{phen_names}, 
-#' holds two tibbles, namely \code{sim_obs}, which holds the simulated liabilities, the
-#' disease status and the current age/age-of-onset for all family members in each of the \code{n_sim} 
-#' families for the first phenotype. The second tibble, \code{thresholds}, holds 
-#' the family identifier, the personal identifier and the lower and upper thresholds 
-#' for all individuals in all families, again for the first phenotype. Note that this 
-#' tibble has the format required in \code{\link{estimate_liability}}. 
+#' holds the tibble \code{sim_obs}, which holds the simulated liabilities, the
+#' disease status and the current age/age-of-onset for all family members in each of 
+#' the \code{n_sim} families for the first phenotype.  
 #' As the first outer list, the second outer list, which is named after the second 
-#' phenotype in \code{phen_names}, holds two tibbles. \code{sim_obs}, which holds 
+#' phenotype in \code{phen_names}, holds the tibble \code{sim_obs}, which holds 
 #' the  simulated liabilities, the disease status and the current age/age-of-onset 
-#' for all family members in each of the \code{n_sim} families for the second phenotype, 
-#' and \code{thresholds}, which holds the family identifier, the personal
-#' identifier and the lower and upper thresholds for all individuals in all families
-#' for the second phenotype.
-#' Once more, note that this tibble has the format required in 
-#' \code{\link{estimate_liability}}.
-#' There is a list containing \code{sim_obs} and \code{thresholds} for each 
-#' phenotype in \code{phen_names}. 
+#' for all family members in each of the \code{n_sim} families for the second phenotype.
+#' There is a list containing \code{sim_obs} for each phenotype in \code{phen_names}. 
+#' The last list entry, \code{thresholds}, holds the family identifier, the personal
+#' identifier, the role (specified in fam_vec or n_fam) as well as the lower and 
+#' upper thresholds for all individuals in all families and all phenotypes.
+#' Note that this tibble has the format required in \code{\link{estimate_liability}}.
 #' Finally, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function 
 #' returns the disease status, the current age/age-of-onset, the lower and upper 
 #' thresholds, as well as the personal identifier for a single individual, namely 
@@ -512,8 +508,27 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
                 thresholds = i_threshs))
   })
   
-  # Renaming the list components
+  # Extracting the information
+  
+  
+  for (i in 1:num_phen) {
+    
+    if(i == 1){
+      
+      thresh <- res[[i]]$thresholds
+      
+    }else{
+      
+      thresh <- left_join(thresh, res[[i]]$thresholds, by = c("fam_ID", "indiv_ID", "role"))
+    }
+    
+    res[[i]]$thresholds <- NULL 
+  }
+  
   names(res) <- phen_names
+  
+  res$thresholds <- thresh
+  
   # Returning the simulated thresholds
   return(res)
 }
@@ -603,8 +618,9 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
 #' status and the current age/age-of-onset for all family members in each of the 
 #' \code{n_sim} families. 
 #' The second tibble, \code{thresholds}, holds the family identifier, the personal
-#' identifier and the lower and upper thresholds for all individuals in all families. 
-#' Note that this tibble has the format required in \code{\link{estimate_liability}}.
+#' identifier, the role (specified in fam_vec or n_fam) as well as the lower and 
+#' upper thresholds for all individuals in all families. Note that this tibble has 
+#' the format required in \code{\link{estimate_liability}}.
 #' If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the 
 #' required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric 
 #' and symmetric matrices satisfying that all diagonal entries are one and that all 
@@ -614,23 +630,18 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
 #' vector such that all entries are at most one, then the output will be a list containing 
 #' the following lists.
 #' The first outer list, which is named after the first phenotype in \code{phen_names}, 
-#' holds two tibbles, namely \code{sim_obs}, which holds the simulated liabilities, the
-#' disease status and the current age/age-of-onset for all family members in each of the \code{n_sim} 
-#' families for the first phenotype. The second tibble, \code{thresholds}, holds 
-#' the family identifier, the personal identifier and the lower and upper thresholds 
-#' for all individuals in all families, again for the first phenotype. Note that this 
-#' tibble has the format required in \code{\link{estimate_liability}}. 
+#' holds the tibble \code{sim_obs}, which holds the simulated liabilities, the
+#' disease status and the current age/age-of-onset for all family members in each of 
+#' the \code{n_sim} families for the first phenotype.  
 #' As the first outer list, the second outer list, which is named after the second 
-#' phenotype in \code{phen_names}, holds two tibbles. \code{sim_obs}, which holds 
+#' phenotype in \code{phen_names}, holds the tibble \code{sim_obs}, which holds 
 #' the  simulated liabilities, the disease status and the current age/age-of-onset 
-#' for all family members in each of the \code{n_sim} families for the second phenotype, 
-#' and \code{thresholds}, which holds the family identifier, the personal
-#' identifier and the lower and upper thresholds for all individuals in all families
-#' for the second phenotype.
-#' Once more, note that this tibble has the format required in 
-#' \code{\link{estimate_liability}}.
-#' There is a list containing \code{sim_obs} and \code{thresholds} for each 
-#' phenotype in \code{phen_names}. 
+#' for all family members in each of the \code{n_sim} families for the second phenotype.
+#' There is a list containing \code{sim_obs} for each phenotype in \code{phen_names}. 
+#' The last list entry, \code{thresholds}, holds the family identifier, the personal
+#' identifier, the role (specified in fam_vec or n_fam) as well as the lower and 
+#' upper thresholds for all individuals in all families and all phenotypes.
+#' Note that this tibble has the format required in \code{\link{estimate_liability}}.
 #' Finally, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function 
 #' returns the disease status, the current age/age-of-onset, the lower and upper 
 #' thresholds, as well as the personal identifier for a single individual, namely 
