@@ -154,11 +154,11 @@ estimate_liability_single <- function(.tbl = NULL,
   
   # Turning .tbl into a tibble
   # if it is not of class tbl
-  if(!tibble::is_tibble(.tbl))  .tbl <- tibble::as_tibble(.tbl)
+  if (!is.null(.tbl) && !tibble::is_tibble(.tbl))  .tbl <- tibble::as_tibble(.tbl)
   
   # If .tbl is NULL and family and threshs are given as the input,
   # the data must be converted to the correct format
-  if(nrow(.tbl)==0) .tbl <- convert_format()
+  if (is.null(.tbl) || nrow(.tbl) == 0) .tbl <- convert_format(family = family, threshs = threshs, personal_id_col = pid, role_col = role)
   
   # # Turning progress into class logical
   # progress <- as.logical(progress)
@@ -531,7 +531,7 @@ estimate_liability_multi <- function(.tbl = NULL,
   
   # If .tbl is NULL and family and threshs are given as the input,
   # the data must be converted to the correct format
-  if(nrow(.tbl)==0) .tbl <- convert_format()
+  if (is.null(.tbl) || nrow(.tbl) == 0) .tbl <- convert_format(family = family, threshs = threshs, personal_id_col = pid, role_col = role)
   
   # Turning progress into class logical
   # progress <- as.logical(progress)

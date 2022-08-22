@@ -96,6 +96,7 @@ validate_relatives <- function(relatives){
 #'
 #' @param prop A number, integer or numeric vector representing the proportions that 
 #' need to be validated.
+#' @param from_covmat logical variable. Only used internally. allows for skip of negative check.
 #' 
 #' @return If \code{prop} is a vector holding valid proportions of class \code{numeric}
 #' or \code{integer} that are non-negative and at most one,
@@ -113,8 +114,7 @@ validate_relatives <- function(relatives){
 #' validate_proportion(-0.5)
 #' }
 #' 
-validate_proportion <- function(prop){
-  
+validate_proportion <- function(prop, from_covmat = FALSE){
   if(is.null(prop)){
     
     stop(paste0(deparse(substitute(prop)), " must be specified!"))
@@ -123,7 +123,7 @@ validate_proportion <- function(prop){
     
     stop(paste0(deparse(substitute(prop)), " must be numeric!"))
     
-  }else if(any(prop<0)){
+  }else if(any(prop<0) & !from_covmat){
     
     stop(paste0(deparse(substitute(prop)), " must be non-negative!"))
     

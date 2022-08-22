@@ -25,6 +25,7 @@ utils::globalVariables("h2")
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' @param h2 A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1. Defaults to 0.5
+#' @param from_covmat logical variable. Only used internally. allows for skip of negative check.
 #' 
 #' @return If both \code{s1} and \code{s2} are strings chosen from the mentioned 
 #' list of strings and \code{h2} is a number satisfying \eqn{0 \leq h2 \leq 1}, 
@@ -48,7 +49,7 @@ utils::globalVariables("h2")
 #' @importFrom stringr str_detect
 #' 
 #' @export
-get_relatedness <- function(s1,s2, h2=0.5){
+get_relatedness <- function(s1,s2, h2=0.5, from_covmat = FALSE){
 
   # Checking that s1 and s2 are strings
   if(!is.character(s1)) stop("s1 must be a string!")
@@ -63,7 +64,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   if(validate_relatives(s2)){invisible()}
 
   # Checking that the heritability is valid
-  if(validate_proportion(h2)){invisible()}
+  if(validate_proportion(h2, from_covmat)){invisible()}
 
   # Getting the percentage of shared DNA
   if (str_detect(s1, "^o$")) { # Target individual's full liability
@@ -354,7 +355,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
   # Filling in all entries 
   for(mem in fam_vec) {
-    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2)
+    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2, from_covmat = T)
   }
   
   # Adding attributes to covmat
@@ -435,6 +436,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' will be used to create the row and column names for the covariance matrix.
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
+#' 
 #' 
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the 
 #' required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
@@ -645,10 +647,10 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
         
         if(p1==p2){
           
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2_vec[p1])
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2_vec[p1], from_covmat = T)
         }else{
          
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2])
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2], from_covmat = T)
         }
       }
       

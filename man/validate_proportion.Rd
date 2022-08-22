@@ -4,11 +4,13 @@
 \alias{validate_proportion}
 \title{Checking that proportions are valid}
 \usage{
-validate_proportion(prop)
+validate_proportion(prop, from_covmat = FALSE)
 }
 \arguments{
 \item{prop}{A number, integer or numeric vector representing the proportions that
 need to be validated.}
+
+\item{from_covmat}{logical variable. Only used internally. allows for skip of negative check.}
 }
 \value{
 If \code{prop} is a vector holding valid proportions of class \code{numeric}

@@ -388,6 +388,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
   # Simulating n_sim liabilities for the each family member and each
   # phenotype. The resulting tibble has n_sim rows and the same number
   # of columns as covmat.
+  print(covmat)
   liabs <- tmvtnorm::rtmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
   # Adding the column names
   colnames(liabs) <- colnames(covmat)
