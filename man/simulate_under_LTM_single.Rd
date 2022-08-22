@@ -20,7 +20,7 @@ following list:
 \itemize{
 \item \code{m} (Mother)
 \item \code{f} (Father)
-\item \code{c[0-9]*.[0-9]\*} (Children)
+\item \code{c[0-9]*.[0-9]*} (Children)
 \item \code{mgm} (Maternal grandmother)
 \item \code{mgf} (Maternal grandfather)
 \item \code{pgm} (Paternal grandmother)
@@ -62,7 +62,8 @@ The first tibble, \code{sim_obs}, holds the simulated liabilities, the disease
 status and the current age/age-of-onset for all family members in each of the
 \code{n_sim} families.
 The second tibble, \code{thresholds}, holds the family identifier, the personal
-identifier and the lower and upper thresholds for all individuals in all families.
+identifier, the role (specified in fam_vec or n_fam) as well as
+the lower and upper thresholds for all individuals in all families.
 Note that this tibble has the format required in \code{\link{estimate_liability}}.
 In addition, note that if neither \code{fam_vec} nor \code{n_fam} are specified, the function
 returns the disease status, the current age/age-of-onset, the lower and upper

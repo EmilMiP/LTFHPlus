@@ -20,6 +20,9 @@ library(future.apply)
 ```
 
 
+
+
+
 # What is the input format for LTFHPlus functions?
 
 With version 2.0, updates have been made to the input and the functions available to estimate the (genetic) liability. Previously, a set order was expected, where the proband was first, then followed by father, mother, and any siblings. This limited analysis to only the immediate family, but if information on, e.g. half-siblings, grandparents etc, was available, it could not be readily used. Now the input does not require a set ordering, but instead the user is expected to provide information on the familial relation to the proband, e.g. mother, paternal half-sibling, etc. This allows for far more flexibility for the user to include the familial information that is available. 

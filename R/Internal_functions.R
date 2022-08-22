@@ -1,3 +1,4 @@
+utils::globalVariables("role")
 #' Checking that relatives are represented by valid strings
 #'
 #' \code{validate_relatives} checks whether relatives are represented
@@ -95,6 +96,7 @@ validate_relatives <- function(relatives){
 #'
 #' @param prop A number, integer or numeric vector representing the proportions that 
 #' need to be validated.
+#' @param from_covmat logical variable. Only used internally. allows for skip of negative check.
 #' 
 #' @return If \code{prop} is a vector holding valid proportions of class \code{numeric}
 #' or \code{integer} that are non-negative and at most one,
@@ -112,8 +114,7 @@ validate_relatives <- function(relatives){
 #' validate_proportion(-0.5)
 #' }
 #' 
-validate_proportion <- function(prop){
-  
+validate_proportion <- function(prop, from_covmat = FALSE){
   if(is.null(prop)){
     
     stop(paste0(deparse(substitute(prop)), " must be specified!"))
@@ -122,7 +123,7 @@ validate_proportion <- function(prop){
     
     stop(paste0(deparse(substitute(prop)), " must be numeric!"))
     
-  }else if(any(prop<0)){
+  }else if(any(prop<0) & !from_covmat){
     
     stop(paste0(deparse(substitute(prop)), " must be non-negative!"))
     
@@ -290,12 +291,14 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0(j, "_", phen_name, "_status")), 
                      tidyselect::matches(paste0(j, "_", phen_name, "_aoo")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr),
+                  role = paste0(j),
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j, "_", phen_name, "_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j, "_", phen_name, "_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., fam_ID, indiv_ID, lower, upper) %>% 
+        rename(., !!as.symbol(paste0("lower_", phen_name)) := lower, !!as.symbol(paste0("upper_", phen_name)) := upper) %>% 
+        select(., fam_ID, indiv_ID, role, starts_with("lower"), starts_with("upper")) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)
@@ -313,12 +316,13 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
                      tidyselect::matches(paste0("^",j,"_status$")), 
                      tidyselect::matches(paste0("^",j,"_aoo$")))) %>%
         rowwise() %>% 
-        mutate(., indiv_ID = paste0(fam_ID,"_", j), 
+        mutate(., indiv_ID = paste0(fam_ID,"_", nbr),
+                  role = paste0(j),
                   upper = convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8), 
                   lower = ifelse(!!as.symbol(paste0(j,"_status")), 
                                   convert_age_to_thresh(!!as.symbol(paste0(j,"_aoo")), dist = "logistic", pop_prev = pop_prev, mid_point = 60, slope = 1/8),
                                   -Inf)) %>%
-        select(., fam_ID, indiv_ID, lower, upper) %>% 
+        select(., fam_ID, indiv_ID, role, starts_with("lower"), starts_with("upper")) %>% 
         ungroup()
       
     }) %>% do.call("bind_rows",.)
