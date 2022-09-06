@@ -168,12 +168,17 @@ diag(genetic_corrmat) <- 1
 full_corrmat <- matrix(0.6, 3, 3)
 diag(full_corrmat) <- 1
 #
-sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, add_ind = TRUE, 
+sims <- simulate_under_LTM(fam_vec = c("m","f"), n_fam = NULL, add_ind = TRUE, 
 genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat, h2 = rep(.5,3), 
-n_sim = 100, pop_prev = rep(.1,3))
-# 
+n_sim = 10, pop_prev = rep(.1,3))
+#
+full_covmat = lapply(sims[-which(names(sims) == "thresholds")], function(x) {
+   dplyr::select(x[[1]], dplyr::starts_with("o") & dplyr::ends_with("status"))
+   })
+full_covmat = cov(dplyr::bind_cols(full_covmat))
+diag(full_covmat) = 1
 estimate_liability_multi(.tbl = sims$thresholds, h2_vec = rep(.5,3), 
-genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+genetic_corrmat = genetic_corrmat, full_corrmat = full_covmat,
 pid = "indiv_ID", fam_id = "fam_ID", role = "role", out = c(1), 
 tol = 0.01)
 

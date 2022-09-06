@@ -384,11 +384,20 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
                                                     genetic_corrmat = genetic_corrmat, 
                                                     full_corrmat = full_corrmat, h2_vec = h2_vec, 
                                                     phen_names = phen_names))
+  # Sometimes the constructed matrix was not positive definite, leading to computational
+  # issues in the gibbs sampler. This check ensures the matrix will be PD.
+  tmp_covmat = eigen(covmat)
+  
+  if (any(tmp_covmat$values < 0)) {
+    eigen_vals = tmp_covmat$values
+    eigen_vecs = tmp_covmat$vectors
+    eigen_vals2 = ifelse(eigen_vals < 0, 1e-4, eigen_vals)
+    covmat = eigen_vecs %*% diag(eigen_vals2) %*% t(eigen_vecs)
+  }
   
   # Simulating n_sim liabilities for the each family member and each
   # phenotype. The resulting tibble has n_sim rows and the same number
   # of columns as covmat.
-  print(covmat)
   liabs <- tmvtnorm::rtmvnorm(n = n_sim, mean = replicate(ncol(covmat), 0), sigma = covmat)
   # Adding the column names
   colnames(liabs) <- colnames(covmat)
