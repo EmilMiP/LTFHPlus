@@ -18,7 +18,7 @@ observed scale to the heritability on the liability scale."><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -36,7 +36,10 @@ observed scale to the heritability on the liability scale."><!-- mathjax --><scr
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -68,22 +71,27 @@ observed scale to the heritability on the liability scale.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>
-  obs_h2 <span class="op">=</span> <span class="fl">0.5</span>,
-  pop_prev <span class="op">=</span> <span class="fl">0.05</span>,
-  prop_cases <span class="op">=</span> <span class="fl">0.5</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span></span>
+<span>  obs_h2 <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  pop_prev <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  prop_cases <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>obs_h2</dt>
-<dd><p>A number or numeric vector representing the heritability(ies)
-on the observed scale. Must be non-negative and at most 1. Defaults to 0.5</p></dd>
+<dd><p>A number or numeric vector representing the liability-scale
+heritability(ies)on the observed scale. Must be non-negative and at most 1.
+Defaults to 0.5</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>A number or numeric vector representing the population prevalence(s). All
 entries must be non-negative and at most one.
 If it is a vector, it must have the same length as obs_h2. Defaults to 0.05.</p></dd>
+
+
 <dt>prop_cases</dt>
 <dd><p>Either NULL or a number or a numeric vector representing the proportion
 of cases in the sample. All entries must be non-negative and at most one.
@@ -94,11 +102,11 @@ scale using Equation 23 from
 Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
 Missing Heritability for Diseases from Genome-wide Association Studies",
 The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
-doi: <a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">10.1016/j.ajhg.2011.02.002</a>
+<a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">doi:10.1016/j.ajhg.2011.02.002</a>
 .
 If <code>obs_h2</code>, <code>pop_prev</code> and <code>prop_cases</code> are non-negative numeric
 vectors where all entries are at most one, the function returns a vector of the same
-length as obq_h2. Each entry holds to the heritability on the liability
+length as obs_h2. Each entry holds to the heritability on the liability
 scale which was obtained from the corresponding entry in obs_h2 using Equation 23.
 If <code>obs_h2</code> and <code>pop_prev</code> are non-negative numbers that are at most
 one and <code>prop_cases</code> is <code>NULL</code>, the function returns the heritability
@@ -106,13 +114,14 @@ on the liability scale using Equation 17 from
 Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
 Missing Heritability for Diseases from Genome-wide Association Studies",
 The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
-doi: <a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">10.1016/j.ajhg.2011.02.002</a>
+<a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">doi:10.1016/j.ajhg.2011.02.002</a>
 .
 If <code>obs_h2</code> and <code>pop_prev</code> are non-negative numeric vectors such that
 all entries are at most one, while <code>prop_cases</code> is <code>NULL</code>,
 <code>convert_observed_to_liability_scale</code> returns a vector of the same
-length as obq_h2. Each entry holds to the heritability on the liability
-scale which was obtained from the corresponding entry in obs_h2 using Equation 17.</p></dd>
+length as obq_h2. Each entry holds to the liability-scale heritability that
+was obtained from the corresponding entry in obs_h2 using Equation 17.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -122,7 +131,7 @@ uses either Equation 17 (if prop_cases = NULL) or Equation 23 from
 Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
 Missing Heritability for Diseases from Genome-wide Association Studies",
 The American Journal of Human Genetics, Volume 88, Issue 3, 2011, pp. 294-305,
-doi: <a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">10.1016/j.ajhg.2011.02.002</a>
+<a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">doi:10.1016/j.ajhg.2011.02.002</a>
  to transform the heritability on the observed
 scale to the heritability on the liability scale.</p>
     </div>
@@ -130,23 +139,23 @@ scale to the heritability on the liability scale.</p>
     <h2>References</h2>
     <p>Sang Hong Lee, Naomi R. Wray, Michael E. Goddard, Peter M. Visscher (2011, March). Estimating
 Missing Heritability for Diseases from Genome-wide Association Studies. In The American Journal
-of Human Genetics (Vol. 88, Issue 3, pp. 294-305). doi: <a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">10.1016/j.ajhg.2011.02.002</a></p>
+of Human Genetics (Vol. 88, Issue 3, pp. 294-305). <a href="https://doi.org/10.1016/j.ajhg.2011.02.002" class="external-link">doi:10.1016/j.ajhg.2011.02.002</a></p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4242283</span>
-<span class="r-in"><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>prop_cases<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>prop_cases<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.232781</span>
-<span class="r-in"><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>obs_h2 <span class="op">=</span> <span class="fl">0.8</span>, pop_prev <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">44</span>, </span>
-<span class="r-in">                                    prop_cases <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>obs_h2 <span class="op">=</span> <span class="fl">0.8</span>, pop_prev <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">44</span>, </span></span>
+<span class="r-in"><span>                                    prop_cases <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6.105859</span>
-<span class="r-in"><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>obs_h2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.8</span><span class="op">)</span>, </span>
-<span class="r-in">                                    pop_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">44</span><span class="op">)</span>, </span>
-<span class="r-in">                                    prop_cases <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">convert_observed_to_liability_scale</span><span class="op">(</span>obs_h2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.8</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                                    pop_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">44</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                                    prop_cases <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.232781 6.105859</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -161,7 +170,7 @@ of Human Genetics (Vol. 88, Issue 3, pp. 294-305). doi: <a href="https://doi.org
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

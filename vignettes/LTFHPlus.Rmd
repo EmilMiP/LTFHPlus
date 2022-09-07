@@ -21,35 +21,31 @@ In the examples, we will go over how the package ***LTFHPlus*** can be used to e
 The examples included here are meant to represent a simple application of the method, such that users are able to get a good idea of how to use the functions in the package and what to expect as output. The genetic liabilities are meant to be used as a phenotype for genome-wide association studies(GWAS). We recommend using software such as [PLINK](https://www.cog-genomics.org/plink/), [BOLT](https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html), or R-based methods such as [bigsnpr](https://privefl.github.io/bigsnpr/) to perform the GWAS. 
 
 
-The examples will follow this overarching structure:
 
-* Packages used
-* Global Settings
-  + prevalence, number of individuals, heritability, etc...
-* Setting up input
-  + Assigning necessary information, e.g. family history.
-  + subsections for each input needed with prints
-* function call to estimate genetic liabilities
-
-
-<!-- ```{r} -->
-<!-- plot(seq(10,100), LTFHPlus::age_to_cir(age = seq(10,100))) -->
-<!-- ``` -->
 ## What would you like to read about?
 
 
 Here is an overview of what you can learn more about:
 
 
-LT-FH++ method description & its applications
+* From CIP and family pedigree to input
+  + What does the CIP and family information look like?
+  + What the input format is like
 
-* format of input data
-  + what does the prevalence information look like?
-  + How do we input the thresholds and family history information?
-* what do i do, if I do not have complete information on some individuals?
-  + estimate genetic liability without family history, but with prevalence information
-  + estimate genetic liability with family history, but without prevalence
-  + estimate genetic liability with family history and prevalence information
-  + correlated traits (still pending)
+* How the covariance matrix is constructed 
+  + What format should the family relationship be like
+  + How does the covariance matrix use the family relationship
+  + Example 
+
+* LT-FH++ Example
+  + Simulate phenotypic data under the liability threshold
+  + Estimating genetic liability with parallelization
+  
+
+<!-- * what do i do, if I do not have complete information on some individuals? -->
+<!--   + estimate genetic liability without family history, but with prevalence information -->
+<!--   + estimate genetic liability with family history, but without prevalence -->
+<!--   + estimate genetic liability with family history and prevalence information -->
+<!--   + correlated traits (still pending) -->
 
 

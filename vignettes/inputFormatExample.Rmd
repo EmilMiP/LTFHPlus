@@ -1,7 +1,7 @@
 ---
-title: "Input Format"
+title: "How the covariance is constructed"
 author: "Emil M. Pedersen"
-date: '2022-04-05'
+date: '2022-09-07'
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Input Format}
@@ -20,56 +20,60 @@ library(future.apply)
 ```
 
 
+### What is the input format for LTFHPlus functions?
 
+With version 2.0, updates have been made to the input and the functions available to estimate the (genetic) liability. Previously, a list entry format with a set order was expected, where the proband was first, then followed by father, mother, and any siblings. This limited analysis to only the immediate family, but if information on, e.g. half-siblings, grandparents etc, was available, it could not be readily used. Now the input does not require a set ordering, but instead the user is expected to provide information on the familial relation to the proband, e.g. mother, paternal half-sibling, etc. This allows for far more flexibility for the user to include the familial information that is available. 
 
+### Family Input 
 
-# What is the input format for LTFHPlus functions?
+The function used to estimate the genetic (or full liability) of an individual is `estimate_liability`. The family input is either input through `.tbl`, which is a long format where each row is an individual, or `family`, which is a list entry format, where each row is a full family. If the `family` object is used, it must be accompanied by another object with the thresholds for each individual in the families.  
 
-With version 2.0, updates have been made to the input and the functions available to estimate the (genetic) liability. Previously, a set order was expected, where the proband was first, then followed by father, mother, and any siblings. This limited analysis to only the immediate family, but if information on, e.g. half-siblings, grandparents etc, was available, it could not be readily used. Now the input does not require a set ordering, but instead the user is expected to provide information on the familial relation to the proband, e.g. mother, paternal half-sibling, etc. This allows for far more flexibility for the user to include the familial information that is available. 
+### Family relationship
 
-## Family Input 
+In either family input format a role must accompany each individual. In the long format, the family relationship to the proband has its own column. In the list entry format, it is combined into a string with the id of an individual. As a result, the IDs of family members must contain the family member's ID and end in the shorthand notation for their familial relation to the proband. For example, for a mother it would be "motherID_m", father would be "fatherID_f", and siblings must be "siblingID_s[0-9]". The relationship to the proband is needed to properly construct the covariance. An example of the different input formats can be seen in *From CIP and family to LT-FH++ input*. 
 
-The function used to estimate the genetic (or full liability) of an individual is <tt>estimate_liability()</tt>. The first input needed for this function is <tt>family</tt>. This should be an object that can be coerced into a tibble with list entries. In short, <tt>family</tt> consists of two columns. The first is <tt>pid</tt> and is the personal identifier, i.e. the ID used to identifier your individuals, usually some anonymized value. The second is <tt>fam_id</tt>, which should be a list entry, and contains the IDs of all family members (including the one in <tt>pid</tt>). However, <tt>fam_id</tt> must contain all family member's ID and end in the shorthand notation for their familial relationship, e.g. mother must be "motherID_m", father must be "fatherID_f", and siblings must be "siblingID_s[0-9]", in order for them to get properly read by the covariance function. Default values for <tt>pid</tt> is *indiv_ID* and <tt>fam_id</tt> is *fam_ID*. 
+### Simulate data
 
-From <tt>simulate_under_LTM()</tt> an example of the full input data can be seen:
+From `simulate_under_LTM` an example of the full input data can be seen in the longer format. It returns a list, first entry is `sim_obs`, and contains all the underlying liabilities, status, and age of onset or age for controls. The second entry is called `thresholds` and is the longer format. It contains a family ID, individual ID, family relationship to the proband, and a lower and upper threshold for each individual. The following example simulates a family with the index person, a mother, a father, and a single sibling.
 ```{r}
  sims <- simulate_under_LTM(fam_vec = c("m","f","s1"),
                             n_fam = NULL, 
                             add_ind = TRUE, 
                             h2 = 0.5, 
-                            n_sim=100, 
+                            n_sim=10, 
                             pop_prev = .05)
-str(sims, max.level = 3)
 
-sims$fam_ID
-sims$fam_ID$fam_ID[[1]]
+sims$sim_obs
+sims$thresholds
 
 ```
 
-In the above example, <tt>sims$fam_ID</tt> correspond to the family input, with the first entry, <tt>indiv_ID</tt> containing the ID for the proband. The <tt>indiv_ID</tt> column is primarily there to make it easier to keep track of who each row refers to. The <tt>fam_ID</tt> column contains list entries with the family member's ID and familial relationship, in the form of *id_familyRole*, where family role refers to the short hand notation used to generate the covariance matrix. See documentation for details.
 
 
-### Covariance Function
+### Covariance Function and examples
 
-We construct the covariance matrix for each family being analysed. The covariance function that is used internally in <tt>estimate_liability()</tt> has been updated to allow for a higher degree of flexibility. This means it is up to the user to provide the familial relationship, and <tt>construct_covmat()</tt> creates the corresponding variances and covariances based on the heritability and expected genetic overlap between two individuals. 
+We construct the covariance matrix for each family being analysed during run-time. The covariance function that is used internally in `estimate_liability` has been updated to allow for a higher degree of flexibility. This means it is up to the user to provide the familial relationship, and `construct_covmat` creates the corresponding covariance matrix based on the heritability and expected genetic overlap between two individuals. 
 
-<tt>construct_covmat()</tt> defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format can be specified in two different ways, either <tt>fam_vec</tt> or <tt>n_fam</tt>. For <tt>fam_vec</tt> a vector of strings from the list of possible familial relationships. Family members will then appear in the covariance matrix in the same order as they appear in <tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, with the *names* of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears. We encourage users to look at the documentation for <tt>construct_covmat()</tt> for further details.
+`construct_covmat` defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format for `construct_covmat` can be specified in two different ways, either `fam_vec` (the method used internally in `estimate_liability`) or with <tt>n_fam</tt>. For <tt>fam_vec</tt> a vector of strings from the list of possible familial relationships must be provided For the full list, please see documentation for `construct_covmat`. Family members will then appear in the covariance matrix in the same order as they appear in <tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, where the *names* of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears. 
 
+In order to illustrate the different possible families, we will provide some examples. If no family information is available, but the age of onset information is still available, we can use the simplest covariance, which only contains the genetic and full liability of the index person:
 ```{r}
-# default settings:
-construct_covmat()
-
-# only with parents
-construct_covmat(fam_vec = c("m", "f"), h2 = .5)
-construct_covmat(fam_vec = NULL, n_fam = setNames(c(1,1), c("m", "f")))
-
 # no family members
 construct_covmat(fam_vec = NULL, n_fam = NULL, h2 = .5)
 ```
 
+The default family contains the index person as well as a father, mother, one sibling, both maternal and paternal grandparents.
+```{r}
+construct_covmat()
+```
+
+With only a mother and a father
+```{r}
+construct_covmat(fam_vec = c("m", "f"), h2 = .5)
+```
 
 
-## Threshholds
-
-Thresholds also need to be provided on a per individual basis. The thresholds must be an object that can be coerced into a tibble with three columns. The columns will be <tt>PID</tt>, <tt>lower</tt>, and <tt>upper</tt>. the IDs for each family member
-
+In this example, we illustrate the covariance accounting for family members on either the mother's or father's side. Assuming there is no genetic overlap between the two sides of the family.
+```{r}
+construct_covmat(fam_vec = c("f", "m", "mgm", "pgm", "mhs1", "phs1", "mau", "pau"), h2 = .5)
+```

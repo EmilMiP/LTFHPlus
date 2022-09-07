@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -35,7 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -57,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Constructs the covariance matrix for LT-FH without Family History, and correlated traits</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/legacy_covariance_functions.R" class="external-link"><code>R/legacy_covariance_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/Outdated_covariance_matrix_functions.R" class="external-link"><code>R/Outdated_covariance_matrix_functions.R</code></a></small>
     <div class="hidden name"><code>generate_cov_matrix_noFH.Rd</code></div>
     </div>
 
@@ -66,19 +69,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">generate_cov_matrix_noFH</span><span class="op">(</span><span class="va">h2_vec</span>, <span class="va">gen_cor_vec</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_cov_matrix_noFH</span><span class="op">(</span><span class="va">h2_vec</span>, <span class="va">gen_cor_vec</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>h2_vec</dt>
 <dd><p>a vector of heritability for traits to be considered.</p></dd>
+
+
 <dt>gen_cor_vec</dt>
 <dd><p>a vector of genetic correlations between the traits considered. The order is important, and they must fit into a correlation matrix by inserting them rowwise.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns the covariance matrix needed for LT-FH without family history, and correlated traits.</p>
+    
+
+<p>Returns the covariance matrix needed for LT-FH without family history, and correlated traits.</p>
     </div>
 
   </div>
@@ -93,7 +101,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

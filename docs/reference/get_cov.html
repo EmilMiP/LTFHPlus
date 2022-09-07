@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
       </span>
     </div>
 
@@ -35,7 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -57,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Creates the covariance matrix needed for LT-FH++</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/legacy_covariance_functions.R" class="external-link"><code>R/legacy_covariance_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/Outdated_covariance_matrix_functions.R" class="external-link"><code>R/Outdated_covariance_matrix_functions.R</code></a></small>
     <div class="hidden name"><code>get_cov.Rd</code></div>
     </div>
 
@@ -66,30 +69,39 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_cov</span><span class="op">(</span><span class="va">h2</span>, n_sib <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cov</span><span class="op">(</span><span class="va">h2</span>, n_sib <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>h2</dt>
 <dd><p>Heritability estimate on liability scale to construct the covariance matrix off of.</p></dd>
+
+
 <dt>n_sib</dt>
 <dd><p>Number of Siblings to include in the covariance matrix.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>None</p>
+    
+
+<p>None</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">get_cov</span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_cov</span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'get_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>           Please consider using 'construct_covmat()' instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>           The signature and semantics have changed, see '?construct_covmat'.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 0.50 0.50 0.25 0.25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.50 1.00 0.25 0.25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.25 0.25 1.00 0.00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.25 0.25 0.00 1.00</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -104,7 +116,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
