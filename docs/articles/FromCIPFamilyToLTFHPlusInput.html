@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -128,9 +128,9 @@ illustrative purposes.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 9</span></span></span>
 <span><span class="co">##   fam_id pid       role        sex status current_age aoo     age birth_year</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>      1 <span style="color: #949494;">&lt;chr [4]&gt;</span> <span style="color: #949494;">&lt;chr [4]&gt;</span>     0      0          57 <span style="color: #BB0000;">NA</span>       57       <span style="text-decoration: underline;">1</span>965</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>      2 <span style="color: #949494;">&lt;chr [6]&gt;</span> <span style="color: #949494;">&lt;chr [6]&gt;</span>     1      0          73 <span style="color: #BB0000;">NA</span>       73       <span style="text-decoration: underline;">1</span>949</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>      3 <span style="color: #949494;">&lt;chr [1]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span>     0      0          16 <span style="color: #BB0000;">NA</span>       16       <span style="text-decoration: underline;">2</span>006</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>      1 <span style="color: #949494;">&lt;chr [4]&gt;</span> <span style="color: #949494;">&lt;chr [4]&gt;</span>     0      0          80 <span style="color: #BB0000;">NA</span>       80       <span style="text-decoration: underline;">1</span>942</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>      2 <span style="color: #949494;">&lt;chr [6]&gt;</span> <span style="color: #949494;">&lt;chr [6]&gt;</span>     1      0          15 <span style="color: #BB0000;">NA</span>       15       <span style="text-decoration: underline;">2</span>007</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>      3 <span style="color: #949494;">&lt;chr [1]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span>     1      0          46 <span style="color: #BB0000;">NA</span>       46       <span style="text-decoration: underline;">1</span>976</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CIP</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,</span>
 <span>                       birth_year <span class="op">=</span> <span class="fl">1900</span><span class="op">:</span><span class="fl">2022</span>,</span>
@@ -172,17 +172,17 @@ will look like this:</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 11 × 5</span></span></span>
 <span><span class="co">##    fam_id pid   role  lower upper</span></span>
 <span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>      1 pid1  o      -<span style="color: #BB0000;">Inf</span>  1.59</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>      1 pid2  f      -<span style="color: #BB0000;">Inf</span>  1.59</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>      1 pid3  m      -<span style="color: #BB0000;">Inf</span>  1.59</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>      1 pid4  s1     -<span style="color: #BB0000;">Inf</span>  1.59</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>      2 pid5  o      -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>      2 pid6  f      -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>      2 pid7  m      -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>      2 pid8  s1     -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>      2 pid9  s2     -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>      2 pid10 s3     -<span style="color: #BB0000;">Inf</span>  1.46</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">11</span>      3 pid11 o      -<span style="color: #BB0000;">Inf</span>  2.17</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>      1 pid1  o      -<span style="color: #BB0000;">Inf</span>  1.41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>      1 pid2  f      -<span style="color: #BB0000;">Inf</span>  1.41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>      1 pid3  m      -<span style="color: #BB0000;">Inf</span>  1.41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>      1 pid4  s1     -<span style="color: #BB0000;">Inf</span>  1.41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>      2 pid5  o      -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>      2 pid6  f      -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>      2 pid7  m      -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>      2 pid8  s1     -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>      2 pid9  s2     -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>      2 pid10 s3     -<span style="color: #BB0000;">Inf</span>  2.20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span>      3 pid11 o      -<span style="color: #BB0000;">Inf</span>  1.70</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="estimating-liabilities">Estimating liabilities<a class="anchor" aria-label="anchor" href="#estimating-liabilities"></a>
@@ -203,9 +203,9 @@ given as</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
 <span><span class="co">##   fam_id pid   genetic_est         genetic_se         </span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  -0.127348843063675  0.00385750574497196</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.201802518032016  0.00374208360579443</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 -0.0162886323613794 0.00376680070501015</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  -0.162937278221742  0.00373974956236937</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.0552143416320438 0.00432611467503388</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 -0.0459170532269625 0.00337390551967564</span></span></code></pre>
 <p>A note is printed to let the user know that the conversion to the
 longer format happened internally, suggesting the use of the longer
 format. The output should be the same. If the conversion fails, an error
@@ -220,9 +220,9 @@ will be given, with another suggestion to use the longer format and the
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
 <span><span class="co">##   fam_id pid   genetic_est         genetic_se         </span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  -0.130678661842956  0.00384317391440259</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.195101939539352  0.0033895737870646 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 -0.0151163495875758 0.0037327076151305</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  -0.164266046950749  0.00357832927838204</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.0500588642437561 0.00423663315570611</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 -0.0504239297479782 0.00335994631905726</span></span></code></pre>
 </div>
   </div>
 
