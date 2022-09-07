@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -53,10 +53,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul>
 </li>
@@ -84,7 +87,7 @@
       <h1 data-toc-skip>LT-FH++ Example</h1>
                         <h4 data-toc-skip class="author">Emil M. Pedersen</h4>
             
-            <h4 data-toc-skip class="date">5/7/2021</h4>
+            <h4 data-toc-skip class="date">6/9/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/LTFHPlusExample.Rmd" class="external-link"><code>vignettes/LTFHPlusExample.Rmd</code></a></small>
       <div class="hidden name"><code>LTFHPlusExample.Rmd</code></div>
@@ -95,195 +98,95 @@
     
 <p>First, we will load the packages that we will need for the example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilMiP/LTFHPlus" class="external-link">LTFHPlus</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.apply.futureverse.org" class="external-link">future.apply</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></code></pre></div>
-<div class="section level3">
-<h3 id="global-parameters">Global parameters<a class="anchor" aria-label="anchor" href="#global-parameters"></a>
-</h3>
-<p>The strategy from here is to generate the necessary information for each individual in the example. We will start out by setting some global parameters:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">N</span> <span class="op">=</span> <span class="fl">100</span> <span class="co">#number of individuals</span>
-<span class="va">h2</span> <span class="op">=</span> <span class="fl">.5</span> <span class="co">#heritability</span>
-<span class="va">nsib</span> <span class="op">=</span> <span class="fl">2</span> <span class="co">#number of siblings</span>
-
-<span class="co">#calculates the sex-specific prevalences used to determine status:</span>
-<span class="va">multiplier</span> <span class="op">=</span> <span class="fl">1</span>
-<span class="va">prev</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.08</span>, <span class="fl">0.02</span><span class="op">)</span> <span class="op">*</span> <span class="va">multiplier</span>
-
-<span class="va">nthreads</span> <span class="op">=</span> <span class="fl">5</span>  <span class="co"># number of threads to use for LT-FH++</span></code></pre></div>
-<p>It is worth noting that these values can be set more or less anything the reader would want/need. Our choice of prevalence vector is to illustrate LT-FH++’s ability to estimate the genetic liability, even when the cases are not equally distributed between the sexes. Other prevalence vectors could be used, for instance one with the same prevalence between sexes.</p>
-</div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilMiP/LTFHPlus" class="external-link">LTFHPlus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.apply.futureverse.org" class="external-link">future.apply</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
+<p>For simplicty’s sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes.</p>
 <div class="section level3">
 <h3 id="setting-up-input">Setting up input<a class="anchor" aria-label="anchor" href="#setting-up-input"></a>
 </h3>
-<p>LT-FH++ requires 3 types of input, name <strong>h2</strong>, <strong>phen</strong>, and <strong>thr</strong>, which is the heritability on liability scale, a list of ids (where each list entry is a family), and finally the upper and lower limit for each individual used by the truncated normal in LT-FH++.</p>
-<p>With the global parameters set, we will simulate the liabilities for each family member based on the multivariate normal described in the [LT-FH++] paper. Next, we assign ages to each individual. The child’s age act as a baseline age, and the age of parents and siblings are determined based off of the child’s age.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#simulate liabilities</span>
-<span class="va">liabs</span> <span class="op">=</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">N</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span> <span class="op">+</span> <span class="va">nsib</span><span class="op">)</span>,
-                      Sigma <span class="op">=</span> <span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"f"</span>, <span class="kw">if</span> <span class="op">(</span><span class="va">nsib</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">nsib</span><span class="op">)</span><span class="op">)</span>,
-                                               h2 <span class="op">=</span> <span class="va">h2</span><span class="op">)</span>
-                      <span class="op">)</span>
-
-<span class="co">#Age of children, parents, and siblings</span>
-<span class="va">child_age</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">15</span>, <span class="fl">60</span><span class="op">)</span>
-<span class="va">father_age</span>  <span class="op">=</span> <span class="va">child_age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">20</span>, <span class="fl">35</span><span class="op">)</span>
-<span class="va">mother_age</span>  <span class="op">=</span> <span class="va">child_age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">20</span>, <span class="fl">35</span><span class="op">)</span>
-<span class="va">children_sex</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, size <span class="op">=</span> <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="kw">if</span><span class="op">(</span><span class="va">nsib</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">sibling_sex</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">nsib</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, size <span class="op">=</span> <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">sibling_age</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">nsib</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="op">-</span><span class="fl">15</span>, <span class="fl">15</span><span class="op">)</span> <span class="op">+</span> <span class="va">child_age</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
-<div class="section level4">
-<h4 id="generating-phen">Generating phen<a class="anchor" aria-label="anchor" href="#generating-phen"></a>
-</h4>
-<p>Next, we want to assign sex, status, age-of-onset(aoo) to each individual, including the family members.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Constructing tibble with list entries,</span>
-<span class="co"># each row is a family. assuming order: os, father, mother, siblings (if any)</span>
-<span class="va">phen</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co">#get full liabilities of all family members</span>
-  <span class="va">cur_liabs</span>  <span class="op">=</span> <span class="va">liabs</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fl">4</span> <span class="op">+</span> <span class="va">nsib</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span> 
-  <span class="co"># assign ids</span>
-  <span class="va">id_vec</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">i</span> , <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">i</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"_f"</span>, <span class="st">"_m"</span><span class="op">)</span><span class="op">)</span>, <span class="kw">if</span><span class="op">(</span><span class="va">nsib</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">"_s"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">nsib</span><span class="op">)</span> <span class="op">)</span> 
-  <span class="co">#assign sex</span>
-  <span class="va">sex_vec</span>    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">children_sex</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="kw">if</span><span class="op">(</span><span class="va">nsib</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="va">sibling_sex</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span><span class="op">)</span> 
-  <span class="co"># assign age</span>
-  <span class="va">age_vec</span>    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">child_age</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">father_age</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">mother_age</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="kw">if</span> <span class="op">(</span><span class="va">nsib</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="va">sibling_age</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span><span class="op">)</span> 
-  <span class="co"># assign status</span>
-  <span class="va">status_vec</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">sex_vec</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">ii</span><span class="op">)</span> <span class="op">{</span> 
-    <span class="op">(</span><span class="va">cur_liabs</span><span class="op">[</span><span class="va">ii</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="va">prev</span><span class="op">[</span><span class="va">sex_vec</span><span class="op">[</span><span class="va">ii</span><span class="op">]</span><span class="op">]</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0L</span>
-  <span class="op">}</span><span class="op">)</span>
-
-  <span class="co">#assign age-of-onset for cases</span>
-  <span class="va">aoo_vec</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id_vec</span><span class="op">)</span><span class="op">)</span> 
-  
-  <span class="va">cases</span> <span class="op">=</span> <span class="va">status_vec</span> <span class="op">==</span> <span class="fl">1</span>
-  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">cases</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">aoo_vec</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fu"><a href="../reference/convert_liability_to_aoo.html">convert_liability_to_aoo</a></span><span class="op">(</span>liability <span class="op">=</span> <span class="va">cur_liabs</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span>,
-                                                   pop_prev <span class="op">=</span> <span class="va">prev</span><span class="op">[</span><span class="va">sex_vec</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
-                          <span class="fl">4</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="co">#return information</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">id_vec</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sex_vec</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">status_vec</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">age_vec</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">aoo_vec</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">.</span> <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co">#outputs list, combining with rbind </span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>.name_repair <span class="op">=</span> <span class="st">'unique'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># converting to tibble</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="st">"ids"</span> <span class="op">=</span> <span class="st">"...1"</span>,
-         <span class="st">"sex"</span> <span class="op">=</span> <span class="st">"...2"</span>, 
-         <span class="st">"status"</span> <span class="op">=</span> <span class="st">"...3"</span>, 
-         <span class="st">"age"</span> <span class="op">=</span> <span class="st">"...4"</span>, 
-         <span class="st">"aoo"</span> <span class="op">=</span> <span class="st">"...5"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># renaming columns</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 100 × 5</span></span>
-<span class="co">##    ids       sex       status    age       aoo      </span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> <span style="color: #949494;">&lt;chr [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;int [5]&gt;</span> <span style="color: #949494;">&lt;dbl [5]&gt;</span> <span style="color: #949494;">&lt;lgl [5]&gt;</span></span>
-<span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></code></pre>
-<p>The output is a tibble with list entries, meaning each row is a family in the order of child, father, mother, and siblings (if any). This keeps all relevant information for each family accessible in an easy manner for processing later on. Each family can be easily accessed, e.g.:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">phen</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
-  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">phen</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span>
-<span class="co">##   ids     sex status   age aoo  </span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span> 1         2      0  25.3 <span style="color: #BB0000;">NA</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;">2</span> 1_f       1      0  47.0 <span style="color: #BB0000;">NA</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;">3</span> 1_m       2      0  49.2 <span style="color: #BB0000;">NA</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;">4</span> 1_s1      1      0  34.8 <span style="color: #BB0000;">NA</span>   </span>
-<span class="co">## <span style="color: #BCBCBC;">5</span> 1_s2      1      0  32.1 <span style="color: #BB0000;">NA</span></span></code></pre>
-<p>Since we expect the family sizes to vary between families and we wanted to accomodate this, we found it simplest to work with lists or tibbles with list entries. This means the <strong>phen</strong> input, which is the first input, is simply the <em>ids</em> column from <em>phen</em>.</p>
+<p>Single trait LT-FH++ requires 3 types of input, namely the liability-scale heritability, the family relationships and the status, age or age of onset, sex, and birth year for each family member, and finally cumulative incidence proportions (CIPs). The more detailed cumulative incidence proportions, the better. In the LT-FH++ paper, we used CIPs that were stratified by birth year and sex and fixed the upper and lower liability threshold for cases to <span class="math inline">\(\Phi(1 - CIP)\)</span>, since it provided a very accurate estimate for the full liability. Each CIP curve was a function of age, where age represented the age of onset or the current age of a control. If less detailed information, such as CIPs stratified by sex, but not birth year, we recommend setting the lower threshold to be <span class="math inline">\(\Phi(1 - CIP)\)</span> and the upper limit to infinity for cases. With this information, the thresholds needed for the age-dependent liability threshold model can be assigned. We have provided a function called <code>prepare_LTFHPlus_input</code> that can help users convert the input into a suitable format. An example of how the input may look and how to use the function can be found in <em>From CIP and family to LT-FH++ input</em>.</p>
 </div>
-<div class="section level4">
-<h4 id="generating-thr">Generating thr<a class="anchor" aria-label="anchor" href="#generating-thr"></a>
-</h4>
-<p>The other input is <strong>thr</strong>, which will contain the ids and an upper and lower limit of possible liabilities for each individual.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#assigning thresholds for each family</span>
-<span class="va">thr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">phen</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
-  <span class="va">ids</span>   <span class="op">=</span> <span class="va">phen</span><span class="op">$</span><span class="va">ids</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span>
-  <span class="va">cases</span> <span class="op">=</span> <span class="va">phen</span><span class="op">$</span><span class="va">status</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1</span>
-  <span class="va">lower</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">upper</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span> <span class="cn">Inf</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span>
-  
-  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">cases</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">lower</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">upper</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_age_to_thresh.html">convert_age_to_thresh</a></span><span class="op">(</span>age <span class="op">=</span> <span class="va">phen</span><span class="op">$</span><span class="va">aoo</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span>, 
-                                                          pop_prev <span class="op">=</span> <span class="va">prev</span><span class="op">[</span><span class="va">phen</span><span class="op">$</span><span class="va">sex</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">cases</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-  <span class="op">}</span>
-  
-  <span class="va">upper</span><span class="op">[</span><span class="op">!</span><span class="va">cases</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_age_to_thresh.html">convert_age_to_thresh</a></span><span class="op">(</span>age <span class="op">=</span> <span class="va">phen</span><span class="op">$</span><span class="va">age</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="va">cases</span><span class="op">]</span>,
-                                         pop_prev <span class="op">=</span> <span class="va">prev</span><span class="op">[</span><span class="va">phen</span><span class="op">$</span><span class="va">sex</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="va">cases</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-  <span class="va">res</span><span class="op">$</span><span class="va">ids</span> <span class="op">=</span> <span class="va">ids</span>
-  <span class="va">res</span><span class="op">$</span><span class="va">lower</span> <span class="op">=</span> <span class="va">lower</span>
-  <span class="va">res</span><span class="op">$</span><span class="va">upper</span> <span class="op">=</span> <span class="va">upper</span>
-  <span class="va">res</span>
-<span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">as_tibble</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 500 × 3</span></span>
-<span class="co">##    ids   lower upper</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1      -<span style="color: #BB0000;">Inf</span>  3.47</span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> 1_f    -<span style="color: #BB0000;">Inf</span>  2.22</span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> 1_m    -<span style="color: #BB0000;">Inf</span>  2.64</span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> 1_s1   -<span style="color: #BB0000;">Inf</span>  2.72</span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> 1_s2   -<span style="color: #BB0000;">Inf</span>  2.82</span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> 2      -<span style="color: #BB0000;">Inf</span>  1.85</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> 2_f    -<span style="color: #BB0000;">Inf</span>  1.42</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> 2_m    -<span style="color: #BB0000;">Inf</span>  2.08</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> 2_s1   -<span style="color: #BB0000;">Inf</span>  2.89</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> 2_s2   -<span style="color: #BB0000;">Inf</span>  2.19</span>
-<span class="co">## <span style="color: #949494;"># … with 490 more rows</span></span></code></pre>
-</div>
+<div class="section level3">
+<h3 id="generating-phenotypes">Generating phenotypes<a class="anchor" aria-label="anchor" href="#generating-phenotypes"></a>
+</h3>
+<p>We have implemented a function that allows users to simulate under the liability threshold model for a given family structure, i.e. mother, father, sibling, or sibling1, sibling2, child1, child2, etc. The function simply needs a family structure, heritablity, and population prevalence.For simplicity’s sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes. The function <code>simulate_under_LTM</code> outputs a list with two tibbles. The first one <code>sim_obs</code> contains the underlying liabilities, status, and age or age of onset for each family and family members. The second tibble <code>thresholds</code> contains the formatted input that is ready to be input to estimate the genetic liability.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span>,<span class="st">"s1"</span><span class="op">)</span>, </span>
+<span>                           n_fam <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                           add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                           h2 <span class="op">=</span> <span class="va">h2</span>, </span>
+<span>                           n_sim <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           pop_prev <span class="op">=</span> <span class="fl">.1</span><span class="op">)</span></span>
+<span><span class="va">sims</span></span></code></pre></div>
+<pre><code><span><span class="co">## $sim_obs</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 14</span></span></span>
+<span><span class="co">##    fam_ID        g      o      m       f      s1 o_sta…¹ m_sta…² f_sta…³ s1_st…⁴</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID… -<span style="color: #BB0000;">0.258</span>   0.560 -<span style="color: #BB0000;">0.322</span>  0.492   0.350  FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID… -<span style="color: #BB0000;">0.041</span><span style="color: #BB0000; text-decoration: underline;">7</span>  0.374  1.01  -<span style="color: #BB0000;">0.779</span>  -<span style="color: #BB0000;">0.186</span>  FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID…  0.675   0.753  1.09   0.047<span style="text-decoration: underline;">5</span>  0.603  FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID… -<span style="color: #BB0000;">0.316</span>   0.157 -<span style="color: #BB0000;">0.212</span>  0.381   1.02   FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID…  0.248   1.16   0.922 -<span style="color: #BB0000;">0.107</span>   0.057<span style="text-decoration: underline;">1</span> FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID…  0.612   0.774 -<span style="color: #BB0000;">3.25</span>   0.572  -<span style="color: #BB0000;">2.53</span>   FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID…  0.647   0.957  1.14   0.631   0.172  FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID…  0.499   0.529 -<span style="color: #BB0000;">0.925</span> -<span style="color: #BB0000;">1.01</span>   -<span style="color: #BB0000;">2.05</span>   FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID…  0.613  -<span style="color: #BB0000;">0.897</span> -<span style="color: #BB0000;">0.103</span> -<span style="color: #BB0000;">1.05</span>   -<span style="color: #BB0000;">0.046</span><span style="color: #BB0000; text-decoration: underline;">8</span> FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID…  0.631  -<span style="color: #BB0000;">1.20</span>   1.16   0.454   0.877  FALSE   FALSE   FALSE   FALSE  </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 90 more rows, 4 more variables: o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;dbl&gt;, and abbreviated variable names ¹​o_status, ²​m_status,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ³​f_status, ⁴​s1_status</span></span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $thresholds</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 400 × 5</span></span></span>
+<span><span class="co">##    fam_ID    indiv_ID    role  lower upper</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  2.55</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  2.55</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  2.76</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  2.59</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  2.68</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  2.83</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  3.55</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  3.06</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  3.52</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  3.52</span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 390 more rows</span></span></span></code></pre>
+<p><code>thresholds</code> keeps track of families and family members with <code>fam_id</code> and <code>indiv_id</code>. Here we simply use dummy variables for both. In real-world data, the <code>indiv_id</code> is usually some pseudonymized identifier unique to each individual. There is total freedom to set <code>fam_id</code> to whatever, as long as it is unique to each family. One choice could be the pseudonymized identifier for the index person in a family, or simply 1 to the total number of families. Next, <code>role</code> identifies each family member’s relationship to the index person. They follow a system shown in the documentation for <code>construct_covmat</code>. If a family member does not fit one of the shown, a suitable covariance matrix cannot be constructed. If more detailed family structures are needed, please contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower and upper liability thresholds are provided for each family member. Previously, we utilised list of lists in <tt>R</tt> to link information to the correct individuals. Going forward, we will still support this format, but in order to ease the use of non-<tt>R</tt> users, we have opted for a long format, where each row is an indivdual instead of a family, such that the input can be generated with the user’s preferred software.</p>
 </div>
 <div class="section level3">
 <h3 id="running-lt-fh">Running LT-FH++<a class="anchor" aria-label="anchor" href="#running-lt-fh"></a>
 </h3>
-<p>With all input parameters generated and the heritability set in the global settings, we have everything we need to run <em>LT-FH++</em>. The package <strong>Future.apply</strong> can be used to parallelize the computations for LT-FH++, and we highly recommend doing this, since all modern computers have more than 2 cores available to them. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize 5 threads.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">phen</span> <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">phen</span>, <span class="va">ids</span><span class="op">)</span>
-
-<span class="co">#Setting up parallelization backend</span>
-<span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu"><a href="https://future.futureverse.org/reference/tweak.html" class="external-link">tweak</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">nthreads</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#performs LT-FH++ analysis</span>
-<span class="va">simu_liab</span> <span class="op">=</span> <span class="fu"><a href="../reference/estimate_gen_liability.html">estimate_gen_liability</a></span><span class="op">(</span>h2 <span class="op">=</span> <span class="va">h2</span>,
-                       phen <span class="op">=</span> <span class="va">phen</span>,
-                       thr <span class="op">=</span> <span class="va">thr</span>,
-                       id_col <span class="op">=</span> <span class="st">"ids"</span><span class="op">)</span>
-<span class="va">simu_liab</span> <span class="op">=</span> <span class="va">simu_liab</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ids</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 100 × 3</span></span>
-<span class="co">##    ids   post_gen_liab post_gen_liab_se</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1          -<span style="color: #BB0000;">0.013</span><span style="color: #BB0000; text-decoration: underline;">6</span>           0.004<span style="text-decoration: underline;">09</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> 2          -<span style="color: #BB0000;">0.085</span><span style="color: #BB0000; text-decoration: underline;">6</span>           0.003<span style="text-decoration: underline;">68</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> 3          -<span style="color: #BB0000;">0.027</span><span style="color: #BB0000; text-decoration: underline;">3</span>           0.004<span style="text-decoration: underline;">20</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> 4          -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">2</span>           0.004<span style="text-decoration: underline;">14</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> 5          -<span style="color: #BB0000;">0.011</span><span style="color: #BB0000; text-decoration: underline;">9</span>           0.004<span style="text-decoration: underline;">24</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> 6          -<span style="color: #BB0000;">0.066</span><span style="color: #BB0000; text-decoration: underline;">4</span>           0.004<span style="text-decoration: underline;">15</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> 7          -<span style="color: #BB0000;">0.075</span><span style="color: #BB0000; text-decoration: underline;">9</span>           0.004<span style="text-decoration: underline;">00</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> 8          -<span style="color: #BB0000;">0.005</span><span style="color: #BB0000; text-decoration: underline;">90</span>          0.004<span style="text-decoration: underline;">74</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> 9           0.745            0.001<span style="text-decoration: underline;">92</span></span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> 10         -<span style="color: #BB0000;">0.014</span><span style="color: #BB0000; text-decoration: underline;">3</span>           0.004<span style="text-decoration: underline;">15</span></span>
-<span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></code></pre>
-<p>From here the object simu_liab can be saved and used in your GWAS method of choice.</p>
+<p>With all input parameters generated and a chosen heritability, we have everything we need to run LT-FH++. We highly recommend the package <strong>Future</strong> to parallelize the computations for LT-FH++. Since all modern computers have more than 2 cores available to them, it should be available to all users. If a user is not able to parallelize, then <tt>LTFHPlus</tt> can still be used, but it will be far slower. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize 4 threads.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Setting up parallelization backend</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu"><a href="https://future.futureverse.org/reference/tweak.html" class="external-link">tweak</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">nthreads</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#performs LT-FH++ analysis</span></span>
+<span><span class="va">simu_liab</span> <span class="op">=</span> <span class="fu"><a href="../reference/estimate_liability.html">estimate_liability</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>,</span>
+<span>                               h2 <span class="op">=</span> <span class="va">h2</span>,</span>
+<span>                               pid <span class="op">=</span> <span class="st">"indiv_ID"</span>,</span>
+<span>                               fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>,</span>
+<span>                               role <span class="op">=</span> <span class="st">"role"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## The number of workers is 4</span></span></code></pre>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simu_liab</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 4</span></span></span>
+<span><span class="co">##    fam_ID    indiv_ID    genetic_est         genetic_se         </span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  -0.0471679422456193 0.00391580567508514</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  -0.0606020638739112 0.00403442091795215</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.0479883034476022 0.00416598287667424</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.056668989211348  0.00391624646631024</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.0567197206503935 0.0037367123023805 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0408773125513636 0.0040204048702907 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0238033568951257 0.00419762889398063</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.0749759323074735 0.00396765648189647</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.0587162553285706 0.00398465581189556</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.0688016544826384 0.00385455757464487</span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></span></code></pre>
+<p>From here the object <code>simu_liab</code> can be saved and used in your GWAS method of choice.</p>
 </div>
   </div>
 
@@ -302,7 +205,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

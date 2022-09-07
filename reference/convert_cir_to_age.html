@@ -18,7 +18,7 @@ from a person's cumulative incidence rate."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -36,10 +36,13 @@ from a person's cumulative incidence rate."><!-- mathjax --><script src="https:/
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -68,7 +71,7 @@ from a person's cumulative incidence rate.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">convert_cir_to_age</span><span class="op">(</span><span class="va">cir</span>, pop_prev <span class="op">=</span> <span class="fl">0.1</span>, mid_point <span class="op">=</span> <span class="fl">60</span>, slope <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">8</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">convert_cir_to_age</span><span class="op">(</span><span class="va">cir</span>, pop_prev <span class="op">=</span> <span class="fl">0.1</span>, mid_point <span class="op">=</span> <span class="fl">60</span>, slope <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -107,14 +110,14 @@ the current age.</p>
     <h2>Details</h2>
     <p>Given a person's cumulative incidence rate (cir), <code>convert_cir_to_age</code>
 can be used to compute the corresponding age, which is given by
-$$mid_point - log(pop_prev/cir - 1) * 1/slope$$</p>
+$$mid_point - \log(pop_prev/cir - 1) * 1/slope$$</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_cir_to_age</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">0.1</span>, xname <span class="op">=</span> <span class="st">"Cumulative incidence rate"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_cir_to_age</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">0.1</span>, xname <span class="op">=</span> <span class="st">"Cumulative incidence rate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -129,7 +132,7 @@ $$mid_point - log(pop_prev/cir - 1) * 1/slope$$</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

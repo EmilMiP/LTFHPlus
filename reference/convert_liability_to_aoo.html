@@ -19,7 +19,7 @@ either the logistic function or the truncated normal distribution."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -37,10 +37,13 @@ either the logistic function or the truncated normal distribution."><!-- mathjax
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -70,17 +73,17 @@ either the logistic function or the truncated normal distribution.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">convert_liability_to_aoo</span><span class="op">(</span>
-  <span class="va">liability</span>,
-  dist <span class="op">=</span> <span class="st">"logistic"</span>,
-  pop_prev <span class="op">=</span> <span class="fl">0.1</span>,
-  mid_point <span class="op">=</span> <span class="fl">60</span>,
-  slope <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">8</span>,
-  min_aoo <span class="op">=</span> <span class="fl">10</span>,
-  max_aoo <span class="op">=</span> <span class="fl">90</span>,
-  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>,
-  upper <span class="op">=</span> <span class="cn">Inf</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">convert_liability_to_aoo</span><span class="op">(</span></span>
+<span>  <span class="va">liability</span>,</span>
+<span>  dist <span class="op">=</span> <span class="st">"logistic"</span>,</span>
+<span>  pop_prev <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  mid_point <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>  slope <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">8</span>,</span>
+<span>  min_aoo <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  max_aoo <span class="op">=</span> <span class="fl">90</span>,</span>
+<span>  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>,</span>
+<span>  upper <span class="op">=</span> <span class="cn">Inf</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -156,12 +159,12 @@ under the truncated normal distribution.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_liability_to_aoo</span>, from <span class="op">=</span> <span class="fl">1.3</span>, to <span class="op">=</span> <span class="fl">3.5</span>, </span>
-<span class="r-in">      xname <span class="op">=</span> <span class="st">"Underlying liability"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_liability_to_aoo</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, to <span class="op">=</span> <span class="fl">3.5</span>, </span>
-<span class="r-in">      xname <span class="op">=</span> <span class="st">"Underlying liability"</span>, dist <span class="op">=</span> <span class="st">"normal"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_liability_to_aoo</span>, from <span class="op">=</span> <span class="fl">1.3</span>, to <span class="op">=</span> <span class="fl">3.5</span>, </span></span>
+<span class="r-in"><span>      xname <span class="op">=</span> <span class="st">"Underlying liability"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">convert_liability_to_aoo</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, to <span class="op">=</span> <span class="fl">3.5</span>, </span></span>
+<span class="r-in"><span>      xname <span class="op">=</span> <span class="st">"Underlying liability"</span>, dist <span class="op">=</span> <span class="st">"normal"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -176,7 +179,7 @@ under the truncated normal distribution.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

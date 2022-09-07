@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -53,10 +53,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul>
 </li>
@@ -96,45 +99,33 @@
 <h2 id="a-word-on-the-examples">A word on the examples<a class="anchor" aria-label="anchor" href="#a-word-on-the-examples"></a>
 </h2>
 <p>The examples included here are meant to represent a simple application of the method, such that users are able to get a good idea of how to use the functions in the package and what to expect as output. The genetic liabilities are meant to be used as a phenotype for genome-wide association studies(GWAS). We recommend using software such as <a href="https://www.cog-genomics.org/plink/" class="external-link">PLINK</a>, <a href="https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html" class="external-link">BOLT</a>, or R-based methods such as <a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a> to perform the GWAS.</p>
-<p>The examples will follow this overarching structure:</p>
-<ul>
-<li>Packages used</li>
-<li>Global Settings
-<ul>
-<li>prevalence, number of individuals, heritability, etc…</li>
-</ul>
-</li>
-<li>Setting up input
-<ul>
-<li>Assigning necessary information, e.g. family history.</li>
-<li>subsections for each input needed with prints</li>
-</ul>
-</li>
-<li>function call to estimate genetic liabilities</li>
-</ul>
-<!-- ```{r} --><!-- plot(seq(10,100), LTFHPlus::age_to_cir(age = seq(10,100))) --><!-- ``` -->
 </div>
 <div class="section level2">
 <h2 id="what-would-you-like-to-read-about">What would you like to read about?<a class="anchor" aria-label="anchor" href="#what-would-you-like-to-read-about"></a>
 </h2>
 <p>Here is an overview of what you can learn more about:</p>
-<p>LT-FH++ method description &amp; its applications</p>
 <ul>
-<li>format of input data
+<li>From CIP and family pedigree to input
 <ul>
-<li>what does the prevalence information look like?</li>
-<li>How do we input the thresholds and family history information?</li>
+<li>What does the CIP and family information look like?</li>
+<li>What the input format is like</li>
 </ul>
 </li>
-<li>what do i do, if I do not have complete information on some individuals?
+<li>How the covariance matrix is constructed
 <ul>
-<li>estimate genetic liability without family history, but with prevalence information</li>
-<li>estimate genetic liability with family history, but without prevalence</li>
-<li>estimate genetic liability with family history and prevalence information</li>
-<li>correlated traits (still pending)</li>
+<li>What format should the family relationship be like</li>
+<li>How does the covariance matrix use the family relationship</li>
+<li>Example</li>
+</ul>
+</li>
+<li>LT-FH++ Example
+<ul>
+<li>Simulate phenotypic data under the liability threshold</li>
+<li>Estimating genetic liability with parallelization</li>
 </ul>
 </li>
 </ul>
+<!-- * what do i do, if I do not have complete information on some individuals? --><!--   + estimate genetic liability without family history, but with prevalence information --><!--   + estimate genetic liability with family history, but without prevalence --><!--   + estimate genetic liability with family history and prevalence information --><!--   + correlated traits (still pending) -->
 </div>
   </div>
 
@@ -155,7 +146,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
