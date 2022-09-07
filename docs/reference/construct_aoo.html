@@ -19,7 +19,7 @@ liability, disease status and current age."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -37,7 +37,10 @@ liability, disease status and current age."><!-- mathjax --><script src="https:/
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -59,7 +62,7 @@ liability, disease status and current age."><!-- mathjax --><script src="https:/
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Constructing age of onset (aoo)</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/Simulate_under_LTM.R" class="external-link"><code>R/Simulate_under_LTM.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/Internal_functions.R" class="external-link"><code>R/Internal_functions.R</code></a></small>
     <div class="hidden name"><code>construct_aoo.Rd</code></div>
     </div>
 
@@ -70,26 +73,39 @@ liability, disease status and current age.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">construct_aoo</span><span class="op">(</span><span class="va">fam_mem</span>, <span class="va">.tbl</span>, <span class="va">pop_prev</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">construct_aoo</span><span class="op">(</span><span class="va">fam_mem</span>, <span class="va">.tbl</span>, <span class="va">pop_prev</span>, phen_name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>fam_mem</dt>
 <dd><p>A character vector holding all family members.</p></dd>
+
+
 <dt>.tbl</dt>
 <dd><p>A tibble holding the liability as well as age and
-disease status for the set of individuals in fam_mem.</p></dd>
+disease status for the set of individuals in <code>fam_mem</code>.</p></dd>
+
+
 <dt>pop_prev</dt>
 <dd><p>A positive number representing the population prevalence, i.e. the
 overall prevalence in the population.</p></dd>
+
+
+<dt>phen_name</dt>
+<dd><p>Either <code>NULL</code> or character vector holding the
+phenotype name. Must be specified in the multi-trait case.
+Defaults to <code>NULL</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A tibble holding all columns present in .tbl as well
+    
+
+<p>A tibble holding all columns present in .tbl as well
 as the age of onset or the current age
 (depending on the disease status) for all individuals
-given in fam_mem.</p>
+given in <code>fam_mem</code>.</p>
     </div>
 
   </div>
@@ -104,7 +120,7 @@ given in fam_mem.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

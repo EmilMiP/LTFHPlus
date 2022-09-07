@@ -13,10 +13,12 @@ reference:
     - convert_age_to_cir
     - convert_age_to_thresh
     - convert_cir_to_age
+    - convert_format
     - convert_liability_to_aoo
     - convert_observed_to_liability_scale
-    - truncated_normal_cdf
+    - prepare_LTFHPlus_input
     - simulate_under_LTM
+    - truncated_normal_cdf
   - title: "Auxiliary functions"
     desc: >
       Functions used to define covariance matrices.
@@ -37,11 +39,16 @@ reference:
     - estimate_gen_liability_ltfh
     - estimate_liability_multi
     - estimate_liability_prevalence
+    - estimate_liability_single
     - generate_cov_matrix_noFH
     - get_between_trait_cov
     - get_cov
     - get_full_cov
-    - check_family_role
+    - simulate_under_LTM_multi
+    - simulate_under_LTM_single
+    - validate_correlation_matrix
+    - validate_proportion
+    - validate_relatives
 template:
   params:
     bootswatch: darkly

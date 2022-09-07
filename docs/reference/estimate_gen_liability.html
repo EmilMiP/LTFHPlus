@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -35,7 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -57,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Estimate genetic liability based off of family history and prevalence information.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/legacy_estimate_gen_liab.R" class="external-link"><code>R/legacy_estimate_gen_liab.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/R/Outdated_estimate_liabilitites.R" class="external-link"><code>R/Outdated_estimate_liabilitites.R</code></a></small>
     <div class="hidden name"><code>estimate_gen_liability.Rd</code></div>
     </div>
 
@@ -66,34 +69,47 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">estimate_gen_liability</span><span class="op">(</span><span class="va">h2</span>, <span class="va">phen</span>, <span class="va">thr</span>, ind <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, id_col <span class="op">=</span> <span class="st">"ids"</span>, tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_gen_liability</span><span class="op">(</span><span class="va">h2</span>, <span class="va">phen</span>, <span class="va">thr</span>, ind <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, id_col <span class="op">=</span> <span class="st">"ids"</span>, tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>h2</dt>
 <dd><p>Liability scale heritability of the trait being analysed.</p></dd>
+
+
 <dt>phen</dt>
 <dd><p>tibble or data.frame with the IDs and status of the genotyped individual and the parents and siblings.</p></dd>
+
+
 <dt>thr</dt>
 <dd><p>tibble or data.frame with a row of each individual in the provided phen. Each row should contain the ID and threshold value needed for the model.</p></dd>
+
+
 <dt>ind</dt>
 <dd><p>Indices to return from the gibbs sampler. 1 corresponds to the genetic liability of the first phenotype. c(1,5) corresponds to the genetic liability of the first two phenotypes provided, but with no siblings in the model.</p></dd>
+
+
 <dt>id_col</dt>
 <dd><p>Column name for IDs of family members.</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns the estimated genetic liabilities.</p>
+    
+
+<p>Returns the estimated genetic liabilities.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">#See vignettes for example of use and input.</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#See vignettes for example of use and input.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -109,7 +125,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

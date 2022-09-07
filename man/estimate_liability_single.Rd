@@ -5,20 +5,39 @@
 \title{Estimating the genetic or full liability}
 \usage{
 estimate_liability_single(
-  .tbl,
-  family,
-  threshs,
+  .tbl = NULL,
+  family = NULL,
+  threshs = NULL,
   h2 = 0.5,
   pid = "PID",
   fam_id = "fam_ID",
+  role = "role",
   out = c(1),
-  tol = 0.01,
-  always_add = c("g", "o"),
-  progress = FALSE
+  tol = 0.01
 )
 }
 \arguments{
-\item{.tbl}{A tibble containing the}
+\item{.tbl}{A matrix, list or data frame that can be converted into a tibble.
+Must have at least five columns that hold the family identifier, the personal
+identifier, the role and the lower and upper thresholds. Note that the
+role must be one of the following abbreviations
+\itemize{
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
+Defaults to \code{NULL}.
+}}
 
 \item{family}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least two columns that hold the family identifier and the corresponding
@@ -42,23 +61,44 @@ on \code{_?}, where \code{?} is one of the following abbreviations
 \item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 \item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 See also \code{\link{construct_covmat}}.
+Defaults to \code{NULL}.
 }}
 
 \item{threshs}{A matrix, list or data frame that can be converted into a tibble.
 Must have at least three columns, one holding the personal identifier for all individuals,
 and the remaining two holding the lower and upper thresholds, respectively. The latter
-should be called "lower" and "upper", respectively.}
+should be called "lower" and "upper", respectively. Defaults to \code{NULL}.}
 
 \item{h2}{A number representing the heritability on liability scale
 for a single phenotype. Must be non-negative. Note that under the liability threshold model,
 the heritability must also be at most 1.
 Defaults to 0.5.}
 
-\item{pid}{A string holding the name of the column in \code{family} and
-\code{threshs} that hold the personal identifier(s). Defaults to "PID".}
+\item{pid}{A string holding the name of the column in \code{.tbl} (or \code{family} and
+\code{threshs}) that hold the personal identifier(s). Defaults to "PID".}
 
-\item{fam_id}{A string holding the name of the column in \code{family} that
+\item{fam_id}{A string holding the name of the column in \code{.tbl} or \code{family} that
 holds the family identifier. Defaults to "fam_ID".}
+
+\item{role}{A string holding the name of the column in \code{.tbl} that
+holds the role. Each role must be chosen from the following list of abbreviations
+\itemize{
+\item \code{g} (Genetic component of full liability)
+\item \code{o} (Full liability)
+\item \code{m} (Mother)
+\item \code{f} (Father)
+\item \code{c[0-9]*.[0-9]*} (Children)
+\item \code{mgm} (Maternal grandmother)
+\item \code{mgf} (Maternal grandfather)
+\item \code{pgm} (Paternal grandmother)
+\item \code{pgf} (Paternal grandfather)
+\item \code{s[0-9]*} (Full siblings)
+\item \code{mhs[0-9]*} (Half-siblings - maternal side)
+\item \code{phs[0-9]*} (Half-siblings - paternal side)
+\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
+\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
+Defaults to "role".
+}}
 
 \item{out}{A character or numeric vector indicating whether the genetic component
 of the full liability, the full liability or both should be returned. If \code{out = c(1)} or
@@ -70,15 +110,6 @@ Defaults to \code{c(1)}.}
 \item{tol}{A number that is used as the convergence criterion for the Gibbs sampler.
 Equals the standard error of the mean. That is, a tolerance of 0.2 means that the
 standard error of the mean is below 0.2. Defaults to 0.01.}
-
-\item{always_add}{A character vector or \code{NULL}. If \code{always_add = c("g","o")}, both the genetic component
-of the full liability as well as the full liability will be added to the list of family members.
-If always_add equals \code{"g"} or \code{"o"}, the genetic component of the full liability or the full liability
-will be added, respectively. If \code{always_add = NULL}, no component will be added.
-Defaults to \code{c("g","o")}.}
-
-\item{progress}{A logical scalar indicating whether the function should display
-a progress bar. Defaults to \code{FALSE}.}
 }
 \value{
 If \code{family} and \code{threshs} are two matrices, lists or
@@ -115,19 +146,20 @@ full liability, the full liability or both. It is possible to input either
 \examples{
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
-
-estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
-h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c(1), tol = 0.01,
-always_add = c("g","o"), progress = TRUE)
+#
+estimate_liability_single(.tbl = sims$thresholds, 
+h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", role = "role", out = c(1), 
+tol = 0.01)
 # 
 sims <- simulate_under_LTM(fam_vec = c(), n_fam = NULL, add_ind = TRUE, 
 h2 = 0.5, n_sim=10, pop_prev = .05)
-
-estimate_liability_single(family = sims$fam_ID, threshs = sims$thresholds, 
-h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", out = c("genetic"), 
-tol = 0.01, always_add = c("g","o"))
+#
+estimate_liability_single(.tbl = sims$thresholds, 
+h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", role = "role",
+out = c("genetic"), tol = 0.01)
 
 }
 \seealso{
-\code{\link[future.apply]{future_apply}}
+\code{\link[future.apply]{future_apply}}, \code{\link{estimate_liability_multi}},
+\code{\link{estimate_liability}}
 }

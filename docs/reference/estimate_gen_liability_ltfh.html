@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -35,7 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -66,51 +69,72 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">estimate_gen_liability_ltfh</span><span class="op">(</span>
-  <span class="va">h2</span>,
-  <span class="va">phen</span>,
-  <span class="va">child_threshold</span>,
-  <span class="va">parent_threshold</span>,
-  status_col_offspring <span class="op">=</span> <span class="st">"CHILD_STATUS"</span>,
-  status_col_father <span class="op">=</span> <span class="st">"P1_STATUS"</span>,
-  status_col_mother <span class="op">=</span> <span class="st">"P2_STATUS"</span>,
-  status_col_siblings <span class="op">=</span> <span class="st">"SIB_STATUS"</span>,
-  number_of_siblings_col <span class="op">=</span> <span class="st">"NUM_SIBS"</span>,
-  tol <span class="op">=</span> <span class="fl">0.01</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_gen_liability_ltfh</span><span class="op">(</span></span>
+<span>  <span class="va">h2</span>,</span>
+<span>  <span class="va">phen</span>,</span>
+<span>  <span class="va">child_threshold</span>,</span>
+<span>  <span class="va">parent_threshold</span>,</span>
+<span>  status_col_offspring <span class="op">=</span> <span class="st">"CHILD_STATUS"</span>,</span>
+<span>  status_col_father <span class="op">=</span> <span class="st">"P1_STATUS"</span>,</span>
+<span>  status_col_mother <span class="op">=</span> <span class="st">"P2_STATUS"</span>,</span>
+<span>  status_col_siblings <span class="op">=</span> <span class="st">"SIB_STATUS"</span>,</span>
+<span>  number_of_siblings_col <span class="op">=</span> <span class="st">"NUM_SIBS"</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.01</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>h2</dt>
 <dd><p>Liability scale heritability of the trait being analysed.</p></dd>
+
+
 <dt>phen</dt>
 <dd><p>tibble or data.frame with status of the genotyped individual, parents and siblings.</p></dd>
+
+
 <dt>child_threshold</dt>
 <dd><p>single numeric value that is used as threshold for the offspring and siblings.</p></dd>
+
+
 <dt>parent_threshold</dt>
 <dd><p>single numeric value that is used as threshold for both parents</p></dd>
+
+
 <dt>status_col_offspring</dt>
 <dd><p>Column name of status for the offspring</p></dd>
+
+
 <dt>status_col_father</dt>
 <dd><p>Column name of status for the father</p></dd>
+
+
 <dt>status_col_mother</dt>
 <dd><p>Column name of status for the mother</p></dd>
+
+
 <dt>status_col_siblings</dt>
 <dd><p>Column name of status for the siblings</p></dd>
+
+
 <dt>number_of_siblings_col</dt>
 <dd><p>Column name for the number of siblings for a given individual</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>Convergence criteria of the Gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns the estimated genetic liabilities.</p>
+    
+
+<p>Returns the estimated genetic liabilities.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># See R/Example/example_nosib.R for an example of use and input.</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See R/Example/example_nosib.R for an example of use and input.</span></span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -126,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -25,6 +25,7 @@ utils::globalVariables("h2")
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' @param h2 A number representing the squared heritability on liability scale.
 #' Must be non-negative and at most 1. Defaults to 0.5
+#' @param from_covmat logical variable. Only used internally. allows for skip of negative check.
 #' 
 #' @return If both \code{s1} and \code{s2} are strings chosen from the mentioned 
 #' list of strings and \code{h2} is a number satisfying \eqn{0 \leq h2 \leq 1}, 
@@ -48,22 +49,22 @@ utils::globalVariables("h2")
 #' @importFrom stringr str_detect
 #' 
 #' @export
-get_relatedness <- function(s1,s2, h2=0.5){
+get_relatedness <- function(s1,s2, h2=0.5, from_covmat = FALSE){
 
   # Checking that s1 and s2 are strings
-  if(!is.character(s1)) stop("s1 must be a string!")
-  if(!is.character(s2)) stop("s2 must be a string!")
+  if (!is.character(s1)) stop("s1 must be a string!")
+  if (!is.character(s2)) stop("s2 must be a string!")
   
   # Convert s1 and s2 to lowercase strings
   s1 <- tolower(s1)
   s2 <- tolower(s2)
   
   # Checking that s1 and s2 are valid strings
-  if(validate_relatives(s1)){invisible()}
-  if(validate_relatives(s2)){invisible()}
+  if (validate_relatives(s1)) {invisible()}
+  if (validate_relatives(s2)) {invisible()}
 
   # Checking that the heritability is valid
-  if(validate_proportion(h2)){invisible()}
+  if (validate_proportion(h2, from_covmat)) {invisible()}
 
   # Getting the percentage of shared DNA
   if (str_detect(s1, "^o$")) { # Target individual's full liability
@@ -76,7 +77,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
   }else if (str_detect(s1, "^g$")) { # Target individual's genetic liability
     
     if (str_detect(s2, "^[go]$")) return(1*h2)
-    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*.[0-9]*")| str_detect(s2, "^s[0-9]*") ) return(0.5*h2)
+    if (str_detect(s2, "^m$") | str_detect(s2, "^f$") | str_detect(s2, "^c[0-9]*.[0-9]*") | str_detect(s2, "^s[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^[mp]hs[0-9]*") | str_detect(s2, "^[mp]g[mf]") | str_detect(s2, "^[mp]au[0-9]*")) return(0.25*h2)
     
   }else if (str_detect(s1, "^m$")) { # Target individual's mother
@@ -93,7 +94,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
-  }else if(str_detect(s1, "^c[0-9]*.[0-9]*")) { # Target individual's children
+  } else if (str_detect(s1, "^c[0-9]*.[0-9]*")) { # Target individual's children
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^[go]$")) return(0.5*h2)
@@ -139,7 +140,7 @@ get_relatedness <- function(s1,s2, h2=0.5){
     
     if (s1 == s2) return(1)
     if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
-    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^pg[mf]$")| str_detect(s2, "^pau[0-9]*")) return(0.25*h2)
+    if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^phs[0-9]*")) return(0.5*h2)
     if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
@@ -157,9 +158,9 @@ get_relatedness <- function(s1,s2, h2=0.5){
     if (str_detect(s2, "^c[0-9]*.[0-9]*")) return(0.125*h2)
     if (str_detect(s2, "^[go]$") | str_detect(s2, "^s[0-9]*") | str_detect(s2, "^phs[0-9]*")) return(0.25*h2)
     if (str_detect(s2, "^f$") | str_detect(s2, "^pg[mf]$") | str_detect(s2, "^pau[0-9]*")) return(0.5*h2)
-    if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") |str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
+    if (str_detect(s2, "^m$") | str_detect(s2, "^mg[mf]$") | str_detect(s2, "^mhs[0-9]*") | str_detect(s2, "^mau[0-9]*")) return(0)
     
-  }else{
+  } else {
     return(NA)
   }
 }
@@ -230,20 +231,20 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   
   # If fam_vec or n_fam is a vector of length zero, it is set to
   # NULL instead
-  if(length(fam_vec) == 0) fam_vec <- NULL
-  if(length(n_fam) == 0) n_fam <- NULL
+  if (length(fam_vec) == 0) fam_vec <- NULL
+  if (length(n_fam) == 0) n_fam <- NULL
 
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
   # Checking that the liability-scale heritability is valid
-  if(validate_proportion(h2)){invisible()}
+  if (validate_proportion(h2)) {invisible()}
   
   # If neither fam_vec nor n_fam are specified, the
   # covariance matrix will simply include the 
   # correlation between the genetic component
   # and the full liability for the individual.
-  if(is.null(fam_vec) && is.null(n_fam)){
+  if (is.null(fam_vec) && is.null(n_fam)) {
     
     cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
     # Constructing the simple 2x2 matrix
@@ -261,7 +262,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     return(covmat)
     
-  }else if(!is.null(fam_vec) && !is.null(n_fam)){
+  } else if (!is.null(fam_vec) && !is.null(n_fam)) {
     # If both fam_vec and n_fam are specified, the user 
     # needs to decide on which vector to use.
     # The user will be asked to enter y (to use fam_vec) 
@@ -269,41 +270,41 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     # y nor n three times, the function will be aborted.
     count <- 1
     ver <- "a"
-    while(!is.null(fam_vec) && !is.null(n_fam)){
+    while (!is.null(fam_vec) && !is.null(n_fam)) {
       
-      if(ver == "y" & (count < 4)){
+      if (ver == "y" & (count < 4)) {
         n_fam <-  NULL
-      }else if(ver == "n" & (count < 4)){
+      } else if (ver == "n" & (count < 4)) {
         fam_vec <- NULL
-      }else if( count >=4){
+      } else if ( count >= 4) {
         stop("Function aborted...")
-      }else{
+      } else {
         count <- count + 1
-        ver <- readline(prompt="Both fam_vec and n_fam are specified... \n Do you want to use fam_vec to create the covariance matrix [y/n]?: ")
+        ver <- readline(prompt = "Both fam_vec and n_fam are specified... \n Do you want to use fam_vec to create the covariance matrix [y/n]?: ")
       }
     }
   }
   
-  if(is.null(fam_vec)){
+  if (is.null(fam_vec)) {
     # If only n_fam is specified, the function uses this
     # vector to create the covariance matrix
     
     # Checking that n_fam is named
-    if(is.null(names(n_fam))) stop("n_fam must be a named vector")
+    if (is.null(names(n_fam))) stop("n_fam must be a named vector")
     # Checking that all family members are valid strings
-    if(validate_relatives(names(n_fam))){invisible()}
+    if (validate_relatives(names(n_fam))) {invisible()}
     # Checking that all entries in n_fam are non-negative
-    if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
+    if (any(n_fam < 0)) stop("All entries in n_fam must be non-negative!")
     
     # Removing all family members that occur zero times
     n_fam <- n_fam[n_fam > 0]
     
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
-    if(any(names(n_fam) %in% c("g","o"))){
+    if (any(names(n_fam) %in% c("g","o"))) {
       n_fam <- n_fam[-which(names(n_fam) %in% c("g","o"))]
     }
-    if(add_ind){
+    if (add_ind) {
       n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
     
@@ -314,33 +315,33 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
     
     # Getting the names for all family members that
     # occur only once
-    if(length(single_indx)==0){
+    if (length(single_indx) == 0) {
       fam_vec <- c()
-    }else{
+    } else {
       fam_vec <- names(n_fam)[single_indx]
     }
     # And the names for those family members that occur
     # several times
-    if(length(multiple_indx)>0){
-      for(indx in multiple_indx){
+    if (length(multiple_indx) > 0) {
+      for (indx in multiple_indx) {
         
         fam_vec <- c(fam_vec, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
       }
     }
     
-  }else if(is.null(n_fam)){
+  } else if (is.null(n_fam)) {
     # If only fam_vec is specified, the function uses this
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    if(validate_relatives(fam_vec)){invisible()}
+    if (validate_relatives(fam_vec)) {invisible()}
     
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
-    if(any(fam_vec %in% c("g","o"))){
+    if (any(fam_vec %in% c("g","o"))) {
       fam_vec <- fam_vec[-which(fam_vec %in% c("g","o"))]
     }
-    if(add_ind){
+    if (add_ind) {
       fam_vec <- c(c("g", "o"), fam_vec)
     }
     n_fam <- table(sub("[0-9]*$", "", fam_vec))
@@ -353,8 +354,8 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   rownames(covmat) <- colnames(covmat) <- fam_vec
     
   # Filling in all entries 
-  for(mem in fam_vec) {
-    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2)
+  for (mem in fam_vec) {
+    covmat[which(rownames(covmat) == mem),] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2, from_covmat = T)
   }
   
   # Adding attributes to covmat
@@ -436,6 +437,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
 #' If it is not specified, the names will default to phenotype1, phenotype2, etc.
 #' Defaults to NULL.
 #' 
+#' 
 #' @return If either \code{fam_vec} or \code{n_fam} is used as the argument and if it is of the 
 #' required format, if \code{genetic_corrmat} and \code{full_corrmat} are two numeric and symmetric matrices 
 #' satisfying that all diagonal entries are one and that all off-diagonal
@@ -482,30 +484,30 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
 
   # If fam_vec or n_fam is a vector of length zero, it is set to
   # NULL instead
-  if(length(fam_vec) == 0) fam_vec <- NULL
-  if(length(n_fam) == 0) n_fam <- NULL
+  if (length(fam_vec) == 0) fam_vec <- NULL
+  if (length(n_fam) == 0) n_fam <- NULL
   # The same holds for the vector holding phenotype names
-  if(length(phen_names) == 0) phen_names <- NULL
+  if (length(phen_names) == 0) phen_names <- NULL
   
   # Turn add_ind into a logical 
   add_ind <- as.logical(add_ind)
   
   # Checking that the heritabilities are valid
-  if(validate_proportion(h2_vec)){invisible()}
+  if (validate_proportion(h2_vec)) {invisible()}
   
   # Checking that all correlations are valid
-  if(validate_correlation_matrix(genetic_corrmat)){invisible()}
-  if(validate_correlation_matrix(full_corrmat)){invisible()}
+  if (validate_correlation_matrix(genetic_corrmat)) {invisible()}
+  if (validate_correlation_matrix(full_corrmat)) {invisible()}
   # Computing the number of phenotypes
   num_phen <- length(h2_vec)
   
   # Checking that phen_names is either NULL or a valid
   # vector of strings
-  if(is.null(phen_names)){
+  if (is.null(phen_names)) {
     phen_names <- paste0("phenotype", 1:num_phen)
-  }else{
-    if(!is.character(phen_names)) phen_names <- as.character(phen_names)
-    if(length(phen_names) != num_phen) stop("The number of names in phen_num and the number of phenotypes differ...")
+  } else {
+    if (!is.character(phen_names)) phen_names <- as.character(phen_names)
+    if (length(phen_names) != num_phen) stop("The number of names in phen_num and the number of phenotypes differ...")
   }
 
   # If neither fam_vec nor n_fam are specified, the
@@ -513,21 +515,20 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   # correlation between the genetic component
   # and the full liability for the individual
   # for all phenotypes
-  if(is.null(fam_vec) && is.null(n_fam)){
+  if (is.null(fam_vec) && is.null(n_fam)) {
     
     cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
     # Constructing a simple covariance matrix
     covmat <- matrix(NA, nrow = 2*num_phen, ncol = 2*num_phen)
     # Filling in all entries
-    for(p1 in 1:num_phen){
-      for(p2 in 1:num_phen){
+    for (p1 in 1:num_phen) {
+      for (p2 in 1:num_phen) {
         
-        if(p1==p2){
-          
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(h2_vec[p1], h2_vec[p1], h2_vec[p1], 1), nrow = 2)
+        if (p1 == p2) {
+          covmat[2*(p1 - 1) + 1:2, 2*(p2 - 1) + 1:2] <- matrix(c(h2_vec[p1], h2_vec[p1], h2_vec[p1], 1), nrow = 2)
         }else{
           
-          covmat[2*(p1-1) + 1:2, 2*(p2-1) + 1:2] <- matrix(c(genetic_corrmat[p1,p2],genetic_corrmat[p1,p2],genetic_corrmat[p1,p2], full_corrmat[p1,p2]), nrow = 2, ncol = 2)
+          covmat[2*(p1 - 1) + 1:2, 2*(p2 - 1) + 1:2] <- matrix(c(genetic_corrmat[p1,p2],genetic_corrmat[p1,p2],genetic_corrmat[p1,p2], full_corrmat[p1,p2]), nrow = 2, ncol = 2)
         }
       }
     }
@@ -545,7 +546,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     
     return(covmat)
     
-  }else if(!is.null(fam_vec) && !is.null(n_fam)){
+  } else if (!is.null(fam_vec) && !is.null(n_fam)) {
     # If both fam_vec and n_fam are specified, the user 
     # needs to decide on which vector to use.
     # The user will be asked to enter y (to use fam_vec) 
@@ -553,42 +554,42 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     # y nor n three times, the function will be aborted.
     count <- 1
     ver <- "a"
-    while(!is.null(fam_vec) && !is.null(n_fam)){
+    while (!is.null(fam_vec) && !is.null(n_fam)) {
       
-      if(ver == "y" & (count < 4)){
+      if (ver == "y" & (count < 4)) {
         n_fam <-  NULL
-      }else if(ver == "n" & (count < 4)){
+      } else if (ver == "n" & (count < 4)) {
         fam_vec <- NULL
-      }else if( count >=4){
+      } else if ( count >= 4) {
         stop("Function aborted...")
-      }else{
+      } else {
         count <- count + 1
-        ver <- readline(prompt="Both fam_vec and n_fam are specified... \n Do you want to use fam_vec to create the covariance matrix [y/n]?: ")
+        ver <- readline(prompt = "Both fam_vec and n_fam are specified... \n Do you want to use fam_vec to create the covariance matrix [y/n]?: ")
       }
     }
   }
-  if(is.null(fam_vec)){
+  if (is.null(fam_vec)) {
     # If only n_fam is specified, the function uses this
     # vector to create the covariance matrix
     
     # Checking that n_fam is named
-    if(is.null(names(n_fam))) stop("n_fam must be a named vector")
+    if (is.null(names(n_fam))) stop("n_fam must be a named vector")
     
     # Checking that all family members are valid strings
-    if(validate_relatives(names(n_fam))){invisible()}
+    if (validate_relatives(names(n_fam))) {invisible()}
     
     # Checking that all entries in n_fam are non-negative
-    if(any(n_fam<0)) stop("All entries in n_fam must be non-negative!")
+    if (any(n_fam < 0)) stop("All entries in n_fam must be non-negative!")
     
     # Removing all family members that occur zero times
     n_fam <- n_fam[n_fam > 0]
     
     # Constructing a vector holding all family members
     # (including g and o if add_ind = T).
-    if(any(names(n_fam) %in% c("g","o"))){
+    if (any(names(n_fam) %in% c("g","o"))) {
       n_fam <- n_fam[-which(names(n_fam) %in% c("g","o"))]
     }
-    if(add_ind){
+    if (add_ind) {
       n_fam <- c(stats::setNames(c(1,1), c("g", "o")), n_fam)
     }
     
@@ -599,33 +600,32 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
     
     # Getting the names for all family members that
     # occur only once
-    if(length(single_indx)==0){
+    if (length(single_indx) == 0) {
       fam_vec <- c()
     }else{
       fam_vec <- names(n_fam)[single_indx]
     }
     # And the names for those family members that occur
     # several times
-    if(length(multiple_indx)>0){
-      for(indx in multiple_indx){
-        
+    if (length(multiple_indx) > 0) {
+      for (indx in multiple_indx) {
         fam_vec <- c(fam_vec, paste0(names(n_fam)[indx],"",1:n_fam[indx]))
       }
     }
     
-  }else if(is.null(n_fam)){
+  } else if (is.null(n_fam)) {
     # If only fam_vec is specified, the function uses this
     # vector to create the covariance matrix
     
     # Checking that all family members are represented by valid strings
-    if(validate_relatives(fam_vec)){invisible()}
+    if (validate_relatives(fam_vec)) {invisible()}
     
     # If add_ind = T, the genetic component and the full
     # liability are added to the family members
-    if(any(fam_vec %in% c("g","o"))){
+    if (any(fam_vec %in% c("g","o"))) {
       fam_vec <- fam_vec[-which(fam_vec %in% c("g","o"))]
     }
-    if(add_ind){
+    if (add_ind) {
       fam_vec <- c(c("g", "o"), fam_vec)
     }
     
@@ -639,20 +639,19 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   rownames(covmat) <- colnames(covmat) <- paste0(fam_vec,"_", rep(phen_names, each = length(fam_vec)))
   
   # Filling in all entries
-  for(p1 in 1:num_phen){
-    for(p2 in 1:num_phen){
-      for(mem in fam_vec){
+  for (p1 in 1:num_phen) {
+    for (p2 in 1:num_phen) {
+      for (mem in fam_vec) {
         
-        if(p1==p2){
-          
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2_vec[p1])
+        if (p1 == p2) {
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2 - 1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = h2_vec[p1], from_covmat = T)
         }else{
          
-          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2-1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2])
+          covmat[which(rownames(covmat) == paste0(mem, "_", phen_names[p1])), (p2 - 1)*length(fam_vec) + 1:length(fam_vec)] <- sapply(fam_vec, get_relatedness, s1 = mem, h2 = genetic_corrmat[p1,p2] * sqrt(prod(h2_vec[c(p1,p2)])), from_covmat = T)
         }
       }
       
-      if(p1!=p2) diag(covmat[(p1-1)*length(fam_vec) + 1:length(fam_vec), (p2-1)*length(fam_vec) + 1:length(fam_vec)]) <- c(genetic_corrmat[p1,p2], replicate(n= length(fam_vec)-1, full_corrmat[p1,p2]))
+      if (p1 != p2) diag(covmat[(p1 - 1)*length(fam_vec) + 1:length(fam_vec), (p2 - 1)*length(fam_vec) + 1:length(fam_vec)]) <- c(genetic_corrmat[p1,p2] * sqrt(prod(h2_vec[c(p1,p2)])), replicate(n = length(fam_vec) - 1, full_corrmat[p1,p2] )) 
     }
   }
   
@@ -772,7 +771,7 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
                              add_ind = TRUE, h2 = 0.5, genetic_corrmat = NULL, 
                              full_corrmat = NULL, phen_names = NULL){
   
-  if(length(h2) == 1){
+  if (length(h2) == 1) {
     
     return(construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, h2 = h2))
     

@@ -1,0 +1,80 @@
+---
+title: "From CIP and family to LT-FH++ input"
+author: "Emil M. Pedersen"
+date: "2022-09-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(LTFHPlus)
+library(dplyr)
+```
+
+### dummy input
+
+Here we will simply simulate a potential input format. We create `fam`, which contains the family information and `CIP`, which contains the cumulative incidence proportions. The CIP is stratified by birth year and sex for illustrative purposes. If users only have CIPs stratified by sex, it would simply have one fewer columns. Please not that all values shown here are only for illustrative purposes. 
+
+```{r}
+fam = tibble(fam_id = list(fam_id = c(1, 2, 3)),
+             pid    = list(pid    = c(list(paste0("pid", 1:4)), list(paste0("pid", 5:10)), list("pid11"))),
+             role   = list(role   = c(list(c("o", "f", "m", "s1")), list(c("o", "f", "m", "s1", "s2", "s3")), list(c("o"))))) %>%
+  tidyr::unnest(cols = c(fam_id, pid, role)) %>%
+  #just adding some info as an example
+  mutate(sex    = sample(x = 0:1, size = n(), replace = T),
+         status = sample(x = 0:1, size = n(), replace = T),
+         current_age    = sample(x = 10:100, size = n(), replace = T),
+         aoo    = sapply(seq_along(status), function(cur_ind) {
+           ifelse(status[cur_ind] == 1, sample(10:current_age[cur_ind], size = 1), NA)
+           }),
+         age = pmin(current_age, aoo, na.rm = T),
+         birth_year = 2022 - age) %>% 
+  print()
+
+
+CIP = expand.grid(list(age = 1:100,
+                       birth_year = 1900:2022,
+                       sex = 0:1)) %>%
+  group_by(sex, birth_year) %>%
+  mutate(cip = (1:n() - 1)/n() * .1) %>%
+  ungroup() %>% 
+  print()
+
+```
+In `fam` we have list entries, corresponding to an input format that is still supported, but for ease of use, will be replaced by a longer format. If the list entry format is used, a note will be printed that tells the users that a conversion happened internally. It will look like this:
+
+```{r}
+input =  prepare_LTFHPlus_input(family = fam, CIP = CIP, role_col = "role", use_fixed_case_thr = F)
+
+input_fam = input %>% tidyr::unnest(cols = c(pid, role)) %>% mutate(pid = paste0(pid, "_", role)) %>% dplyr::select(., fam_id, pid) %>% tidyr::nest(data = pid)
+thr = input %>% tidyr::unnest(cols = pid) %>% dplyr::select(-role, -fam_id)# %>% rename(fam_id2 = fam_id, fam_id = pid) %>% rename(pid = fam_id2) %>% select(-1)
+
+.tbl = convert_format(family = input_fam, threshs = thr, personal_id_col = "pid", role_col = "role")
+.tbl
+```
+
+
+
+### Estimating liabilities
+
+From here both input formats can be used to estimate the desired liabilities. Either with the set of inputs `family` and `threshs` that is based on the list entries or the long format supported by `.tbl`. For the long format the input is given as 
+```{r}
+estimate_liability(family = input_fam,
+                   threshs = thr,
+                   h2 = .5,
+                   pid = "pid",
+                   fam_id = "fam_id")
+```
+
+A note is printed to let the user know that the conversion to the longer format happened internally, suggesting the use of the longer format. The output should be the same. If the conversion fails, an error will be given, with another suggestion to use the longer format and the `prepare_LTFHPlus_input` function.
+```{r}
+estimate_liability(.tbl = .tbl,
+                   h2 = .5,
+                   pid = "pid",
+                   fam_id = "fam_id")
+
+```

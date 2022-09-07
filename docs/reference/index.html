@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -35,7 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -66,7 +69,8 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="estimate_liability.html">estimate_liability()</a></code> </p>
         </td>
-        <td><p>Estimating the genetic or full liability</p></td>
+        <td><p>Estimating the genetic or full liability for a variable number of
+phenotypes</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="helper-functions">Helper functions <a href="#helper-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Collection of functions used as examples of how to include additional information.</p>
@@ -84,6 +88,10 @@
         </td>
         <td><p>Convert cumulative incidence rate to age</p></td>
       </tr><tr><td>
+          <p><code><a href="convert_format.html">convert_format()</a></code> </p>
+        </td>
+        <td><p>Attempts to convert the list entry input format to a long format</p></td>
+      </tr><tr><td>
           <p><code><a href="convert_liability_to_aoo.html">convert_liability_to_aoo()</a></code> </p>
         </td>
         <td><p>Convert liability to age of onset</p></td>
@@ -92,13 +100,17 @@
         </td>
         <td><p>Convert the heritability on the observed scale to that on the liability scale</p></td>
       </tr><tr><td>
-          <p><code><a href="truncated_normal_cdf.html">truncated_normal_cdf()</a></code> </p>
+          <p><code><a href="prepare_LTFHPlus_input.html">prepare_LTFHPlus_input()</a></code> </p>
         </td>
-        <td><p>CDF for truncated normal distribution.</p></td>
+        <td><p>Prepares input for <code>estimate_liability</code></p></td>
       </tr><tr><td>
           <p><code><a href="simulate_under_LTM.html">simulate_under_LTM()</a></code> </p>
         </td>
         <td><p>Simulate under the liability threshold model.</p></td>
+      </tr><tr><td>
+          <p><code><a href="truncated_normal_cdf.html">truncated_normal_cdf()</a></code> </p>
+        </td>
+        <td><p>CDF for truncated normal distribution.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="auxiliary-functions">Auxiliary functions <a href="#auxiliary-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions used to define covariance matrices.</p>
@@ -151,16 +163,16 @@ phenotypes</p></td>
       </tr><tr><td>
           <p><code><a href="estimate_liability_multi.html">estimate_liability_multi()</a></code> </p>
         </td>
-        <td><p>Estimating the genetic or full liability for multiple phenotypes
-FUNCTIONS FOR MULTIPLE TRAITS IS STILL NOT COMPLETE. PLEASE DO NOT USE.
-<code>estimate_liability_multi</code> estimates the genetic component of the full
-liability and/or the full liability for a number of individuals based
-on their family history for a variable number of phenotypes.</p></td>
+        <td><p>Estimating the genetic or full liability for multiple phenotypes</p></td>
       </tr><tr><td>
           <p><code><a href="estimate_liability_prevalence.html">estimate_liability_prevalence()</a></code> </p>
         </td>
         <td><p>Estimating the genetic or full liability for multiple phenotypes
 using prevalence information</p></td>
+      </tr><tr><td>
+          <p><code><a href="estimate_liability_single.html">estimate_liability_single()</a></code> </p>
+        </td>
+        <td><p>Estimating the genetic or full liability</p></td>
       </tr><tr><td>
           <p><code><a href="generate_cov_matrix_noFH.html">generate_cov_matrix_noFH()</a></code> </p>
         </td>
@@ -177,6 +189,26 @@ using prevalence information</p></td>
           <p><code><a href="get_full_cov.html">get_full_cov()</a></code> </p>
         </td>
         <td><p>Helps construct the correlation entries in the covariance matrix needed for LT-FH++ with multiple traits.</p></td>
+      </tr><tr><td>
+          <p><code><a href="simulate_under_LTM_multi.html">simulate_under_LTM_multi()</a></code> </p>
+        </td>
+        <td><p>Simulate under the liability threshold model (multiple phenotypes).</p></td>
+      </tr><tr><td>
+          <p><code><a href="simulate_under_LTM_single.html">simulate_under_LTM_single()</a></code> </p>
+        </td>
+        <td><p>Simulate under the liability threshold model (single phenotype).</p></td>
+      </tr><tr><td>
+          <p><code><a href="validate_correlation_matrix.html">validate_correlation_matrix()</a></code> </p>
+        </td>
+        <td><p>Checking that a correlation matrix is valid</p></td>
+      </tr><tr><td>
+          <p><code><a href="validate_proportion.html">validate_proportion()</a></code> </p>
+        </td>
+        <td><p>Checking that proportions are valid</p></td>
+      </tr><tr><td>
+          <p><code><a href="validate_relatives.html">validate_relatives()</a></code> </p>
+        </td>
+        <td><p>Checking that relatives are represented by valid strings</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -190,7 +222,7 @@ using prevalence information</p></td>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ multivariate normal distribution with covariance matrix covmat."><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -36,7 +36,10 @@ multivariate normal distribution with covariance matrix covmat."><!-- mathjax --
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/inputFormatExample.html">Input Format</a>
+      <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
+    </li>
+    <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
@@ -68,55 +71,70 @@ multivariate normal distribution with covariance matrix <code>covmat</code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rtmvnorm.gibbs</span><span class="op">(</span>
-  n_sim <span class="op">=</span> <span class="fl">1e+05</span>,
-  <span class="va">covmat</span>,
-  lower <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,
-  <span class="va">upper</span>,
-  fixed <span class="op">=</span> <span class="op">(</span><span class="va">lower</span> <span class="op">==</span> <span class="va">upper</span><span class="op">)</span>,
-  out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,
-  burn_in <span class="op">=</span> <span class="fl">1000</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rtmvnorm.gibbs</span><span class="op">(</span></span>
+<span>  n_sim <span class="op">=</span> <span class="fl">1e+05</span>,</span>
+<span>  <span class="va">covmat</span>,</span>
+<span>  lower <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,</span>
+<span>  <span class="va">upper</span>,</span>
+<span>  fixed <span class="op">=</span> <span class="op">(</span><span class="va">lower</span> <span class="op">==</span> <span class="va">upper</span><span class="op">)</span>,</span>
+<span>  out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>  burn_in <span class="op">=</span> <span class="fl">1000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>n_sim</dt>
 <dd><p>A positive number representing the number of draws from the
-Gibbs sampler after burn-in.. Defaults to 1e+05.</p></dd>
+Gibbs sampler after burn-in.. Defaults to <code>1e+05</code>.</p></dd>
+
+
 <dt>covmat</dt>
 <dd><p>A symmetric and numeric matrix representing the covariance
 matrix for the multivariate normal distribution.</p></dd>
+
+
 <dt>lower</dt>
 <dd><p>A number or numeric vector representing the lower cutoff point(s) for the
 truncated normal distribution. The length of lower must be 1 or equal
 to the dimension of the multivariable normal distribution.
 Defaults to <code>-Inf</code>.</p></dd>
+
+
 <dt>upper</dt>
 <dd><p>A number or numeric vector representing the upper cutoff point(s) for the
 truncated normal distribution. Must be greater or equal to lower.
 In addition the length of upper must be 1 or equal to the dimension
 of the multivariable normal distribution.
 Defaults to <code>Inf</code>.</p></dd>
+
+
 <dt>fixed</dt>
 <dd><p>A logical scalar or a logical vector indicating which
 variables to fix. If <code>fixed</code> is a vector, it must have the same length as
-lower and upper. Defaults to <code>TRUE</code> when <code>lowert</code> is equal to
+lower and upper. Defaults to <code>TRUE</code> when <code>lower</code> is equal to
 <code>upper</code> and <code>FALSE</code> otherwise.</p></dd>
+
+
 <dt>out</dt>
 <dd><p>An integer or numeric vector indicating which variables should be returned
-from the Gibbs sampler. If out = c(1), the first variable (usually the genetic
+from the Gibbs sampler. If <code>out = c(1)</code>, the first variable (usually the genetic
 component of the full liability of the first phenotype) is estimated and returned.
-If out = c(2), the second variable (usually full liability) is estimated and returned.
-If out = c(1,2), both the first and the second variable are estimated and returned.
-Defaults to c(1).</p></dd>
+If <code>out = c(2)</code>, the second variable (usually full liability) is estimated and returned.
+If <code>out = c(1,2)</code>, both the first and the second variable are estimated and returned.
+Defaults to <code>c(1)</code>.</p></dd>
+
+
 <dt>burn_in</dt>
 <dd><p>A number of iterations that count as burn in for the Gibbs sampler.
-Must be non-negative. Defaults to 1000.</p></dd>
+Must be non-negative. Defaults to <code>1000</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>If <code>covmat</code> is a symmetric and numeric matrix, if <code>n_sim</code> and
+    
+
+<p>If <code>covmat</code> is a symmetric and numeric matrix, if <code>n_sim</code> and
 <code>burn_in</code> are positive/non-negative numbers, if <code>out</code> is a numeric vector and
 <code>lower</code>, <code>upper</code> and <code>fixed</code> are numbers or vectors of the same length
 and the required format, <code>rtmvnorm.gibbs</code> returns the sampling values
@@ -125,7 +143,7 @@ from the Gibbs sampler for all variables specified in <code>out</code>.</p>
     <div id="details">
     <h2>Details</h2>
     <p>Given a covariance matrix <code>covmat</code> and lower and upper cutoff points,
-the function <code>rtmvnorm.gibbs</code> can be used to perform Gibbs sampler on a truncated
+the function <code>rtmvnorm.gibbs()</code> can be used to perform Gibbs sampler on a truncated
 multivariable normal distribution. It is possible to specify which variables
 to return from the Gibbs sampler, making it convenient to use when estimating
 only the full liability or the genetic component of the full liability.</p>
@@ -136,15 +154,15 @@ only the full liability or the genetic component of the full liability.</p>
 generation of truncated multivariate gaussian random variables. In 1999 IEEE
 International Conference on Acoustics, Speech, and Signal Processing.
 Proceedings. ICASSP99 (Cat. No. 99CH36258) (Vol. 3, pp. 1757-1760). IEEE.
-doi: <a href="https://doi.org/10.1109/ICASSP.1999.756335" class="external-link">10.1109/ICASSP.1999.756335</a></p>
+<a href="https://doi.org/10.1109/ICASSP.1999.756335" class="external-link">doi:10.1109/ICASSP.1999.756335</a></p>
 <p>Wilhelm, S., &amp; Manjunath, B. G. (2010). tmvtnorm: A package for the truncated
-multivariate normal distribution. The R Journal. doi: <a href="https://doi.org/10.32614/RJ-2010-005" class="external-link">10.32614/RJ-2010-005</a></p>
+multivariate normal distribution. The R Journal. <a href="https://doi.org/10.32614/RJ-2010-005" class="external-link">doi:10.32614/RJ-2010-005</a></p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">samp</span> <span class="op">&lt;-</span> <span class="fu">rtmvnorm.gibbs</span><span class="op">(</span><span class="fl">10e3</span>, covmat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span class="r-in">                       lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0</span><span class="op">)</span>, upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, out <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">samp</span> <span class="op">&lt;-</span> <span class="fu">rtmvnorm.gibbs</span><span class="op">(</span><span class="fl">10e3</span>, covmat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0</span><span class="op">)</span>, upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, out <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -159,7 +177,7 @@ multivariate normal distribution. The R Journal. doi: <a href="https://doi.org/1
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

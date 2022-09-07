@@ -290,7 +290,6 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' @export
 convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
                                  min_age = 10, max_age = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
-  
   # Checking that age is valid
   if(!is.numeric(age)&& !is.integer(age)) stop("The age must be numeric!")
   if(age<0) stop("The age must be non-negative!")

@@ -4,7 +4,7 @@
 \alias{get_relatedness}
 \title{Relatedness between a pair of family members}
 \usage{
-get_relatedness(s1, s2, h2 = 0.5)
+get_relatedness(s1, s2, h2 = 0.5, from_covmat = FALSE)
 }
 \arguments{
 \item{s1, s2}{Strings representing the two family members.
@@ -28,6 +28,8 @@ The strings must be chosen from the following list of strings:
 
 \item{h2}{A number representing the squared heritability on liability scale.
 Must be non-negative and at most 1. Defaults to 0.5}
+
+\item{from_covmat}{logical variable. Only used internally. allows for skip of negative check.}
 }
 \value{
 If both \code{s1} and \code{s2} are strings chosen from the mentioned
