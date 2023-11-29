@@ -272,7 +272,7 @@ full liability, the full liability or both for a variable number of traits.</p>
 <span class="r-in"><span><span class="va">full_covmat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sims</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sims</span><span class="op">)</span> <span class="op">==</span> <span class="st">"thresholds"</span><span class="op">)</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"o"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>   <span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">full_covmat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">full_covmat</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">full_covmat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">full_covmat</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">full_covmat</span><span class="op">)</span> <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="fu">estimate_liability_multi</span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>, h2_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>,<span class="fl">3</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_covmat</span>,</span></span>
@@ -280,21 +280,21 @@ full liability, the full liability or both for a variable number of traits.</p>
 <span class="r-in"><span>tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_pheno…¹ genet…² genet…³ genet…⁴ genet…⁵ genet…⁶</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.050895609173… 0.0051… 0.3232… 0.0045… 0.0588… 0.0054…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  1.032592990664… 0.0021… 0.8982… 0.0020… 0.5310… 0.0042…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.07556044319… 0.0052… -0.066… 0.0053… -0.070… 0.0057…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.08829693173… 0.0055… -0.092… 0.0052… -0.095… 0.0054…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.10796563941… 0.0051… -0.106… 0.0055… -0.112… 0.0054…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.10269471204… 0.0056… -0.101… 0.0056… -0.100… 0.0055…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  0.117592046640… 0.0055… 0.1211… 0.0052… 0.3319… 0.0051…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.04355840241… 0.0048… -0.045… 0.0050… -0.037… 0.0050…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  0.261232947426… 0.0046… 0.0464… 0.0050… 0.0557… 0.0052…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.02290277173… 0.0056… -0.022… 0.0054… -0.022… 0.0056…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​genetic_phenotype1_est,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ²​genetic_phenotype1_se, ³​genetic_phenotype2_est, ⁴​genetic_phenotype2_se,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁵​genetic_phenotype3_est, ⁶​genetic_phenotype3_se</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_phenotype1_est genetic_phenotype1_se</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.789082451503562      0.00319904802030995  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  -0.0152204334431449    0.00533767515489094  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  0.296429023424931      0.00421488704314774  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.0226535359033798    0.00491566751294939  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  1.1670154294143        0.00164856092540934  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  0.203536166865307      0.00437528003577773  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0273468530655696    0.00518499275674639  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  0.315975917293606      0.004422415725532    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.00849494233209866   0.00506661292822047  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 0.890091156600932      0.00377187741818868  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: genetic_phenotype2_est &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype2_se &lt;chr&gt;, genetic_phenotype3_est &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype3_se &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -311,7 +311,7 @@ full liability, the full liability or both for a variable number of traits.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

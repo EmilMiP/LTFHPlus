@@ -85,7 +85,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>How the covariance is constructed</h1>
-                        <h4 data-toc-skip class="author">Emil M. Pedersen</h4>
+                        <h4 data-toc-skip class="author">Emil M.
+Pedersen</h4>
             
             <h4 data-toc-skip class="date">2022-09-07</h4>
       
@@ -99,22 +100,56 @@
 <div class="section level3">
 <h3 id="what-is-the-input-format-for-ltfhplus-functions">What is the input format for LTFHPlus functions?<a class="anchor" aria-label="anchor" href="#what-is-the-input-format-for-ltfhplus-functions"></a>
 </h3>
-<p>With version 2.0, updates have been made to the input and the functions available to estimate the (genetic) liability. Previously, a list entry format with a set order was expected, where the proband was first, then followed by father, mother, and any siblings. This limited analysis to only the immediate family, but if information on, e.g. half-siblings, grandparents etc, was available, it could not be readily used. Now the input does not require a set ordering, but instead the user is expected to provide information on the familial relation to the proband, e.g. mother, paternal half-sibling, etc. This allows for far more flexibility for the user to include the familial information that is available.</p>
+<p>With version 2.0, updates have been made to the input and the
+functions available to estimate the (genetic) liability. Previously, a
+list entry format with a set order was expected, where the proband was
+first, then followed by father, mother, and any siblings. This limited
+analysis to only the immediate family, but if information on,
+e.g. half-siblings, grandparents etc, was available, it could not be
+readily used. Now the input does not require a set ordering, but instead
+the user is expected to provide information on the familial relation to
+the proband, e.g. mother, paternal half-sibling, etc. This allows for
+far more flexibility for the user to include the familial information
+that is available.</p>
 </div>
 <div class="section level3">
 <h3 id="family-input">Family Input<a class="anchor" aria-label="anchor" href="#family-input"></a>
 </h3>
-<p>The function used to estimate the genetic (or full liability) of an individual is <code>estimate_liability</code>. The family input is either input through <code>.tbl</code>, which is a long format where each row is an individual, or <code>family</code>, which is a list entry format, where each row is a full family. If the <code>family</code> object is used, it must be accompanied by another object with the thresholds for each individual in the families.</p>
+<p>The function used to estimate the genetic (or full liability) of an
+individual is <code>estimate_liability</code>. The family input is
+either input through <code>.tbl</code>, which is a long format where
+each row is an individual, or <code>family</code>, which is a list entry
+format, where each row is a full family. If the <code>family</code>
+object is used, it must be accompanied by another object with the
+thresholds for each individual in the families.</p>
 </div>
 <div class="section level3">
 <h3 id="family-relationship">Family relationship<a class="anchor" aria-label="anchor" href="#family-relationship"></a>
 </h3>
-<p>In either family input format a role must accompany each individual. In the long format, the family relationship to the proband has its own column. In the list entry format, it is combined into a string with the id of an individual. As a result, the IDs of family members must contain the family member’s ID and end in the shorthand notation for their familial relation to the proband. For example, for a mother it would be “motherID_m”, father would be “fatherID_f”, and siblings must be “siblingID_s[0-9]”. The relationship to the proband is needed to properly construct the covariance. An example of the different input formats can be seen in <em>From CIP and family to LT-FH++ input</em>.</p>
+<p>In either family input format a role must accompany each individual.
+In the long format, the family relationship to the proband has its own
+column. In the list entry format, it is combined into a string with the
+id of an individual. As a result, the IDs of family members must contain
+the family member’s ID and end in the shorthand notation for their
+familial relation to the proband. For example, for a mother it would be
+“motherID_m”, father would be “fatherID_f”, and siblings must be
+“siblingID_s[0-9]”. The relationship to the proband is needed to
+properly construct the covariance. An example of the different input
+formats can be seen in <em>From CIP and family to LT-FH++
+input</em>.</p>
 </div>
 <div class="section level3">
 <h3 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
 </h3>
-<p>From <code>simulate_under_LTM</code> an example of the full input data can be seen in the longer format. It returns a list, first entry is <code>sim_obs</code>, and contains all the underlying liabilities, status, and age of onset or age for controls. The second entry is called <code>thresholds</code> and is the longer format. It contains a family ID, individual ID, family relationship to the proband, and a lower and upper threshold for each individual. The following example simulates a family with the index person, a mother, a father, and a single sibling.</p>
+<p>From <code>simulate_under_LTM</code> an example of the full input
+data can be seen in the longer format. It returns a list, first entry is
+<code>sim_obs</code>, and contains all the underlying liabilities,
+status, and age of onset or age for controls. The second entry is called
+<code>thresholds</code> and is the longer format. It contains a family
+ID, individual ID, family relationship to the proband, and a lower and
+upper threshold for each individual. The following example simulates a
+family with the index person, a mother, a father, and a single
+sibling.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span>,<span class="st">"s1"</span><span class="op">)</span>,</span>
 <span>                            n_fam <span class="op">=</span> <span class="cn">NULL</span>, </span>
@@ -125,43 +160,65 @@
 <span></span>
 <span><span class="va">sims</span><span class="op">$</span><span class="va">sim_obs</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 14</span></span></span>
-<span><span class="co">##    fam_ID        g       o      m      f      s1 o_sta…¹ m_sta…² f_sta…³ s1_st…⁴</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID…  0.469  -<span style="color: #BB0000;">0.149</span>  -<span style="color: #BB0000;">0.858</span>  1.66   0.929  FALSE   FALSE   TRUE    FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID… -<span style="color: #BB0000;">0.164</span>   0.755   0.788  0.995 -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">0</span> FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID… -<span style="color: #BB0000;">0.221</span>  -<span style="color: #BB0000;">1.42</span>   -<span style="color: #BB0000;">0.726</span>  0.974  1.56   FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID…  1.61    0.948   1.31   0.784  0.649  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID…  0.275   0.324   0.329 -<span style="color: #BB0000;">1.17</span>   0.405  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID… -<span style="color: #BB0000;">1.03</span>    0.036<span style="text-decoration: underline;">7</span>  1.75  -<span style="color: #BB0000;">0.802</span>  0.303  FALSE   TRUE    FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID…  0.423  -<span style="color: #BB0000;">0.392</span>  -<span style="color: #BB0000;">1.83</span>   0.383 -<span style="color: #BB0000;">1.58</span>   FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID… -<span style="color: #BB0000;">0.037</span><span style="color: #BB0000; text-decoration: underline;">4</span> -<span style="color: #BB0000;">0.854</span>  -<span style="color: #BB0000;">1.82</span>   0.595  0.705  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID… -<span style="color: #BB0000;">1.43</span>   -<span style="color: #BB0000;">1.49</span>   -<span style="color: #BB0000;">1.40</span>  -<span style="color: #BB0000;">0.943</span>  0.022<span style="text-decoration: underline;">4</span> FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID…  0.521   0.127  -<span style="color: #BB0000;">0.399</span>  1.89   1.29   FALSE   FALSE   TRUE    FALSE  </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 4 more variables: o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;, s1_aoo &lt;int&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   and abbreviated variable names ¹​o_status, ²​m_status, ³​f_status, ⁴​s1_status</span></span></span></code></pre>
+<span><span class="co">##    fam_ID         g      o      m      f       s1 o_status m_status f_status</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  -<span style="color: #BB0000;">1.43</span>  -<span style="color: #BB0000;">1.96</span>  -<span style="color: #BB0000;">1.34</span>  -<span style="color: #BB0000;">0.640</span> -<span style="color: #BB0000;">1.23</span>    FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2   0.270  0.224 -<span style="color: #BB0000;">0.500</span> -<span style="color: #BB0000;">1.54</span>  -<span style="color: #BB0000;">0.173</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3   0.567  0.212 -<span style="color: #BB0000;">1.13</span>   1.27  -<span style="color: #BB0000;">0.188</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  -<span style="color: #BB0000;">0.122</span> -<span style="color: #BB0000;">0.847</span> -<span style="color: #BB0000;">0.199</span> -<span style="color: #BB0000;">0.726</span>  0.685   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5   0.698  0.198 -<span style="color: #BB0000;">0.348</span>  1.08   0.879   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6   0.334  0.701 -<span style="color: #BB0000;">0.151</span>  0.185  1.63    FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  -<span style="color: #BB0000;">0.135</span> -<span style="color: #BB0000;">0.377</span>  1.19  -<span style="color: #BB0000;">1.02</span>  -<span style="color: #BB0000;">1.04</span>    FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  -<span style="color: #BB0000;">0.149</span> -<span style="color: #BB0000;">1.01</span>   0.745 -<span style="color: #BB0000;">0.307</span> -<span style="color: #BB0000;">0.308</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9   1.31   1.23   1.87   0.789  1.14    FALSE    TRUE     FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 -<span style="color: #BB0000;">0.315</span> -<span style="color: #BB0000;">1.99</span>   1.91  -<span style="color: #BB0000;">1.34</span>  -<span style="color: #BB0000;">0.007</span><span style="color: #BB0000; text-decoration: underline;">95</span> FALSE    TRUE     FALSE   </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: s1_status &lt;lgl&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;int&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 40 × 5</span></span></span>
 <span><span class="co">##    fam_ID    indiv_ID    role  lower upper</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  3.30</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  3.26</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  3.16</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  2.97</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  3.16</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  3.57</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  2.75</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  3.19</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  3.57</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  3.33</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 30 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  3.47</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  2.75</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  2.75</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  3.30</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  3.60</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  2.82</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  2.86</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  3.12</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  3.40</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  3.40</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 30 more rows</span></span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="covariance-function-and-examples">Covariance Function and examples<a class="anchor" aria-label="anchor" href="#covariance-function-and-examples"></a>
 </h3>
-<p>We construct the covariance matrix for each family being analysed during run-time. The covariance function that is used internally in <code>estimate_liability</code> has been updated to allow for a higher degree of flexibility. This means it is up to the user to provide the familial relationship, and <code>construct_covmat</code> creates the corresponding covariance matrix based on the heritability and expected genetic overlap between two individuals.</p>
-<p><code>construct_covmat</code> defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format for <code>construct_covmat</code> can be specified in two different ways, either <code>fam_vec</code> (the method used internally in <code>estimate_liability</code>) or with <tt>n_fam</tt>. For <tt>fam_vec</tt> a vector of strings from the list of possible familial relationships must be provided For the full list, please see documentation for <code>construct_covmat</code>. Family members will then appear in the covariance matrix in the same order as they appear in <tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, where the <em>names</em> of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears.</p>
-<p>In order to illustrate the different possible families, we will provide some examples. If no family information is available, but the age of onset information is still available, we can use the simplest covariance, which only contains the genetic and full liability of the index person:</p>
+<p>We construct the covariance matrix for each family being analysed
+during run-time. The covariance function that is used internally in
+<code>estimate_liability</code> has been updated to allow for a higher
+degree of flexibility. This means it is up to the user to provide the
+familial relationship, and <code>construct_covmat</code> creates the
+corresponding covariance matrix based on the heritability and expected
+genetic overlap between two individuals.</p>
+<p><code>construct_covmat</code> defaults to a family structure with
+both parents, one sibling, and the paternal and maternal grandparents.
+The input format for <code>construct_covmat</code> can be specified in
+two different ways, either <code>fam_vec</code> (the method used
+internally in <code>estimate_liability</code>) or with <tt>n_fam</tt>.
+For <tt>fam_vec</tt> a vector of strings from the list of possible
+familial relationships must be provided For the full list, please see
+documentation for <code>construct_covmat</code>. Family members will
+then appear in the covariance matrix in the same order as they appear in
+<tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, where
+the <em>names</em> of the named vector corresponding to the familial
+relationship and the values of the vector corresponds to how often that
+particular familial role appears.</p>
+<p>In order to illustrate the different possible families, we will
+provide some examples. If no family information is available, but the
+age of onset information is still available, we can use the simplest
+covariance, which only contains the genetic and full liability of the
+index person:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># no family members</span></span>
 <span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="cn">NULL</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, h2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
@@ -179,7 +236,8 @@
 <span><span class="co">## [1] TRUE</span></span>
 <span><span class="co">## attr(,"h2")</span></span>
 <span><span class="co">## [1] 0.5</span></span></code></pre>
-<p>The default family contains the index person as well as a father, mother, one sibling, both maternal and paternal grandparents.</p>
+<p>The default family contains the index person as well as a father,
+mother, one sibling, both maternal and paternal grandparents.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##         g     o    m    f    s1   mgm   mgf   pgm   pgf</span></span>
@@ -220,7 +278,9 @@
 <span><span class="co">## [1] TRUE</span></span>
 <span><span class="co">## attr(,"h2")</span></span>
 <span><span class="co">## [1] 0.5</span></span></code></pre>
-<p>In this example, we illustrate the covariance accounting for family members on either the mother’s or father’s side. Assuming there is no genetic overlap between the two sides of the family.</p>
+<p>In this example, we illustrate the covariance accounting for family
+members on either the mother’s or father’s side. Assuming there is no
+genetic overlap between the two sides of the family.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"m"</span>, <span class="st">"mgm"</span>, <span class="st">"pgm"</span>, <span class="st">"mhs1"</span>, <span class="st">"phs1"</span>, <span class="st">"mau"</span>, <span class="st">"pau"</span><span class="op">)</span>, h2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          g     o    f    m   mgm   pgm  mhs1  phs1   mau   pau</span></span>
@@ -262,7 +322,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

@@ -85,7 +85,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LT-FH++ Example</h1>
-                        <h4 data-toc-skip class="author">Emil M. Pedersen</h4>
+                        <h4 data-toc-skip class="author">Emil M.
+Pedersen</h4>
             
             <h4 data-toc-skip class="date">6/9/2022</h4>
       
@@ -96,23 +97,55 @@
 
     
     
-<p>First, we will load the packages that we will need for the example:</p>
+<p>First, we will load the packages that we will need for the
+example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilMiP/LTFHPlus" class="external-link">LTFHPlus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.apply.futureverse.org" class="external-link">future.apply</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>For simplicty’s sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes.</p>
+<p>For simplicty’s sake, we will use the same prevalence for both sexes.
+However, it is worth noting that in real-world applications, the
+cumulative incidence proportions needed for the thresholds, will rarely
+be identical for both sexes.</p>
 <div class="section level3">
 <h3 id="setting-up-input">Setting up input<a class="anchor" aria-label="anchor" href="#setting-up-input"></a>
 </h3>
-<p>Single trait LT-FH++ requires 3 types of input, namely the liability-scale heritability, the family relationships and the status, age or age of onset, sex, and birth year for each family member, and finally cumulative incidence proportions (CIPs). The more detailed cumulative incidence proportions, the better. In the LT-FH++ paper, we used CIPs that were stratified by birth year and sex and fixed the upper and lower liability threshold for cases to <span class="math inline">\(\Phi(1 - CIP)\)</span>, since it provided a very accurate estimate for the full liability. Each CIP curve was a function of age, where age represented the age of onset or the current age of a control. If less detailed information, such as CIPs stratified by sex, but not birth year, we recommend setting the lower threshold to be <span class="math inline">\(\Phi(1 - CIP)\)</span> and the upper limit to infinity for cases. With this information, the thresholds needed for the age-dependent liability threshold model can be assigned. We have provided a function called <code>prepare_LTFHPlus_input</code> that can help users convert the input into a suitable format. An example of how the input may look and how to use the function can be found in <em>From CIP and family to LT-FH++ input</em>.</p>
+<p>Single trait LT-FH++ requires 3 types of input, namely the
+liability-scale heritability, the family relationships and the status,
+age or age of onset, sex, and birth year for each family member, and
+finally cumulative incidence proportions (CIPs). The more detailed
+cumulative incidence proportions, the better. In the LT-FH++ paper, we
+used CIPs that were stratified by birth year and sex and fixed the upper
+and lower liability threshold for cases to <span class="math inline">\(\Phi(1 - CIP)\)</span>, since it provided a very
+accurate estimate for the full liability. Each CIP curve was a function
+of age, where age represented the age of onset or the current age of a
+control. If less detailed information, such as CIPs stratified by sex,
+but not birth year, we recommend setting the lower threshold to be <span class="math inline">\(\Phi(1 - CIP)\)</span> and the upper limit to
+infinity for cases. With this information, the thresholds needed for the
+age-dependent liability threshold model can be assigned. We have
+provided a function called <code>prepare_LTFHPlus_input</code> that can
+help users convert the input into a suitable format. An example of how
+the input may look and how to use the function can be found in <em>From
+CIP and family to LT-FH++ input</em>.</p>
 </div>
 <div class="section level3">
 <h3 id="generating-phenotypes">Generating phenotypes<a class="anchor" aria-label="anchor" href="#generating-phenotypes"></a>
 </h3>
-<p>We have implemented a function that allows users to simulate under the liability threshold model for a given family structure, i.e. mother, father, sibling, or sibling1, sibling2, child1, child2, etc. The function simply needs a family structure, heritablity, and population prevalence.For simplicity’s sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes. The function <code>simulate_under_LTM</code> outputs a list with two tibbles. The first one <code>sim_obs</code> contains the underlying liabilities, status, and age or age of onset for each family and family members. The second tibble <code>thresholds</code> contains the formatted input that is ready to be input to estimate the genetic liability.</p>
+<p>We have implemented a function that allows users to simulate under
+the liability threshold model for a given family structure, i.e. mother,
+father, sibling, or sibling1, sibling2, child1, child2, etc. The
+function simply needs a family structure, heritablity, and population
+prevalence.For simplicity’s sake, we will use the same prevalence for
+both sexes. However, it is worth noting that in real-world applications,
+the cumulative incidence proportions needed for the thresholds, will
+rarely be identical for both sexes. The function
+<code>simulate_under_LTM</code> outputs a list with two tibbles. The
+first one <code>sim_obs</code> contains the underlying liabilities,
+status, and age or age of onset for each family and family members. The
+second tibble <code>thresholds</code> contains the formatted input that
+is ready to be input to estimate the genetic liability.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span>,<span class="st">"s1"</span><span class="op">)</span>, </span>
 <span>                           n_fam <span class="op">=</span> <span class="cn">NULL</span>, </span>
@@ -123,43 +156,69 @@
 <span><span class="va">sims</span></span></code></pre></div>
 <pre><code><span><span class="co">## $sim_obs</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 14</span></span></span>
-<span><span class="co">##    fam_ID        g       o      m      f      s1 o_sta…¹ m_sta…² f_sta…³ s1_st…⁴</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID… -<span style="color: #BB0000;">0.577</span>  -<span style="color: #BB0000;">0.262</span>  -<span style="color: #BB0000;">0.582</span> -<span style="color: #BB0000;">1.13</span>   0.044<span style="text-decoration: underline;">8</span> FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID…  0.081<span style="text-decoration: underline;">9</span> -<span style="color: #BB0000;">0.351</span>   2.50  -<span style="color: #BB0000;">0.715</span>  0.512  FALSE   TRUE    FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID…  0.338   1.10   -<span style="color: #BB0000;">0.816</span> -<span style="color: #BB0000;">1.07</span>  -<span style="color: #BB0000;">1.18</span>   FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID… -<span style="color: #BB0000;">0.703</span>  -<span style="color: #BB0000;">1.11</span>   -<span style="color: #BB0000;">0.385</span> -<span style="color: #BB0000;">0.446</span>  0.115  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID… -<span style="color: #BB0000;">1.04</span>   -<span style="color: #BB0000;">2.18</span>   -<span style="color: #BB0000;">0.783</span>  0.435 -<span style="color: #BB0000;">1.07</span>   FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID…  0.087<span style="text-decoration: underline;">1</span> -<span style="color: #BB0000;">0.421</span>   0.791 -<span style="color: #BB0000;">1.15</span>   0.016<span style="text-decoration: underline;">0</span> FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID…  0.446   0.044<span style="text-decoration: underline;">7</span> -<span style="color: #BB0000;">0.839</span>  0.998 -<span style="color: #BB0000;">0.924</span>  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID… -<span style="color: #BB0000;">0.167</span>  -<span style="color: #BB0000;">0.081</span><span style="color: #BB0000; text-decoration: underline;">6</span> -<span style="color: #BB0000;">1.07</span>  -<span style="color: #BB0000;">0.997</span>  0.335  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID… -<span style="color: #BB0000;">0.419</span>  -<span style="color: #BB0000;">0.137</span>  -<span style="color: #BB0000;">0.460</span>  0.273  0.478  FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID… -<span style="color: #BB0000;">0.290</span>  -<span style="color: #BB0000;">0.636</span>  -<span style="color: #BB0000;">0.662</span> -<span style="color: #BB0000;">0.545</span>  1.17   FALSE   FALSE   FALSE   FALSE  </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 90 more rows, 4 more variables: o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;dbl&gt;, and abbreviated variable names ¹​o_status, ²​m_status,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ³​f_status, ⁴​s1_status</span></span></span>
+<span><span class="co">##    fam_ID         g      o      m      f      s1 o_status m_status f_status</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1   0.934  0.300  1.98   0.608 -<span style="color: #BB0000;">0.780</span>  FALSE    TRUE     FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2   0.591  0.711  0.113  0.231 -<span style="color: #BB0000;">0.041</span><span style="color: #BB0000; text-decoration: underline;">6</span> FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  -<span style="color: #BB0000;">0.962</span> -<span style="color: #BB0000;">1.25</span>  -<span style="color: #BB0000;">1.77</span>   1.47   0.892  FALSE    FALSE    TRUE    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4   0.555  0.559 -<span style="color: #BB0000;">0.614</span> -<span style="color: #BB0000;">0.944</span>  0.110  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5   0.337  0.247  0.595  0.299  2.37   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6   0.183 -<span style="color: #BB0000;">0.139</span>  0.636  0.141 -<span style="color: #BB0000;">0.168</span>  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7   0.921  0.494  1.44   0.119  0.664  FALSE    TRUE     FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  -<span style="color: #BB0000;">0.904</span> -<span style="color: #BB0000;">1.16</span>   1.11   0.475 -<span style="color: #BB0000;">0.878</span>  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9   0.363 -<span style="color: #BB0000;">0.206</span>  0.620  0.376 -<span style="color: #BB0000;">0.534</span>  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 -<span style="color: #BB0000;">0.312</span> -<span style="color: #BB0000;">0.131</span>  1.03  -<span style="color: #BB0000;">0.389</span>  0.212  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 90 more rows</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: s1_status &lt;lgl&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;dbl&gt;</span></span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $thresholds</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 400 × 5</span></span></span>
 <span><span class="co">##    fam_ID    indiv_ID    role  lower upper</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  3.55</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  3.24</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  3.48</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  2.83</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  2.68</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  3.52</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  2.72</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  2.55</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  2.68</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  3.55</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 390 more rows</span></span></span></code></pre>
-<p><code>thresholds</code> keeps track of families and family members with <code>fam_id</code> and <code>indiv_id</code>. Here we simply use dummy variables for both. In real-world data, the <code>indiv_id</code> is usually some pseudonymized identifier unique to each individual. There is total freedom to set <code>fam_id</code> to whatever, as long as it is unique to each family. One choice could be the pseudonymized identifier for the index person in a family, or simply 1 to the total number of families. Next, <code>role</code> identifies each family member’s relationship to the index person. They follow a system shown in the documentation for <code>construct_covmat</code>. If a family member does not fit one of the shown, a suitable covariance matrix cannot be constructed. If more detailed family structures are needed, please contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower and upper liability thresholds are provided for each family member. Previously, we utilised list of lists in <tt>R</tt> to link information to the correct individuals. Going forward, we will still support this format, but in order to ease the use of non-<tt>R</tt> users, we have opted for a long format, where each row is an indivdual instead of a family, such that the input can be generated with the user’s preferred software.</p>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  2.79</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  3.17</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  2.63</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  2.76</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  3.14</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  2.95</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  3.42</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  3.45</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  2.95</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  2.91</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 390 more rows</span></span></span></code></pre>
+<p><code>thresholds</code> keeps track of families and family members
+with <code>fam_id</code> and <code>indiv_id</code>. Here we simply use
+dummy variables for both. In real-world data, the <code>indiv_id</code>
+is usually some pseudonymized identifier unique to each individual.
+There is total freedom to set <code>fam_id</code> to whatever, as long
+as it is unique to each family. One choice could be the pseudonymized
+identifier for the index person in a family, or simply 1 to the total
+number of families. Next, <code>role</code> identifies each family
+member’s relationship to the index person. They follow a system shown in
+the documentation for <code>construct_covmat</code>. If a family member
+does not fit one of the shown, a suitable covariance matrix cannot be
+constructed. If more detailed family structures are needed, please
+contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower
+and upper liability thresholds are provided for each family member.
+Previously, we utilised list of lists in <tt>R</tt> to link information
+to the correct individuals. Going forward, we will still support this
+format, but in order to ease the use of non-<tt>R</tt> users, we have
+opted for a long format, where each row is an indivdual instead of a
+family, such that the input can be generated with the user’s preferred
+software.</p>
 </div>
 <div class="section level3">
 <h3 id="running-lt-fh">Running LT-FH++<a class="anchor" aria-label="anchor" href="#running-lt-fh"></a>
 </h3>
-<p>With all input parameters generated and a chosen heritability, we have everything we need to run LT-FH++. We highly recommend the package <strong>Future</strong> to parallelize the computations for LT-FH++. Since all modern computers have more than 2 cores available to them, it should be available to all users. If a user is not able to parallelize, then <tt>LTFHPlus</tt> can still be used, but it will be far slower. The future framework also allows for easy use on high performance computing (HPC) clusters. In this example, we will utilize 4 threads.</p>
+<p>With all input parameters generated and a chosen heritability, we
+have everything we need to run LT-FH++. We highly recommend the package
+<strong>Future</strong> to parallelize the computations for LT-FH++.
+Since all modern computers have more than 2 cores available to them, it
+should be available to all users. If a user is not able to parallelize,
+then <tt>LTFHPlus</tt> can still be used, but it will be far slower. The
+future framework also allows for easy use on high performance computing
+(HPC) clusters. In this example, we will utilize 4 threads.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Setting up parallelization backend</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu"><a href="https://future.futureverse.org/reference/tweak.html" class="external-link">tweak</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">nthreads</span><span class="op">)</span><span class="op">)</span></span>
@@ -173,20 +232,21 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simu_liab</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 4</span></span></span>
-<span><span class="co">##    fam_ID    indiv_ID    genetic_est         genetic_se         </span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  -0.012374657737121  0.00422231770032231</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  0.606504135811865   0.00357580055319415</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.056843102925785  0.0039543562566042 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.0551707361279066 0.00394723405492107</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.049183220382382  0.00389226834246052</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0496716132791294 0.00401525188229491</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0458468043219474 0.00392461521089912</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.0654350642144821 0.00379874834177276</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.0358941592067409 0.00407375700576779</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.0321905828449052 0.00434973822503502</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></span></code></pre>
-<p>From here the object <code>simu_liab</code> can be saved and used in your GWAS method of choice.</p>
+<span><span class="co">##    fam_ID    indiv_ID    genetic_est          genetic_se         </span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.444096425245677    0.00350671124889102</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  -0.00914845665526472 0.00436730257601537</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  0.332439199046806    0.00361182179130543</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.0620108177638813  0.00417126783511199</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  0.51551345741891     0.00356926196252759</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0280895065208585  0.00465230520293855</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  0.358135870129802    0.00363675844234315</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.00958897982912453 0.00429759171427015</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.0465388834980118  0.00432021544602438</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.085883292914355   0.00395322206312178</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 90 more rows</span></span></span></code></pre>
+<p>From here the object <code>simu_liab</code> can be saved and used in
+your GWAS method of choice.</p>
 </div>
   </div>
 
@@ -205,7 +265,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
