@@ -4,7 +4,7 @@ author: "Emil M. Pedersen"
 date: '2022-09-07'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Input Format}
+  %\VignetteIndexEntry{How the covariance is constructed}
   %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
