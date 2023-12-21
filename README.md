@@ -14,7 +14,7 @@ effects, and allows for flexible family structures.
 LT-FH++ can be used to estimate an individual’s genetic component of the
 full liability, the full liability or both by accounting for the family
 history and population prevalences. It utilises an efficient Gibbs
-sampler, which is implemented with [Rcpp](http://www.rcpp.org/) and is
+sampler, which is implemented with [Rcpp](https://www.rcpp.org/) and is
 highly scaleable. A detailed description of the liability threshold
 model conditioned on family history, age of onset and sex can be found
 [here](https://doi.org/10.1016/j.ajhg.2022.01.009).
