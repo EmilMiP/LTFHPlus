@@ -1,7 +1,7 @@
 ---
 title: "LT-FH++ Example"
 author: "Emil M. Pedersen"
-date: "6/9/2022"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{LT-FH++ Example}
@@ -48,7 +48,7 @@ sims <- simulate_under_LTM(fam_vec = c("m","f","s1"),
                            pop_prev = .1)
 sims
 ```
-`thresholds` keeps track of families and family members with `fam_id` and `indiv_id`. Here we simply use dummy variables for both. In real-world data, the `indiv_id` is usually some pseudonymized identifier unique to each individual. There is total freedom to set `fam_id` to whatever, as long as it is unique to each family. One choice could be the pseudonymized identifier for the index person in a family, or simply 1 to the total number of families. Next, `role` identifies each family member's relationship to the index person. They follow a system shown in the documentation for `construct_covmat`. If a family member does not fit one of the shown, a suitable covariance matrix cannot be constructed. If more detailed family structures are needed, please contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower and upper liability thresholds are provided for each family member. Previously, we utilised list of lists in <tt>R</tt> to link information to the correct individuals. Going forward, we will still support this format, but in order to ease the use of non-<tt>R</tt> users, we have opted for a long format, where each row is an indivdual instead of a family, such that the input can be generated with the user's preferred software. 
+`thresholds` keeps track of families and family members with `fam_id` and `indiv_id`. Here we simply use dummy variables for both. In real-world data, the `indiv_id` is usually some pseudonymized identifier unique to each individual. There is total freedom to set `fam_id` to whatever, as long as it is unique to each family. One choice could be the pseudonymized identifier for the index person in a family, or simply numerate the families from $1$ to the total number of families. Next, `role` identifies each family member's relationship to the index person. They follow a system shown in the documentation for `construct_covmat`. If a family member does not fit one of the shown, a suitable covariance matrix cannot be constructed. If more detailed family structures are needed, please contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower and upper liability thresholds are provided for each family member. Previously, we utilised list of lists in <tt>R</tt> to link information to the correct individuals. Going forward, we will still support this format, but in order to ease the use of non-<tt>R</tt> users, we have opted for a long format, where each row is an indivdual instead of a family, such that the input can be generated with the user's preferred software. 
 
 
 ### Running LT-FH++
