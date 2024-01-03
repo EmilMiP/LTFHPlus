@@ -5,22 +5,28 @@
 \title{Prepares input for \code{estimate_liability}}
 \usage{
 prepare_LTFHPlus_input(
-  family,
+  .tbl,
   CIP,
-  CIP_columns = c("sex", "birth_year", "age"),
+  age_col,
+  aoo_col,
+  CIP_merge_columns = c("sex", "birth_year", "age"),
+  CIP_cip_col = "cip",
   status_col = "status",
   use_fixed_case_thr = F,
   fam_id_col = "fam_id",
   personal_id_col = "pid",
-  role_col = "role"
+  role_col = "role",
+  interpolation = NULL,
+  bst.params = list(max_depth = 10, base_score = 0, verbose = 2, nthread = 4,
+    min_child_weight = 10),
+  min_CIP_value = 1e-05,
+  xgboost_itr = 50
 )
 }
 \arguments{
-\item{family}{contains family and personal ids and role with a family.}
+\item{.tbl}{contains family and personal ids and role with a family.}
 
-\item{CIP}{tibble with population representative cumulative incidence proportions has the interpretation of "proportion of people that has experienced the trait subset by \code{CIP_columns}.}
-
-\item{CIP_columns}{the columns the CIPs are subset by, e.g. CIPs by birth_year, sex.}
+\item{CIP}{tibble with population representative cumulative incidence proportions. CIP values should be merged by \code{CIP_columns}.}
 
 \item{status_col}{Column that contains the status of each family member}
 
@@ -31,6 +37,8 @@ prepare_LTFHPlus_input(
 \item{personal_id_col}{Column that contains the personal ID}
 
 \item{role_col}{Column that cotnains the role of each individual}
+
+\item{CIP_columns}{the columns the CIPs are subset by, e.g. CIPs by birth_year, sex.}
 }
 \description{
 Prepares input for \code{estimate_liability}

@@ -10,13 +10,14 @@ reference:
     desc: >
       Collection of functions used as examples of how to include additional information.
     contents:
+    - prepare_LTFHPlus_input
+    - prepare_graph
     - convert_age_to_cir
     - convert_age_to_thresh
     - convert_cir_to_age
     - convert_format
     - convert_liability_to_aoo
     - convert_observed_to_liability_scale
-    - prepare_LTFHPlus_input
     - simulate_under_LTM
     - truncated_normal_cdf
   - title: "Auxiliary functions"
@@ -24,6 +25,7 @@ reference:
       Functions used to define covariance matrices.
     contents:
     - rtmvnorm.gibbs
+    - get_kinship
     - get_relatedness
     - construct_covmat_single
     - construct_covmat_multi
@@ -33,6 +35,8 @@ reference:
     desc: >
       functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.
     contents:
+    - add_gen_liab_to_graph
+    - get_all_combs
     - construct_aoo
     - construct_thresholds
     - estimate_gen_liability

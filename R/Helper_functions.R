@@ -677,6 +677,8 @@ convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, p
 #' @param index_id id of proband.
 #' 
 #' @return returns family graph with a pseudo point added that will have the same connections as the proband point. For kinship construction, the relationship to the proband must be adjusted to 1 \* h2 (and not 0.5 \* h2).
+#' @export
+#' 
 
 add_gen_liab_to_graph = function(fam_graph, index_id) {
   # find all index edges
@@ -777,7 +779,7 @@ get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE) {
 #' get_all_combs(letters[1:3])
 #' }
 #' 
-#' 
+#' @export
 get_all_combs = function(vec) {
   # outer: creates all combinations of entries in vec
   # then we select only the off diagonal entries

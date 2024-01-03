@@ -40,6 +40,9 @@ on their family history."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
     </li>
     <li>
+      <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
+    </li>
+    <li>
       <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
@@ -241,18 +244,18 @@ full liability, the full liability or both. It is possible to input either</p>
 <span class="r-in"><span>tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_est          genetic_se         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  -0.0408348126178018  0.00397325603751863</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  0.44190332582002     0.00372074057008778</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.00485817114851236 0.00419919766551418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.0305504078432319  0.00400742653898302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.03917906942663    0.00404127919671246</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0169789087969499  0.00429215747905777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0245303515518855  0.00422737822715694</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.0259110949101527  0.00448010995176346</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.0278824487106201  0.00428441422768003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.026772178323596   0.00427446305133274</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_est           genetic_se         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.00505443674057094   0.00421100510517694</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  0.469968821490876     0.00367676389745846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.0337087205929126   0.00414079149581881</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.0118644613443411   0.00417119462190505</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.0293431188287592   0.00439244106786504</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0134597430247327   0.00410643292831094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0365623754336157   0.00421198835040333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.0330629908484133   0.00464612627560725</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.000154253638899973 0.00418233713734622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.0327984271351036   0.004078823450613  </span>
 <span class="r-in"><span><span class="co"># </span></span></span>
 <span class="r-in"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
 <span class="r-in"><span>h2 <span class="op">=</span> <span class="fl">0.5</span>, n_sim<span class="op">=</span><span class="fl">10</span>, pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span></span>
@@ -264,18 +267,18 @@ full liability, the full liability or both. It is possible to input either</p>
 <span class="r-in"><span>out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"genetic"</span><span class="op">)</span>, tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_est          genetic_se         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.00609914666903494  0.00415763282457756</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  0.00430023878316369  0.00380925036745055</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.00599324984794655 0.0039379988001966 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.00299378546580937 0.00360430795293274</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  0.00168073425860345  0.00367691919607366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.00640362554247319 0.00386072535359489</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  0.877370933524902    0.0016124069290146 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  0.00848821392622357  0.00389053253578216</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.00463501590371818 0.00374823153689309</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.00543062905029017 0.00369210751058208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_est           genetic_se         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  -0.00158578147944848  0.00402958731201032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  0.000298345606234469  0.00375684172639474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.000349183930627193 0.00397644675614783</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  0.000473282054658652  0.00378926103880689</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  0.000345428670880936  0.00424465926219562</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.000979739502746221 0.0040094954917013 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.00146408182261283  0.00378962075706592</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.00113193564436767  0.00377796129676452</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.00766287179262568  0.0037769918938736 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 0.00252500962858401   0.00377403219678656</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

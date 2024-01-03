@@ -171,6 +171,8 @@ prepare_LTFHPlus_input = function(.tbl,
 #' 
 #' @export
 #' @importFrom dplyr %>% rename relocate mutate filter group_by summarise select bind_rows pull
+#' 
+#' @export
 
 
 prepare_graph = function(.tbl, fcol, mcol, icol, missingID_patterns = "^0$") {

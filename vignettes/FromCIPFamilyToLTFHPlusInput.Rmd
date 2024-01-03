@@ -31,13 +31,13 @@ fam = tibble(fam_id = list(fam_id = c(1, 2, 3)),
   #just adding some info as an example
   mutate(sex    = sample(x = 0:1, size = n(), replace = T),
          status = sample(x = 0:1, size = n(), replace = T),
-         current_age = sample(x = 10:100, size = n(), replace = T),
+         age = sample(x = 10:100, size = n(), replace = T),
          aoo    = sapply(seq_along(status), function(cur_ind) {
            ifelse(status[cur_ind] == 1, 
-                  sample(10:current_age[cur_ind], size = 1),
+                  sample(10:age[cur_ind], size = 1),
                   NA)
            }),
-         age = pmin(current_age, aoo, na.rm = T),
+#         event = pmin(current_age, aoo, na.rm = T),
          birth_year = 2022 - age) %>% 
   print()
 
@@ -54,7 +54,7 @@ CIP = expand.grid(list(age = 1:100,
 In `fam` we have list entries, corresponding to an input format that is still supported, but for ease of use, will be replaced by a longer format. If the list entry format is used, a note will be printed that tells the users that a conversion happened internally. It will look like this:
 
 ```{r}
-input =  prepare_LTFHPlus_input(family = fam, CIP = CIP, role_col = "role", use_fixed_case_thr = F)
+input =  prepare_LTFHPlus_input(.tbl = fam, CIP = CIP, age_col = "age", aoo_col = "aoo", role_col = "role", use_fixed_case_thr = F, interpolation = NA)
 
 input_fam = input %>% 
   tidyr::unnest(cols = c(pid, role)) %>% 

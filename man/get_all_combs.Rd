@@ -20,5 +20,4 @@ pastes together all combinations of input vector
 get_all_combs(letters[1:3])
 }
 
-
 }

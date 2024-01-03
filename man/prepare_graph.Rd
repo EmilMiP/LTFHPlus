@@ -4,7 +4,7 @@
 \alias{prepare_graph}
 \title{Construct graph from register information}
 \usage{
-prepare_graph(.tbl, fcol, mcol, icol, missingID_patterns = "0")
+prepare_graph(.tbl, fcol, mcol, icol, missingID_patterns = "^0$")
 }
 \arguments{
 \item{.tbl}{tibble with columns icol, fcol, mcol. Additional columns will be attributes in the constructed graph.}

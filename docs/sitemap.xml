@@ -7,6 +7,9 @@
     <loc>EmilMiP.github.io/LTFHPlus/articles/FromCIPFamilyToLTFHPlusInput.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/articles/FromTrioToFamilies.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/articles/index.html</loc>
   </url>
   <url>
@@ -23,6 +26,9 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/index.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/add_gen_liab_to_graph.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/construct_aoo.html</loc>
@@ -82,6 +88,9 @@
     <loc>EmilMiP.github.io/LTFHPlus/reference/generate_cov_matrix_noFH.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/get_all_combs.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_between_trait_cov.html</loc>
   </url>
   <url>
@@ -91,6 +100,9 @@
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_full_cov.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/get_kinship.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_relatedness.html</loc>
   </url>
   <url>
@@ -98,6 +110,9 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/LTFHPlus-package.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/prepare_graph.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/prepare_LTFHPlus_input.html</loc>
