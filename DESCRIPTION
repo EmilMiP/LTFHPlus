@@ -27,7 +27,8 @@ Imports:
     tibble,
     tmvtnorm,
     tidyselect,
-    utils
+    utils,
+    igraph
 Suggests:
     tidyr,
     MASS,

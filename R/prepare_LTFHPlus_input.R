@@ -48,8 +48,8 @@ convert_format = function(family, threshs, personal_id_col = "pid", role_col = N
 
 #' Prepares input for \code{estimate_liability}
 #' 
-#' @param family contains family and personal ids and role with a family.
-#' @param CIP tibble with population representative cumulative incidence proportions has the interpretation of "proportion of people that has experienced the trait subset by \code{CIP_columns}. 
+#' @param .tbl contains family and personal ids and role with a family.
+#' @param CIP tibble with population representative cumulative incidence proportions. CIP values should be merged by \code{CIP_columns}. 
 #' @param CIP_columns the columns the CIPs are subset by, e.g. CIPs by birth_year, sex. 
 #' @param status_col Column that contains the status of each family member 
 #' @param use_fixed_case_thr Should the threshold be fixed for cases? Can be used if CIPs are detailed, e.g. stratified by birth_year and sex.
@@ -59,28 +59,100 @@ convert_format = function(family, threshs, personal_id_col = "pid", role_col = N
 #' 
 #' @export
 
-prepare_LTFHPlus_input = function(family, CIP, 
-                                  CIP_columns = c("sex", "birth_year", "age"), 
+prepare_LTFHPlus_input = function(.tbl, 
+                                  CIP, 
+                                  age_col,
+                                  aoo_col,
+                                  CIP_merge_columns = c("sex", "birth_year", "age"), 
+                                  CIP_cip_col = "cip", 
                                   status_col = "status", 
                                   use_fixed_case_thr = F, 
                                   fam_id_col = "fam_id", 
                                   personal_id_col = "pid",
-                                  role_col = "role") {
-
+                                  role_col = "role",
+                                  interpolation = NULL,
+                                  bst.params = list(
+                                    max_depth = 10,
+                                    base_score = 0,
+                                    verbose = 2,
+                                    nthread = 4,
+                                    min_child_weight = 10
+                                  ),
+                                  min_CIP_value = 1e-5,
+                                  xgboost_itr = 50
+                                  ) {
+  #### checks for the presence of all columns in .tbl and CIP goes here ####
+  #### checks for the presence of all columns in .tbl and CIP goes here ####
   
-
-# Merging CIPs and assigning thresholds -----------------------------------
-
-  family = dplyr::left_join(family, CIP, by = CIP_columns) %>% 
-    dplyr::mutate(
-      lower = ifelse(!!as.symbol(status_col) == 1, stats::qnorm(cip, lower.tail = F), -Inf),
-      upper = ifelse(!!as.symbol(status_col) == 1, ifelse(use_fixed_case_thr, stats::qnorm(cip, lower.tail = F), Inf), stats::qnorm(cip, lower.tail = F))
-    )
   
+  # interpolation with xgboost or merge on raw values?
+  if (!is.na(interpolation) && interpolation != "xgboost") stop("Invalid choice of interpolation method. Must be NULL or xgboost.")
 
-# returning formatted input -----------------------------------------------
+  # interpolate CIP values based on xgb
+  if (is.na(interpolation)) {
+    
+    # merge on raw values
+    
+    # Merging CIPs and assigning thresholds -----------------------------------
 
-  dplyr::select(family, !!as.symbol(fam_id_col), !!as.symbol(personal_id_col), !!as.symbol(role_col), lower, upper)
+    .tbl = dplyr::left_join(.tbl, CIP, by = CIP_merge_columns) %>% 
+      dplyr::mutate(thr = qnorm(!!as.symbol(CIP_cip_col), lower.tail = FALSE),
+                    lower = ifelse(!!as.symbol(status_col) == 1, thr, -Inf),
+                    upper = ifelse(!!as.symbol(status_col) == 1, 
+                                   ifelse(use_fixed_case_thr, thr, Inf),
+                                   thr))
+    # mutate(
+    #     thr = stats::qnorm(!!as.symbol(CIP_cip_col), lower.tail = F),
+    #     lower = ifelse(!!as.symbol(status_col) == 1, thr,-Inf),
+    #     upper = ifelse(!!as.symbol(status_col) == 1, ifelse(use_fixed_case_thr, thr, Inf), thr)
+    #   )
+    
+    if(any(is.na(.tbl$lower)) | any(is.na(.tbl$upper))) {
+      warning(paste0("There are ", sum(is.na(select(.tbl, lower, upper))), " NA values in the upper and lower thresholds. \n Do the age and age of onset values match the ages given in the CIPs?"))
+    }
+    
+    # returning formatted input -----------------------------------------------
+    return(.tbl)
+    # if (!is.na(role_col)) {
+    #   dplyr::select(.tbl, !!as.symbol(fam_id_col), !!as.symbol(personal_id_col), !!as.symbol(role_col), lower, upper)
+    # } else {
+    #   dplyr::select(.tbl, !!as.symbol(fam_id_col), !!as.symbol(personal_id_col), lower, upper)
+    # }
+
+  } else if (interpolation == "xgboost") { 
+    
+    
+    # extract cip values
+    y = CIP[[CIP_cip_col]]
+    
+    # force the remaining values in cur_cip to be a matrix
+    X = as.matrix(select(CIP, all_of(c(CIP_merge_columns, age_col)), -!!as.symbol(CIP_cip_col)))
+    # train xgboost
+    xgb = xgboost::xgboost(X, y, nrounds = xgboost_itr, params = bst.params)
+    
+    
+    # get the predicted CIP value based on the merge columns.
+    .tbl$cip_pred = .tbl %>% 
+      mutate(age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = T)) %>% 
+      select(all_of(c(CIP_merge_columns, age_col))) %>% 
+      as.matrix() %>% 
+      predict(xgb,.) %>% 
+      pmax(min_CIP_value)
+    
+    .tbl %>% 
+      mutate(event_age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = T)) %>% 
+      group_by(across(all_of(setdiff(CIP_merge_columns, c(age_col, aoo_col))))) %>% 
+      arrange(event_age) %>% 
+      mutate(cip_pred = cummax(cip_pred)) %>% 
+      ungroup() %>% 
+      mutate(thr = qnorm(cip_pred, lower.tail = FALSE),
+             lower = ifelse(!!as.symbol(status_col), thr, -Inf),
+             upper = ifelse(!!as.symbol(status_col), 
+                            ifelse(use_fixed_case_thr, thr, Inf),
+                            thr)) #%>% select(!!as.symbol(fam_id_col), !!as.symbol(personal_id_col), !!as.symbol(role_col), lower, upper)
+  } else {
+    stop("unsupported interpolation method. Please use xgboost or NA.")
+  }
 }
 
 

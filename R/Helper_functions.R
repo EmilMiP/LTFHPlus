@@ -689,7 +689,7 @@ add_gen_liab_to_graph = function(fam_graph, index_id) {
       # format into vector with start and end of edge at positions 1 & 2, 3 & 4, etc
       # as defined by igraph.
       stringr::str_split("\\|") %>% 
-      # rbind is faster than cbind
+      # rbind is much faster than cbind
       do.call("rbind", .) %>%
       # transpose for 2xN
       t() %>% 
