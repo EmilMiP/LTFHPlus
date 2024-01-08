@@ -358,9 +358,12 @@ The earliest and latest age will be swapped...")
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
       
-      lower <- lower + upper
-      upper <- lower - upper
-      lower <- lower - upper
+      #lower <- lower + upper
+      #upper <- lower - upper
+      #lower <- lower - upper
+      temp <- lower
+      lower <- upper
+      upper <- temp
     }
     # Computing the threshold
     return(stats::qnorm((1 - (age-min_age)/max_age) * (stats::pnorm(upper) - stats::pnorm(lower)) + stats::pnorm(lower)))
