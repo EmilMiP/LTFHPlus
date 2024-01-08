@@ -231,7 +231,7 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
   if(pop_prev>1)stop("The population prevalence pop_prev must be smaller or equal to 1!")
   
   # Checking that mid_point is valid
-  if(!is.numeric(mid_point) && !is.integer(mid_point)) stop("The mid point must be numeric!")
+  if(!is.numeric(mid_point) && !is.integer(mid_point)) stop("The mid point mid_point must be numeric!")
   if(mid_point<=0)stop("The mid point mid_point must be positive!")
   
   # Checking that slope is valid
