@@ -297,21 +297,22 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   # Checking that dist is either logistic or normal.
   if(is.character(dist)){
     
-    dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
+    #TODO will always default to logistic given multiple valid inputs
+    #dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]  
+    valid_is <- grep("logistic|normal", dist)
     
   }else{
     stop("dist must be a string!")
   }
   
   # Checking whether dist is empty or of length >1.
-  if(length(dist) == 0){
+  if(length(valid_is) == 0){
     
     cat("Warning message: \n dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
     dist <- "logistic"
-  }else if(length(dist) >1){
-    
-    cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
-    dist <- dist[1]
+  }else {
+    if(length(valid_is) > 1) cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
+    dist <- dist[valid_is[1]]
   }
   
   # If dist = logistic, the logistic function will be used to compute the age of onset
@@ -346,7 +347,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
       cat("The latest age max_age is below the earliest age min_age! \n 
 The earliest and latest age will be swapped...")
       
-      min_age <- min_age + max_age
+      min_age <- min_age + max_age #TODO why swap values in this way
       max_age <- min_age - max_age
       min_age <- min_age - max_age
     }
@@ -358,6 +359,7 @@ The earliest and latest age will be swapped...")
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
       
+      #TODO why swap values in this way
       #lower <- lower + upper
       #upper <- lower - upper
       #lower <- lower - upper
@@ -490,21 +492,23 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   # Checking that dist is either logistic or normal.
   if(is.character(dist)){
     
-    dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
+    #TODO will always default to logistic given multiple valid inputs
+    #dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
+    valid_is <- grep("logistic|normal", dist)
     
   }else{
     stop("dist must be a string!")
   }
   
   # Checking whether dist is empty or of length >1.
-  if(length(dist) == 0){
+  if(length(valid_is) == 0){
     
     cat("Warning message: \n dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
     dist <- "logistic"
-  }else if(length(dist) >1){
+  }else {
     
-    cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
-    dist <- dist[1]
+    if(length(valid_is) > 1) cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
+    dist <- dist[valid_is[1]]
   }
   
   # If dist = logistic, the logistic function will be used to compute the age of onset
@@ -546,6 +550,7 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
       cat("The latest age of onset max_aoo is below the earliest age of onset min_aoo! \n 
 The earliest and latest age of onset will be swapped...")
       
+      #TODO why swap values in this way
       min_aoo <- min_aoo + max_aoo
       max_aoo <- min_aoo - max_aoo
       min_aoo <- min_aoo - max_aoo
@@ -558,16 +563,21 @@ The earliest and latest age of onset will be swapped...")
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
       
-      lower <- lower + upper
-      upper <- lower - upper
-      lower <- lower - upper
+      #TODO why swap values in this way
+      #lower <- lower + upper TODO same as above
+      #upper <- lower - upper
+      #lower <- lower - upper
+      temp <- lower
+      lower <- upper
+      upper <- temp
     }
     
     # Computing the age of onset
     res <- (1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo
     
     if(res > 0) return(res)
-    if(res <= 0) return(0)
+    #TODO impossible
+    #if(res <= 0) return(0)
   }
 }
 
