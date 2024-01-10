@@ -1,4 +1,41 @@
-testing_tolerance <- 1e-4
+testing_tolerance <- 1e-4 #TODO remove this, use higher precision values instead
+
+################################################################################
+# Testing truncated_normal_cdf
+################################################################################
+
+# Positive Tests
+test_that("truncated_normal_cdf works with default parameters", {
+  liability <- 0.5
+  test <- truncated_normal_cdf(liability)
+  expected <- -0.2585375387
+  expect_equal(test, expected)
+})
+
+test_that("truncated_normal_cdf works with non-default parameters", {
+  liability <- 0.5
+  lower <- 1.0
+  upper <- 2.0
+  test <- truncated_normal_cdf(liability, lower, upper)
+  expected <- -0.1498822848
+  expect_equal(test, expected)
+})
+
+test_that("truncated_normal_cdf works with swapped lower and upper values", {
+  liability <- 0.5
+  test <- truncated_normal_cdf(0.5, lower = Inf, upper = 1.644853627)
+  expected <- -0.2585375387
+  expect_equal(test, expected)
+})
+
+# Negative Tests
+
+test_that("truncated_normal_cdf rejects non-numeric arguments", {
+  expect_error(truncated_normal_cdf("liability"), "liability must be numeric")
+  expect_error(truncated_normal_cdf(0.5, lower = "lower"), "lower cutoff point must be numeric")
+  expect_error(truncated_normal_cdf(0.5, upper = "upper"), "upper cutoff point must be numeric")
+})
+
 
 ################################################################################
 # Testing convert_age_to_cir
@@ -142,9 +179,12 @@ test_that("convert_age_to_thresh rejects invalid normal parameters", {
   expect_error(convert_age_to_thresh(30, dist = "normal", max_age = -10), "max_age must be positive")
 })
 
+test_that("convert_age_to_thresh rejects invalid dist", {
+  expect_error(convert_age_to_thresh(30, dist = 123), "dist must be a string")
+})
+
 test_that("convert_age_to_thresh rejects non-numeric arguments", {
   expect_error(convert_age_to_thresh("age"), "age must be numeric")
-  expect_error(convert_age_to_thresh(30, dist = 123), "dist must be a string")
   expect_error(convert_age_to_thresh(30, pop_prev = "pop_prev"), "pop_prev must be numeric")
   expect_error(convert_age_to_thresh(30, dist = "normal", min_age = "min_age"), "min_age must be numeric")
   expect_error(convert_age_to_thresh(30, dist = "normal", max_age = "max_age"), "max_age must be numeric")
@@ -349,3 +389,60 @@ test_that("convert_liability_to_aoo rejects non-numeric arguments", {
   expect_error(convert_liability_to_aoo(0.05, dist = "normal", lower = "lower"), "lower cutoff point must be numeric")
   expect_error(convert_liability_to_aoo(0.05, dist = "normal", upper = "upper"), "upper cutoff point must be numeric")
 })
+
+################################################################################
+# Testing convert_observed_to_liability_scale
+################################################################################
+
+# Positive Tests
+test_that("convert_observed_to_liability_scale works with default parameters", {
+  test <- convert_observed_to_liability_scale()
+  expected <- 0.4242283384
+  expect_equal(test, expected)
+})
+
+test_that("convert_observed_to_liability_scale works with single non-default parameters", {
+  obs_h2 <- 0.6
+  pop_prev <- 0.1
+  prop_cases <- 0.6
+  test <- convert_observed_to_liability_scale(obs_h2, pop_prev, prop_cases)
+  expected <- 0.657474694
+  expect_equal(test, expected)
+})
+
+test_that("convert_observed_to_liability_scale works with vector parameters", {
+  obs_h2 <- c(0.6, 0.7)
+  pop_prev <- c(0.1, 0.2)
+  prop_cases <- c(0.6, 0.7)
+  test <- convert_observed_to_liability_scale(obs_h2, pop_prev, prop_cases)
+  expected <- c(0.657474694, 1.088731486)
+  expect_equal(test, expected)
+})
+
+test_that("convert_observed_to_liability_scale works with NULL prop_cases", {
+  obs_h2 <- 0.6
+  pop_prev <- 0.1
+  test <- convert_observed_to_liability_scale(obs_h2, pop_prev, NULL)
+  expected <- 1.753265851
+  expect_equal(test, expected)
+})
+
+# Negative Tests
+test_that("convert_observed_to_liability_scale rejects negative inputs", {
+  expect_error(convert_observed_to_liability_scale(-0.1, 0.05, 0.5), "observed heritability\\(ies\\) must be non-negative")
+  expect_error(convert_observed_to_liability_scale(0.5, -0.1, 0.5), "population prevalence\\(s\\) must be non-negative")
+  expect_error(convert_observed_to_liability_scale(0.5, 0.05, -0.1), "proportion\\(s\\) of cases must be non-negative")
+})
+
+test_that("convert_observed_to_liability_scale rejects inputs larger than 1", {
+  expect_error(convert_observed_to_liability_scale(1.1, 0.05, 0.8), "observed heritability\\(ies\\) must be smaller than or equal to one")
+  expect_error(convert_observed_to_liability_scale(0.5, 1.1, 0.8), "population prevalence\\(s\\) must be smaller than or equal to one")
+  expect_error(convert_observed_to_liability_scale(0.5, 0.05, 1.1), "proportion\\(s\\) of cases must be smaller than or equal to one")
+})
+
+test_that("convert_observed_to_liability_scale rejects non-numeric inputs", {
+  expect_error(convert_observed_to_liability_scale("obs_h2", 0.05, 0.5), "observed heritability\\(ies\\) must be numeric")
+  expect_error(convert_observed_to_liability_scale(0.5, "pop_prev", 0.5), "population prevalence\\(s\\) must be numeric")
+  expect_error(convert_observed_to_liability_scale(0.5, 0.05, "prop_cases"), "proportion\\(s\\) of cases must be numeric")
+})
+
