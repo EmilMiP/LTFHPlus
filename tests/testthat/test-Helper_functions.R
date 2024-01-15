@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-################################################################################
-
-test_that("convert_age_to_cir works with defaults", {
-  test <- convert_age_to_cir(age = 40)
-  expect_equal(test, 0.00758582)
-})
-
-################################################################################
-
-test_that("convert_age_to_cir works with boundary values", {
-  test <- convert_age_to_cir(age = 0, pop_prev = 1)
-  expect_equal(test, 0.00055277)
-})
-
-################################################################################
-
-test_that("convert_age_to_cir works with negative slope", {
-  test <- convert_age_to_cir(age = 40, slope = -1/12)
-  expect_equal(test, 0.0841131)
-})
-
-################################################################################
-
-test_that("convert_age_to_cir rejects negative arguments", {
-  expect_error(convert_age_to_cir(age = -1), "age must be non-negative")
-  expect_error(convert_age_to_cir(age = 0, pop_prev = -1), "pop_prev must be positive")
-  expect_error(convert_age_to_cir(age = 0, mid_point = 0), "mid_point must be positive")
-})
-
-################################################################################
-
-test_that("convert_age_to_cir warns when age is big", {
-  expect_warning(convert_age_to_cir(age = 150), "it is unrealistic to be of age 150 or older")
-})
-
-################################################################################
-=======
 testing_tolerance <- 1e-4 #TODO remove this, use higher precision values instead
 
 ################################################################################
@@ -105,6 +67,11 @@ test_that("convert_age_to_cir works with boundary values", {
   expected_cir_boundary <- 0.5
   test <- convert_age_to_cir(age_boundary, pop_prev_boundary, mid_point_boundary, slope_boundary)
   expect_equal(test, expected_cir_boundary)
+})
+
+test_that("convert_age_to_cir works with negative slope", {
+  test <- convert_age_to_cir(age = 40, slope = -1/12)
+  expect_equal(test, 0.0841131)
 })
 
 # Negative Tests
@@ -483,5 +450,3 @@ test_that("convert_observed_to_liability_scale rejects non-numeric inputs", {
   expect_error(convert_observed_to_liability_scale(0.5, "pop_prev", 0.5), "population prevalence\\(s\\) must be numeric")
   expect_error(convert_observed_to_liability_scale(0.5, 0.05, "prop_cases"), "proportion\\(s\\) of cases must be numeric")
 })
-
->>>>>>> c32c794ad252e5d7dd3a0a679d3574f00edb88c0
