@@ -46,6 +46,9 @@
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
@@ -72,7 +75,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_kinship</span><span class="op">(</span><span class="va">fam_graph</span>, <span class="va">h2</span>, index_id <span class="op">=</span> <span class="cn">NA</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_kinship</span><span class="op">(</span><span class="va">fam_graph</span>, <span class="va">h2</span>, index_id <span class="op">=</span> <span class="cn">NA</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, fix_diag <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -91,6 +94,11 @@
 
 <dt>add_ind</dt>
 <dd><p>add genetic liability to the kinship matrix. Defaults to true.</p></dd>
+
+
+<dt>fix_diag</dt>
+<dd><p>Whether to set diagonal to 1 for all entries except for the
+genetic liability.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -112,7 +120,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

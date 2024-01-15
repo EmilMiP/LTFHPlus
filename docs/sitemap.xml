@@ -22,6 +22,9 @@
     <loc>EmilMiP.github.io/LTFHPlus/articles/LTFHPlusExample.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/articles/LTFHPlusGraphExample.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/authors.html</loc>
   </url>
   <url>
@@ -29,6 +32,9 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/add_gen_liab_to_graph.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/add_missing_roles_for_proband.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/construct_aoo.html</loc>
@@ -65,6 +71,9 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/correct_positive_definite.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/correct_positive_definite_simplified.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_gen_liability.html</loc>
@@ -104,6 +113,12 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_relatedness.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/graph_based_covariance_construction.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/graph_based_covariance_construction_multi.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/index.html</loc>

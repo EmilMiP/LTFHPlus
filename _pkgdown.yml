@@ -31,11 +31,15 @@ reference:
     - construct_covmat_multi
     - construct_covmat
     - correct_positive_definite
+    - correct_positive_definite_simplified
+    - graph_based_covariance_construction
+    - graph_based_covariance_construction_multi
   - title: "Legacy & internal functions"
     desc: >
       functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.
     contents:
     - add_gen_liab_to_graph
+    - add_missing_roles_for_proband
     - get_all_combs
     - construct_aoo
     - construct_thresholds

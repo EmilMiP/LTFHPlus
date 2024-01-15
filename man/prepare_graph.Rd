@@ -4,21 +4,36 @@
 \alias{prepare_graph}
 \title{Construct graph from register information}
 \usage{
-prepare_graph(.tbl, fcol, mcol, icol, missingID_patterns = "^0$")
+prepare_graph(
+  .tbl,
+  icol,
+  fcol,
+  mcol,
+  thresholds,
+  lower_col = "lower",
+  upper_col = "upper",
+  missingID_patterns = "^0$"
+)
 }
 \arguments{
 \item{.tbl}{tibble with columns icol, fcol, mcol. Additional columns will be attributes in the constructed graph.}
+
+\item{icol}{column name of column with proband ids.}
 
 \item{fcol}{column name of column with father ids.}
 
 \item{mcol}{column name of column with mother ids.}
 
-\item{icol}{column name of column with proband ids.}
+\item{thresholds}{tibble with icol, lower_col and upper_col. Used to assign lower and upper thresholds to individuals in the graph as attributes.}
 
-\item{missingID_patterns}{string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "0".}
+\item{lower_col}{Column name of column with proband's lower threshold.}
+
+\item{upper_col}{Column name of column with proband's upper threshold.}
+
+\item{missingID_patterns}{string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$".}
 }
 \value{
-An igraph object. A (directed) graph object based on the links provided in .tbl.
+An igraph object. A (directed) graph object based on the links provided in .tbl with the lower and upper thresholds stored as attributes.
 }
 \description{
 \code{prepare_graph} constructs a graph based on mother, father, and offspring links.

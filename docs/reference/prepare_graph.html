@@ -46,6 +46,9 @@
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
@@ -72,13 +75,26 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_graph</span><span class="op">(</span><span class="va">.tbl</span>, <span class="va">fcol</span>, <span class="va">mcol</span>, <span class="va">icol</span>, missingID_patterns <span class="op">=</span> <span class="st">"^0$"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_graph</span><span class="op">(</span></span>
+<span>  <span class="va">.tbl</span>,</span>
+<span>  <span class="va">icol</span>,</span>
+<span>  <span class="va">fcol</span>,</span>
+<span>  <span class="va">mcol</span>,</span>
+<span>  <span class="va">thresholds</span>,</span>
+<span>  lower_col <span class="op">=</span> <span class="st">"lower"</span>,</span>
+<span>  upper_col <span class="op">=</span> <span class="st">"upper"</span>,</span>
+<span>  missingID_patterns <span class="op">=</span> <span class="st">"^0$"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.tbl</dt>
 <dd><p>tibble with columns icol, fcol, mcol. Additional columns will be attributes in the constructed graph.</p></dd>
+
+
+<dt>icol</dt>
+<dd><p>column name of column with proband ids.</p></dd>
 
 
 <dt>fcol</dt>
@@ -89,19 +105,27 @@
 <dd><p>column name of column with mother ids.</p></dd>
 
 
-<dt>icol</dt>
-<dd><p>column name of column with proband ids.</p></dd>
+<dt>thresholds</dt>
+<dd><p>tibble with icol, lower_col and upper_col. Used to assign lower and upper thresholds to individuals in the graph as attributes.</p></dd>
+
+
+<dt>lower_col</dt>
+<dd><p>Column name of column with proband's lower threshold.</p></dd>
+
+
+<dt>upper_col</dt>
+<dd><p>Column name of column with proband's upper threshold.</p></dd>
 
 
 <dt>missingID_patterns</dt>
-<dd><p>string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "0".</p></dd>
+<dd><p>string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$".</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>An igraph object. A (directed) graph object based on the links provided in .tbl.</p>
+<p>An igraph object. A (directed) graph object based on the links provided in .tbl with the lower and upper thresholds stored as attributes.</p>
     </div>
 
   </div>
@@ -116,7 +140,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

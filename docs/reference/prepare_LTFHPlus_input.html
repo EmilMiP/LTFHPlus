@@ -46,6 +46,9 @@
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
@@ -83,10 +86,8 @@
 <span>  use_fixed_case_thr <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  fam_id_col <span class="op">=</span> <span class="st">"fam_id"</span>,</span>
 <span>  personal_id_col <span class="op">=</span> <span class="st">"pid"</span>,</span>
-<span>  role_col <span class="op">=</span> <span class="st">"role"</span>,</span>
 <span>  interpolation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bst.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_depth <span class="op">=</span> <span class="fl">10</span>, base_score <span class="op">=</span> <span class="fl">0</span>, verbose <span class="op">=</span> <span class="fl">2</span>, nthread <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>    min_child_weight <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  bst.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_depth <span class="op">=</span> <span class="fl">10</span>, base_score <span class="op">=</span> <span class="fl">0</span>, nthread <span class="op">=</span> <span class="fl">4</span>, min_child_weight <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  min_CIP_value <span class="op">=</span> <span class="fl">1e-05</span>,</span>
 <span>  xgboost_itr <span class="op">=</span> <span class="fl">50</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -100,6 +101,22 @@
 
 <dt>CIP</dt>
 <dd><p>tibble with population representative cumulative incidence proportions. CIP values should be merged by <code>CIP_columns</code>.</p></dd>
+
+
+<dt>age_col</dt>
+<dd><p>name of column with age</p></dd>
+
+
+<dt>aoo_col</dt>
+<dd><p>name of column with age of onset</p></dd>
+
+
+<dt>CIP_merge_columns</dt>
+<dd><p>The columns the CIPs are subset by, e.g. CIPs by birth_year, sex.</p></dd>
+
+
+<dt>CIP_cip_col</dt>
+<dd><p>name of column with CIP values</p></dd>
 
 
 <dt>status_col</dt>
@@ -118,12 +135,20 @@
 <dd><p>Column that contains the personal ID</p></dd>
 
 
-<dt>role_col</dt>
-<dd><p>Column that cotnains the role of each individual</p></dd>
+<dt>interpolation</dt>
+<dd><p>type of interpolation, defaults to NULL.</p></dd>
 
 
-<dt>CIP_columns</dt>
-<dd><p>the columns the CIPs are subset by, e.g. CIPs by birth_year, sex.</p></dd>
+<dt>bst.params</dt>
+<dd><p>list of parameters to pass on to xgboost</p></dd>
+
+
+<dt>min_CIP_value</dt>
+<dd><p>minimum cip value to allow, too low values may lead to numerical instabilities.</p></dd>
+
+
+<dt>xgboost_itr</dt>
+<dd><p>Number of iterations to run xgboost for.</p></dd>
 
 </dl></div>
 
@@ -139,7 +164,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -64,6 +64,9 @@
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -91,7 +94,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2024-01-03</h4>
+            <h4 data-toc-skip class="date">2024-01-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/FromCIPFamilyToLTFHPlusInput.Rmd" class="external-link"><code>vignettes/FromCIPFamilyToLTFHPlusInput.Rmd</code></a></small>
       <div class="hidden name"><code>FromCIPFamilyToLTFHPlusInput.Rmd</code></div>
@@ -107,49 +110,50 @@ Pedersen</h4>
 <h3 id="dummy-input">dummy input<a class="anchor" aria-label="anchor" href="#dummy-input"></a>
 </h3>
 <p>Here we will simply simulate a potential input format. We create
-<code>fam</code>, which contains the family information and
-<code>CIP</code>, which contains the cumulative incidence proportions.
-The CIP is stratified by birth year and sex for illustrative purposes.
-If users only have CIPs stratified by sex, it would simply have one
-fewer columns. <strong>Please note that all values shown here are only
-for illustrative purposes.</strong></p>
+<code>tbæ</code>, which contains information on each person to attach
+thresholds to. It should contain each family member along with the
+needed information. Here, we simply use the proband with no family
+members. Next, we create <code>CIP</code>, which contains the cumulative
+incidence proportions. The CIP is stratified by birth year and sex for
+illustrative purposes. If users only have CIPs stratified by sex, it
+would simply have one fewer columns. <strong>Please note that all values
+shown here are only for illustrative purposes.</strong></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fam</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>fam_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fam_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>             pid    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pid    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"pid"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>, </span>
-<span>                                      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"pid"</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>, </span>
-<span>                                      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pid11"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>             role   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>role   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"o"</span>, <span class="st">"f"</span>, <span class="st">"m"</span>, <span class="st">"s1"</span><span class="op">)</span><span class="op">)</span>, </span>
-<span>                                      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"o"</span>, <span class="st">"f"</span>, <span class="st">"m"</span>, <span class="st">"s1"</span>, <span class="st">"s2"</span>, <span class="st">"s3"</span><span class="op">)</span><span class="op">)</span>, </span>
-<span>                                      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"o"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">fam_id</span>, <span class="va">pid</span>, <span class="va">role</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="co">#just adding some info as an example</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sex    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, size <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
-<span>         status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, size <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
-<span>         age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span><span class="op">:</span><span class="fl">100</span>, size <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
-<span>         aoo    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">status</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">cur_ind</span><span class="op">)</span> <span class="op">{</span></span>
-<span>           <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">status</span><span class="op">[</span><span class="va">cur_ind</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1</span>, </span>
-<span>                  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="va">age</span><span class="op">[</span><span class="va">cur_ind</span><span class="op">]</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>                  <span class="cn">NA</span><span class="op">)</span></span>
-<span>           <span class="op">}</span><span class="op">)</span>,</span>
-<span><span class="co">#         event = pmin(current_age, aoo, na.rm = T),</span></span>
-<span>         birth_year <span class="op">=</span> <span class="fl">2022</span> <span class="op">-</span> <span class="va">age</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="va">n_sim</span> <span class="op">=</span> <span class="fl">10</span></span>
+<span><span class="va">tbl</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  fam_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"fam"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n_sim</span><span class="op">)</span>,</span>
+<span>  pid <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">n_sim</span>,</span>
+<span>  role <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"o"</span>, <span class="va">n_sim</span><span class="op">)</span>,</span>
+<span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, size <span class="op">=</span> <span class="va">n_sim</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
+<span>  status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">n_sim</span>, x <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
+<span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">n_sim</span>, x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">90</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,</span>
+<span>  birth_year <span class="op">=</span> <span class="fl">2023</span> <span class="op">-</span> <span class="va">age</span>,</span>
+<span>  aoo <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">status</span>, .y <span class="op">=</span> <span class="va">age</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">.x</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span>, x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">.y</span><span class="op">)</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 8</span></span></span>
-<span><span class="co">##   fam_id pid       role        sex status   age   aoo birth_year</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>      1 <span style="color: #949494;">&lt;chr [4]&gt;</span> <span style="color: #949494;">&lt;chr [4]&gt;</span>     0      1    96    36       <span style="text-decoration: underline;">1</span>926</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>      2 <span style="color: #949494;">&lt;chr [6]&gt;</span> <span style="color: #949494;">&lt;chr [6]&gt;</span>     1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>      3 <span style="color: #949494;">&lt;chr [1]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span>     1      1    33    28       <span style="text-decoration: underline;">1</span>989</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 8</span></span></span>
+<span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         0      1    47       <span style="text-decoration: underline;">1</span>976    29</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         0      1    61       <span style="text-decoration: underline;">1</span>962    16</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         1      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         0      1    50       <span style="text-decoration: underline;">1</span>973    34</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      1    84       <span style="text-decoration: underline;">1</span>939    44</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         1      0    28       <span style="text-decoration: underline;">1</span>995    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         1      1    62       <span style="text-decoration: underline;">1</span>961    25</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         1      1    84       <span style="text-decoration: underline;">1</span>939    48</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    57       <span style="text-decoration: underline;">1</span>966    20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         0      1    45       <span style="text-decoration: underline;">1</span>978    30</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### THIS IS DUMMY CIP. DO NOT USE FOR REAL-WORLD DATA USE ####</span></span>
 <span><span class="va">CIP</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,</span>
-<span>                       birth_year <span class="op">=</span> <span class="fl">1900</span><span class="op">:</span><span class="fl">2022</span>,</span>
+<span>                       birth_year <span class="op">=</span> <span class="fl">1900</span><span class="op">:</span><span class="fl">2024</span>,</span>
 <span>                       sex <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sex</span>, <span class="va">birth_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cip <span class="op">=</span> <span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="fl">.1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 24,600 × 4</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 25,000 × 4</span></span></span>
 <span><span class="co">##      age birth_year   sex   cip</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span>     1       <span style="text-decoration: underline;">1</span>900     0 0    </span></span>
@@ -162,87 +166,148 @@ for illustrative purposes.</strong></p>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span>     8       <span style="text-decoration: underline;">1</span>900     0 0.007</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     9       <span style="text-decoration: underline;">1</span>900     0 0.008</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>    10       <span style="text-decoration: underline;">1</span>900     0 0.009</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 24,590 more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 24,990 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### THIS IS DUMMY CIP. DO NOT USE FOR REAL-WORLD DATA USE ####</span></span></code></pre></div>
-<p>In <code>fam</code> we have list entries, corresponding to an input
-format that is still supported, but for ease of use, will be replaced by
-a longer format. If the list entry format is used, a note will be
-printed that tells the users that a conversion happened internally. It
-will look like this:</p>
+</div>
+<div class="section level3">
+<h3 id="preparing-input">Preparing input<a class="anchor" aria-label="anchor" href="#preparing-input"></a>
+</h3>
+<p>Assigning thresholds to each person in <code>tbl</code> can now be
+done with the function <code>prepare_LTFHPlus_input</code>. The
+thresholds can be assigned in two ways. The first is matching directly
+on the combinations of birth year, sex, and age of each person to the
+combinations that are present in the <code>CIP</code> object. The second
+uses interpolation to predict the CIP value between the observed
+combinations of birth year, sex, and age that is present in the CIP
+object. Currently, only interpolation with
+<strong><em>xgboost</em></strong> package is supported. The
+interpolation can be useful, since real-world data often lead to ages or
+age of onsets that can be expressed as decimals and rounding may lead to
+large jumps in CIP values. The outputs below can be subset such that
+only the required information is left. For direct input into
+<code><a href="../reference/estimate_liability.html">estimate_liability()</a></code>, only the family and personal id
+columns are needed as well as role (if the graph input is not used) and
+the lower and upper columns.</p>
+<div class="section level4">
+<h4 id="no-interpolation">No interpolation<a class="anchor" aria-label="anchor" href="#no-interpolation"></a>
+</h4>
+<p>Without using interpolation, meaning we match on the combinations of
+birth year, sex and age that are present in both the <code>tbl</code>
+and <code>CIP</code> objects. The thresholds can then be assigned in the
+following way:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">input</span> <span class="op">=</span>  <span class="fu"><a href="../reference/prepare_LTFHPlus_input.html">prepare_LTFHPlus_input</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">fam</span>, CIP <span class="op">=</span> <span class="va">CIP</span>, age_col <span class="op">=</span> <span class="st">"age"</span>, aoo_col <span class="op">=</span> <span class="st">"aoo"</span>, role_col <span class="op">=</span> <span class="st">"role"</span>, use_fixed_case_thr <span class="op">=</span> <span class="cn">F</span>, interpolation <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">input_fam</span> <span class="op">=</span> <span class="va">input</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pid</span>, <span class="va">role</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pid</span>, <span class="st">"_"</span>, <span class="va">role</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">fam_id</span>, <span class="va">pid</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">nest</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pid</span><span class="op">)</span></span>
-<span><span class="va">thr</span> <span class="op">=</span> <span class="va">input</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="va">pid</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">role</span>, <span class="op">-</span><span class="va">fam_id</span><span class="op">)</span><span class="co"># %&gt;% rename(fam_id2 = fam_id, fam_id = pid) %&gt;% rename(pid = fam_id2) %&gt;% select(-1)</span></span>
-<span></span>
-<span><span class="va">.tbl</span> <span class="op">=</span> <span class="fu"><a href="../reference/convert_format.html">convert_format</a></span><span class="op">(</span>family <span class="op">=</span> <span class="va">input_fam</span>, threshs <span class="op">=</span> <span class="va">thr</span>, personal_id_col <span class="op">=</span> <span class="st">"pid"</span>, role_col <span class="op">=</span> <span class="st">"role"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## We've tried converting from list entries to a long format internally. If you see this print, please run prepare_LTFHPlus_input and use the .tbl input going forward!</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">tbl2</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_LTFHPlus_input.html">prepare_LTFHPlus_input</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">tbl</span>,</span>
+<span>                              CIP <span class="op">=</span> <span class="va">CIP</span>, </span>
+<span>                              age_col <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>                              aoo_col <span class="op">=</span> <span class="st">"aoo"</span>,</span>
+<span>                              CIP_merge_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>,<span class="st">"birth_year"</span>, <span class="st">"sex"</span><span class="op">)</span>,</span>
+<span>                              CIP_cip_col <span class="op">=</span> <span class="st">"cip"</span>,</span>
+<span>                              status_col <span class="op">=</span> <span class="st">"status"</span>,</span>
+<span>                              use_fixed_case_thr <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>                              fam_id_col <span class="op">=</span> <span class="st">"fam_id"</span>,</span>
+<span>                              personal_id_col <span class="op">=</span> <span class="st">"pid"</span>,</span>
+<span>                              interpolation <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>                              min_CIP_value <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span></span>
+<span><span class="va">tbl2</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 12</span></span></span>
+<span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo   cip   thr   lower</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         0      1    29       <span style="text-decoration: underline;">1</span>976    29 0.028  1.91    1.91</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         0      1    16       <span style="text-decoration: underline;">1</span>962    16 0.015  2.17    2.17</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         1      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span> 0.075  1.44 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         0      1    34       <span style="text-decoration: underline;">1</span>973    34 0.033  1.84    1.84</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      1    44       <span style="text-decoration: underline;">1</span>939    44 0.043  1.72    1.72</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         1      0    28       <span style="text-decoration: underline;">1</span>995    <span style="color: #BB0000;">NA</span> 0.027  1.93 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         1      1    25       <span style="text-decoration: underline;">1</span>961    25 0.024  1.98    1.98</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         1      1    48       <span style="text-decoration: underline;">1</span>939    48 0.047  1.67    1.67</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    20       <span style="text-decoration: underline;">1</span>966    20 0.019  2.07    2.07</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         0      1    30       <span style="text-decoration: underline;">1</span>978    30 0.029  1.90    1.90</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: upper &lt;dbl&gt;</span></span></span></code></pre>
+</div>
+<div class="section level4">
+<h4 id="interpolation-with-xgboost">Interpolation with Xgboost<a class="anchor" aria-label="anchor" href="#interpolation-with-xgboost"></a>
+</h4>
+<p>If decimal ages and ages of onset are present, then we can
+interpolate the cip values with the xgboost package. The input does not
+change, except for <code>interpolate = "xgboost"</code>. The current
+input data does not contain decimal values, but for illustrative
+purposes, we will use it as-is. Parameters can be passed to xgboost
+through the <code>bst.params</code> variable.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">.tbl</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 11 × 12</span></span></span>
-<span><span class="co">##    fam_id pid   role    sex status   age   aoo birth_year   cip   thr   lower</span></span>
-<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>      1 pid1  o         0      1    96    36       <span style="text-decoration: underline;">1</span>926 0.095  1.31    1.31</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>      1 pid2  f         0      1    96    36       <span style="text-decoration: underline;">1</span>926 0.095  1.31    1.31</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>      1 pid3  m         0      1    96    36       <span style="text-decoration: underline;">1</span>926 0.095  1.31    1.31</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>      1 pid4  s1        0      1    96    36       <span style="text-decoration: underline;">1</span>926 0.095  1.31    1.31</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>      2 pid5  o         1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>      2 pid6  f         1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>      2 pid7  m         1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>      2 pid8  s1        1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>      2 pid9  s2        1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>      2 pid10 s3        1      0    94    <span style="color: #BB0000;">NA</span>       <span style="text-decoration: underline;">1</span>928 0.093  1.32 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">11</span>      3 pid11 o         1      1    33    28       <span style="text-decoration: underline;">1</span>989 0.032  1.85    1.85</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 1 more variable: upper &lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ Use `colnames()` to see all variable names</span></span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">tbl2_xgb</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_LTFHPlus_input.html">prepare_LTFHPlus_input</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">tbl</span>,</span>
+<span>                                 CIP <span class="op">=</span> <span class="va">CIP</span>, </span>
+<span>                                 age_col <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>                                 aoo_col <span class="op">=</span> <span class="st">"aoo"</span>,</span>
+<span>                                 CIP_merge_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>,<span class="st">"birth_year"</span>, <span class="st">"sex"</span><span class="op">)</span>,</span>
+<span>                                 CIP_cip_col <span class="op">=</span> <span class="st">"cip"</span>,</span>
+<span>                                 status_col <span class="op">=</span> <span class="st">"status"</span>,</span>
+<span>                                 use_fixed_case_thr <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>                                 fam_id_col <span class="op">=</span> <span class="st">"fam_id"</span>,</span>
+<span>                                 personal_id_col <span class="op">=</span> <span class="st">"pid"</span>,</span>
+<span>                                 interpolation <span class="op">=</span> <span class="st">"xgboost"</span>, </span>
+<span>                                 xgboost_itr <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>                                 min_CIP_value <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1]  train-rmse:0.040135 </span></span>
+<span><span class="co">## [2]  train-rmse:0.028111 </span></span>
+<span><span class="co">## [3]  train-rmse:0.019688 </span></span>
+<span><span class="co">## [4]  train-rmse:0.013790 </span></span>
+<span><span class="co">## [5]  train-rmse:0.009659 </span></span>
+<span><span class="co">## [6]  train-rmse:0.006766 </span></span>
+<span><span class="co">## [7]  train-rmse:0.004740 </span></span>
+<span><span class="co">## [8]  train-rmse:0.003321 </span></span>
+<span><span class="co">## [9]  train-rmse:0.002328 </span></span>
+<span><span class="co">## [10] train-rmse:0.001632 </span></span>
+<span><span class="co">## [11] train-rmse:0.001144 </span></span>
+<span><span class="co">## [12] train-rmse:0.000802 </span></span>
+<span><span class="co">## [13] train-rmse:0.000563 </span></span>
+<span><span class="co">## [14] train-rmse:0.000395 </span></span>
+<span><span class="co">## [15] train-rmse:0.000278 </span></span>
+<span><span class="co">## [16] train-rmse:0.000196 </span></span>
+<span><span class="co">## [17] train-rmse:0.000139 </span></span>
+<span><span class="co">## [18] train-rmse:0.000101 </span></span>
+<span><span class="co">## [19] train-rmse:0.000075 </span></span>
+<span><span class="co">## [20] train-rmse:0.000058 </span></span>
+<span><span class="co">## [21] train-rmse:0.000047 </span></span>
+<span><span class="co">## [22] train-rmse:0.000041 </span></span>
+<span><span class="co">## [23] train-rmse:0.000037 </span></span>
+<span><span class="co">## [24] train-rmse:0.000035 </span></span>
+<span><span class="co">## [25] train-rmse:0.000034 </span></span>
+<span><span class="co">## [26] train-rmse:0.000034 </span></span>
+<span><span class="co">## [27] train-rmse:0.000034 </span></span>
+<span><span class="co">## [28] train-rmse:0.000034 </span></span>
+<span><span class="co">## [29] train-rmse:0.000034 </span></span>
+<span><span class="co">## [30] train-rmse:0.000034</span></span></code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tbl2_xgb</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 13</span></span></span>
+<span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo cip_pred event_age</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam2       2 o         0      1    61       <span style="text-decoration: underline;">1</span>962    16   0.015<span style="text-decoration: underline;">0</span>        16</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam9       9 o         1      1    57       <span style="text-decoration: underline;">1</span>966    20   0.019<span style="text-decoration: underline;">0</span>        20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam7       7 o         1      1    62       <span style="text-decoration: underline;">1</span>961    25   0.024<span style="text-decoration: underline;">0</span>        25</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam6       6 o         1      0    28       <span style="text-decoration: underline;">1</span>995    <span style="color: #BB0000;">NA</span>   0.027<span style="text-decoration: underline;">0</span>        28</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam1       1 o         0      1    47       <span style="text-decoration: underline;">1</span>976    29   0.028<span style="text-decoration: underline;">0</span>        29</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam10     10 o         0      1    45       <span style="text-decoration: underline;">1</span>978    30   0.029<span style="text-decoration: underline;">0</span>        30</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam4       4 o         0      1    50       <span style="text-decoration: underline;">1</span>973    34   0.033<span style="text-decoration: underline;">0</span>        34</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam5       5 o         1      1    84       <span style="text-decoration: underline;">1</span>939    44   0.043<span style="text-decoration: underline;">0</span>        44</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam8       8 o         1      1    84       <span style="text-decoration: underline;">1</span>939    48   0.047<span style="text-decoration: underline;">0</span>        48</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam3       3 o         1      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span>   0.075<span style="text-decoration: underline;">1</span>        76</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 3 more variables: thr &lt;dbl&gt;, lower &lt;dbl&gt;, upper &lt;dbl&gt;</span></span></span></code></pre>
+</div>
 </div>
 <div class="section level3">
 <h3 id="estimating-liabilities">Estimating liabilities<a class="anchor" aria-label="anchor" href="#estimating-liabilities"></a>
 </h3>
-<p>From here both input formats can be used to estimate the desired
-liabilities. Either with the set of inputs <code>family</code> and
-<code>threshs</code> that is based on the list entries or the long
-format supported by <code>.tbl</code>. For the long format the input is
-given as</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/estimate_liability.html">estimate_liability</a></span><span class="op">(</span>family <span class="op">=</span> <span class="va">input_fam</span>,</span>
-<span>                   threshs <span class="op">=</span> <span class="va">thr</span>,</span>
-<span>                   h2 <span class="op">=</span> <span class="fl">.5</span>,</span>
-<span>                   pid <span class="op">=</span> <span class="st">"pid"</span>,</span>
-<span>                   fam_id <span class="op">=</span> <span class="st">"fam_id"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## We've tried converting from list entries to a long format internally. If you see this print, please run prepare_LTFHPlus_input and use the .tbl input going forward! </span></span>
-<span><span class="co">## The number of workers is 1</span></span></code></pre>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
-<span><span class="co">##   fam_id pid   genetic_est       genetic_se         </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  1.4537238063454   0.00221564855871935</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.23800788869239 0.00354433829721992</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 1.12332893653117  0.00181671439884389</span></span></code></pre>
-<p>A note is printed to let the user know that the conversion to the
-longer format happened internally, suggesting the use of the longer
-format. The output should be the same. If the conversion fails, an error
-will be given, with another suggestion to use the longer format and the
-<code>prepare_LTFHPlus_input</code> function.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/estimate_liability.html">estimate_liability</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">.tbl</span>,</span>
-<span>                   h2 <span class="op">=</span> <span class="fl">.5</span>,</span>
-<span>                   pid <span class="op">=</span> <span class="st">"pid"</span>,</span>
-<span>                   fam_id <span class="op">=</span> <span class="st">"fam_id"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## The number of workers is 1</span></span></code></pre>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
-<span><span class="co">##   fam_id pid   genetic_est        genetic_se         </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1      pid1  1.45744872267092   0.00216808926684047</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2      pid5  -0.235208629785654 0.00349441268373768</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 3      pid11 1.12221254229849   0.00187248810080137</span></span></code></pre>
+<p>From here, the above objects <code>tbl2</code> and
+<code>tbl2_xgb</code> can be subset to the relevant columns and used in
+<code><a href="../reference/estimate_liability.html">estimate_liability()</a></code>. See <strong><em>LT-FH++
+Example</em></strong> for an example of this.</p>
+<p>The objects can also be subset to contain just the family and
+personal ID columns, as well as the lower and upper columns, and then
+used as input in <code><a href="../reference/prepare_graph.html">prepare_graph()</a></code> to assign each individual
+with the threshold information as attributes. See <strong><em>LT-FH++
+Graph Example</em></strong> for details.</p>
 </div>
   </div>
 
@@ -261,7 +326,7 @@ will be given, with another suggestion to use the longer format and the
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

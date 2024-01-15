@@ -106,7 +106,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   
   # We also extract the vectors holding the family members
   fam_vec <- setdiff(attr(covmat,"fam_vec"), c("g","o"))
-  n_fam <- attr(covmat,"n_fam")[stringr::str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
+  #n_fam <- attr(covmat,"n_fam")[stringr::str_detect(names(attr(covmat,"n_fam")), "^[^go]")]
   
   while(any(eigen(covmat)$values < 0) && n <= correction_limit) {
     
@@ -118,7 +118,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
     diag(full_corrmat) <- 1
     # Computing a new covariance matrix
     covmat <- construct_covmat(fam_vec = fam_vec, 
-                               n_fam = n_fam, 
+                               n_fam = NULL,
                                add_ind = attr(covmat,"add_ind"), 
                                genetic_corrmat = genetic_corrmat,
                                full_corrmat = full_corrmat,
@@ -139,6 +139,38 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   
   return(covmat)
 }
+
+#' A simplied version of correct_positive_definite
+#' 
+#' multiplies off-diagonal elements of a matrix with a correction value until all eigen values are positive or correction limit is reached.
+#' 
+#' @param covmat Covariance matrix that needs to be positive definite
+#' @param correction_limit The maximum number of times to correct off-diagonal elements
+#' @param correction_val The value to multiply on the off-diagnoal elements.
+#' 
+#' @return Returns list with the corrected covmat and number of iterations used to achieve positive definite.
+#' 
+
+correct_positive_definite_simplified = function(covmat, correction_limit = 100, correction_val = 0.99) {
+  eigen_val = eigen(covmat)
+
+  if ( any(eigen_val$values < 0) ) {
+    og_diag = diag(covmat)
+    n = 0
+
+    while (any(eigen(covmat)$values < 0) & n <= correction_limit ) {
+      covmat = covmat*correction_val
+      diag(covmat) = og_diag
+      n = n + 1
+    }
+
+    if (eigen(eigen_val$values < 0)) stop("Unable to enforce a positive definite covariance matrix.")
+    return(list(covmat = covmat, nitr = n))
+  } else {
+    return(list(covmat = covmat, nitr = 0))
+  }
+}
+
 
 
 #' CDF for truncated normal distribution.
@@ -682,7 +714,17 @@ convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, p
 
 add_gen_liab_to_graph = function(fam_graph, index_id) {
   # find all index edges
-  index_edges = stringr::str_subset(igraph::as_ids(igraph::E(fam_graph)), index_id)
+  all_edges = igraph::as_ids(igraph::E(fam_graph))
+  # extract only edges that directly match the index_id.
+  # edges are of the form str1|str2; to avoid matching the wrong substring,
+  # we include string end and start as well as the divider "|" in the match
+  
+  # find edges that start with index_id
+  startWith_edges = stringr::str_detect(all_edges, paste0("^", index_id, "\\|")) 
+  # find edges that end with index_id
+  endWith_edges = stringr::str_detect(all_edges, paste0("\\|", index_id, "$"))
+  
+  index_edges = all_edges[startWith_edges | endWith_edges ]
   # subset edges to and from index with new id - here with "_g" added
   
   # we need to handle the no edges case, i.e. one point graphs.
@@ -716,13 +758,15 @@ add_gen_liab_to_graph = function(fam_graph, index_id) {
 #' @param h2 heritability.
 #' @param index_id proband id. Only used in conjuction with add_ind = TRUE.
 #' @param add_ind add genetic liability to the kinship matrix. Defaults to true.
+#' @param fix_diag Whether to set diagonal to 1 for all entries except for the 
+#' genetic liability.
 #' 
 #' @return A kinship matrix. 
 #' 
 #' @export
 #' 
 
-get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE) {
+get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE, fix_diag = TRUE) {
   if (add_ind) {
     index_id_g = paste0(index_id, "_g")
     # adding in point to act as genetic liability for index person
@@ -741,6 +785,9 @@ get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE) {
   rownames(new_distances) = rnames
   colnames(new_distances) = rnames
   
+  # distance to self is always 0
+  diag(new_distances) = 0
+  
   # fill dummy matrix
   for (i in 1:(nrows - 1)) {
     for (j in (i + 1):nrows) {
@@ -754,11 +801,14 @@ get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE) {
     # multipying with h2 and fixing diagonal to 1 - except for gen liab
     kinship[index_id, index_id_g] <- kinship[index_id_g, index_id] <- kinship[index_id_g, index_id_g] <- 1
     kinship = kinship * h2
-    diag(kinship)[-which(rownames(kinship) == index_id_g)] <- 1
+    if (fix_diag) { # fixing diagonal at 1, except the genetic component
+      diag(kinship)[-which(rownames(kinship) == index_id_g)] <- 1  
+    }
     
   } else {
     kinship = kinship * h2
-    diag(kinship) <- 1
+    
+    if (fix_diag) diag(kinship) <- 1
   }
   
   return(kinship)

@@ -28,7 +28,7 @@ library(future.apply)
 library(tidyr)
 ```
 
-For simplicty's sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes.   
+For simplicity's sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions (CIPs) needed for the thresholds will rarely be identical for both sexes. A common way to estimate the CIP is with the Aalen-Johansen estimator that accounts for competing events.
 
 ### Setting up input
 
@@ -37,19 +37,22 @@ Single trait LT-FH++ requires 3 types of input, namely the liability-scale herit
 
 ### Generating phenotypes
 
-We have implemented a function that allows users to simulate under the liability threshold model for a given family structure, i.e. mother, father, sibling, or sibling1, sibling2, child1, child2, etc. The function simply needs a family structure, heritablity, and population prevalence.For simplicity's sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes. The function `simulate_under_LTM` outputs a list with two tibbles. The first one `sim_obs` contains the underlying liabilities, status, and age or age of onset for each family and family members. The second tibble `thresholds` contains the formatted input that is ready to be input to estimate the genetic liability.  
+We have implemented a function that allows users to simulate under the liability threshold model for a given family structure, i.e. mother, father, sibling, or sibling1, sibling2, child1, child2, etc. The function simply needs a family structure, heritability, and population prevalence.For simplicity's sake, we will use the same prevalence for both sexes. However, it is worth noting that in real-world applications, the cumulative incidence proportions needed for the thresholds, will rarely be identical for both sexes. The function `simulate_under_LTM` outputs a list with two tibbles. The first one `sim_obs` contains the underlying liabilities, status, and age or age of onset for each family and family members. The second tibble `thresholds` contains the formatted input that is ready to be input to estimate the genetic liability.  
 
 ```{r}
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), 
                            n_fam = NULL, 
                            add_ind = TRUE, 
                            h2 = h2, 
-                           n_sim = 100, 
+                           n_sim = 10, 
                            pop_prev = .1)
 sims
 ```
 `thresholds` keeps track of families and family members with `fam_id` and `indiv_id`. Here we simply use dummy variables for both. In real-world data, the `indiv_id` is usually some pseudonymized identifier unique to each individual. There is total freedom to set `fam_id` to whatever, as long as it is unique to each family. One choice could be the pseudonymized identifier for the index person in a family, or simply numerate the families from $1$ to the total number of families. Next, `role` identifies each family member's relationship to the index person. They follow a system shown in the documentation for `construct_covmat`. If a family member does not fit one of the shown, a suitable covariance matrix cannot be constructed. If more detailed family structures are needed, please contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower and upper liability thresholds are provided for each family member. Previously, we utilised list of lists in <tt>R</tt> to link information to the correct individuals. Going forward, we will still support this format, but in order to ease the use of non-<tt>R</tt> users, we have opted for a long format, where each row is an indivdual instead of a family, such that the input can be generated with the user's preferred software. 
 
+#### Generating your own input data
+
+If you would like to use LTFHPlus, then the above can provide a template for the input format. The object `sims` is a list of two entries, namely `sim_obs` and `thresholds`. The values in `sim_obs` are values such as the true underlying liabilities, simulated ages and onset ages. etc.. The values in `thresholds` are ready to be used in `estimate_liability()`. Generating this input from ones own register data can be tedious, as it requires identifying parents (role for parents are $m$ and $f$), then one can identify siblings (roles for siblings are $s1, s2, etc.$), and so on for all available roles. The available roles can be seen in the documentation for `estimate_liability()`.
 
 ### Running LT-FH++
 

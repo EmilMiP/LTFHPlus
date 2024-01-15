@@ -48,6 +48,9 @@ on their family history for a variable number of phenotypes."><!-- mathjax --><s
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
@@ -78,8 +81,7 @@ on their family history for a variable number of phenotypes.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_liability_multi</span><span class="op">(</span></span>
 <span>  .tbl <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  family <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  threshs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  family_graphs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">h2_vec</span>,</span>
 <span>  <span class="va">genetic_corrmat</span>,</span>
 <span>  <span class="va">full_corrmat</span>,</span>
@@ -87,6 +89,7 @@ on their family history for a variable number of phenotypes.</p>
 <span>  pid <span class="op">=</span> <span class="st">"PID"</span>,</span>
 <span>  fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>,</span>
 <span>  role <span class="op">=</span> <span class="st">"role"</span>,</span>
+<span>  family_graphs_col <span class="op">=</span> <span class="st">"fam_graph"</span>,</span>
 <span>  out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">0.01</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -116,39 +119,9 @@ Defaults to <code>NULL</code>.</p></li>
 </ul></dd>
 
 
-<dt>family</dt>
-<dd><p>A matrix, list or data frame that can be converted into a tibble.
-Must have at least two columns that hold the family identifier and the corresponding
-personal identifiers, respectively. That is, for each family in fam_id there should
-be a list holding all individuals belonging to that family in pid. Note that the
-personal identifiers for all individuals must have a special format. It must be end
-with _?, where ? is one of the following abbreviations</p><ul><li><p><code>g</code> (Genetic component of full liability)</p></li>
-<li><p><code>o</code> (Full liability)</p></li>
-<li><p><code>m</code> (Mother)</p></li>
-<li><p><code>f</code> (Father)</p></li>
-<li><p><code>c[0-9]*.[0-9]*</code> (Children)</p></li>
-<li><p><code>mgm</code> (Maternal grandmother)</p></li>
-<li><p><code>mgf</code> (Maternal grandfather)</p></li>
-<li><p><code>pgm</code> (Paternal grandmother)</p></li>
-<li><p><code>pgf</code> (Paternal grandfather)</p></li>
-<li><p><code>s[0-9]*</code> (Full siblings)</p></li>
-<li><p><code>mhs[0-9]*</code> (Half-siblings - maternal side)</p></li>
-<li><p><code>phs[0-9]*</code> (Half-siblings - paternal side)</p></li>
-<li><p><code>mau[0-9]*</code> (Aunts/Uncles - maternal side)</p></li>
-<li><p><code>pau[0-9]*</code> (Aunts/Uncles - paternal side).
-See also <code><a href="construct_covmat.html">construct_covmat</a></code>.
-Defaults to <code>NULL</code>.</p></li>
-</ul></dd>
-
-
-<dt>threshs</dt>
-<dd><p>A matrix, list or data frame that can be converted into a tibble.
-Must have at least five columns; one holding the personal identifier for all individuals,
-and the remaining four holding the lower and upper thresholds for the first and second
-phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-to a specific phenotype uniquely. This is done easily by adding _name_of_phenotype to
-the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-thresholds corresponding to the first phenotype. Defaults to <code>NULL</code>.</p></dd>
+<dt>family_graphs</dt>
+<dd><p>A tibble with columns pid and family_graph_col.
+See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.</p></dd>
 
 
 <dt>h2_vec</dt>
@@ -203,6 +176,10 @@ holds the role.Each role must be chosen from the following list of abbreviations
 <li><p><code>pau[0-9]*</code> (Aunts/Uncles - paternal side).
 Defaults to "role".</p></li>
 </ul></dd>
+
+
+<dt>family_graphs_col</dt>
+<dd><p>Name of column with family graphs in family_graphs. Defaults to "fam_graph".</p></dd>
 
 
 <dt>out</dt>
@@ -270,34 +247,19 @@ full liability, the full liability or both for a variable number of traits.</p>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
 <span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_corrmat</span>, h2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>,<span class="fl">3</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>n_sim <span class="op">=</span> <span class="fl">10</span>, pop_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co">#</span></span></span>
-<span class="r-in"><span><span class="va">full_covmat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sims</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sims</span><span class="op">)</span> <span class="op">==</span> <span class="st">"thresholds"</span><span class="op">)</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"o"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>   <span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">full_covmat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">full_covmat</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">full_covmat</span><span class="op">)</span> <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>n_sim <span class="op">=</span> <span class="fl">1</span>, pop_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">estimate_liability_multi</span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>, h2_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>,<span class="fl">3</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_covmat</span>,</span></span>
+<span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_corrmat</span>,</span></span>
 <span class="r-in"><span>pid <span class="op">=</span> <span class="st">"indiv_ID"</span>, fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>, role <span class="op">=</span> <span class="st">"role"</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span>phen_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"phenotype"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID    genetic_pheno…¹ genet…² genet…³ genet…⁴ genet…⁵ genet…⁶</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  0.544866504526… 0.0052… 0.7591… 0.0045… 1.2010… 0.0040…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  -0.04401124669… 0.0060… -0.038… 0.0063… -0.042… 0.0061…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.08525722721… 0.0059… -0.088… 0.0057… -0.088… 0.0057…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  -0.03185957102… 0.0061… -0.037… 0.0059… -0.037… 0.0060…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.11139157991… 0.0058… -0.104… 0.0063… -0.108… 0.0059…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.04954829474… 0.0060… -0.049… 0.0058… -0.051… 0.0061…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  0.159231391471… 0.0053… 0.5078… 0.0050… 0.1636… 0.0052…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.13334036411… 0.0053… -0.127… 0.0055… -0.129… 0.0056…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.08006185155… 0.0057… -0.084… 0.0056… -0.086… 0.0055…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 -0.01969964448… 0.0060… -0.022… 0.0062… -0.024… 0.0063…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​genetic_phenotype1_est,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ²​genetic_phenotype1_se, ³​genetic_phenotype2_est, ⁴​genetic_phenotype2_se,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁵​genetic_phenotype3_est, ⁶​genetic_phenotype3_se</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fam_ID   indiv_ID genetic_phenotype1_est genetic_phenotype1_se</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> fam_ID_1 fam_ID_1                  0.350               0.006<span style="text-decoration: underline;">20</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: genetic_phenotype2_est &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype2_se &lt;dbl&gt;, genetic_phenotype3_est &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype3_se &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -314,7 +276,7 @@ full liability, the full liability or both for a variable number of traits.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

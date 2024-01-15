@@ -4,7 +4,7 @@
 \alias{get_kinship}
 \title{Construct kinship matrix from graph}
 \usage{
-get_kinship(fam_graph, h2, index_id = NA, add_ind = TRUE)
+get_kinship(fam_graph, h2, index_id = NA, add_ind = TRUE, fix_diag = TRUE)
 }
 \arguments{
 \item{fam_graph}{graph.}
@@ -14,6 +14,9 @@ get_kinship(fam_graph, h2, index_id = NA, add_ind = TRUE)
 \item{index_id}{proband id. Only used in conjuction with add_ind = TRUE.}
 
 \item{add_ind}{add genetic liability to the kinship matrix. Defaults to true.}
+
+\item{fix_diag}{Whether to set diagonal to 1 for all entries except for the
+genetic liability.}
 }
 \value{
 A kinship matrix.

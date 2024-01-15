@@ -34,32 +34,8 @@ utils::globalVariables("name")
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to \code{NULL}.
-#' @param family A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least two columns that hold the family identifier and the corresponding
-#' personal identifiers, respectively. That is, for each family in \code{fam_id} there should
-#' be a list holding all individuals belonging to that family in \code{pid}. Note that the 
-#' personal identifiers for all individuals must have a special format. It must end
-#' on \code{_?}, where \code{?} is one of the following abbreviations 
-#' - \code{g} (Genetic component of full liability)
-#' - \code{o} (Full liability)
-#' - \code{m} (Mother)
-#' - \code{f} (Father)
-#' - \code{c[0-9]*.[0-9]*} (Children)
-#' - \code{mgm} (Maternal grandmother)
-#' - \code{mgf} (Maternal grandfather)
-#' - \code{pgm} (Paternal grandmother)
-#' - \code{pgf} (Paternal grandfather)
-#' - \code{s[0-9]*} (Full siblings)
-#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
-#' - \code{phs[0-9]*} (Half-siblings - paternal side)
-#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
-#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
-#' See also \code{\link{construct_covmat}}.
-#' Defaults to \code{NULL}.
-#' @param threshs A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least three columns, one holding the personal identifier for all individuals,
-#' and the remaining two holding the lower and upper thresholds, respectively. The latter
-#' should be called "lower" and "upper", respectively. Defaults to \code{NULL}.
+#' @param family_graphs A tibble with columns pid and family_graph_col. 
+#' See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.
 #' @param h2 A number representing the heritability on liability scale
 #' for a single phenotype. Must be non-negative. Note that under the liability threshold model,
 #' the heritability must also be at most 1.
@@ -85,6 +61,7 @@ utils::globalVariables("name")
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to "role".
+#' @param family_graphs_col Name of column with family graphs in family_graphs. Defaults to "fam_graph".
 #' @param out A character or numeric vector indicating whether the genetic component
 #' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
 #' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
@@ -135,73 +112,53 @@ utils::globalVariables("name")
 #' @seealso \code{\link[future.apply]{future_apply}}, \code{\link{estimate_liability_multi}},
 #' \code{\link{estimate_liability}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols select filter
+#' @importFrom dplyr %>% pull bind_rows bind_cols select filter tibble 
 #' @importFrom stringr str_ends str_split str_subset str_detect
 #' @importFrom rlang :=
+#' @importFrom igraph get.vertex.attribute
 #' 
 #' @export
-estimate_liability_single <- function(.tbl = NULL, 
-                                      family = NULL, 
-                                      threshs = NULL, 
-                                      h2 = 0.5, 
-                                      pid = "PID", 
-                                      fam_id = "fam_ID", 
-                                      role = "role",
-                                      out = c(1), 
+estimate_liability_single <- function(.tbl = NULL,
+                                      family_graphs = NULL,
+                                      h2 = 0.5,
+                                      pid = "PID",
+                                      fam_id = "fam_ID",
+                                      family_graphs_col = "fam_graph",
+                                      role = NULL,
+                                      out = c(1),
                                       tol = 0.01){
   
-# Making sure input is valid ----------------------------------------------
   
-  # Turning .tbl into a tibble
-  # if it is not of class tbl
-  if (!is.null(.tbl) && !tibble::is_tibble(.tbl))  .tbl <- tibble::as_tibble(.tbl)
+  # validating input-agnostic variables --------------------------------------
   
-  # If .tbl is NULL and family and threshs are given as the input,
-  # the data must be converted to the correct format
-  if (is.null(.tbl) || nrow(.tbl) == 0) .tbl <- convert_format(family = family, threshs = threshs, personal_id_col = pid, role_col = role)
-  
-  # # Turning progress into class logical
-  # progress <- as.logical(progress)
-  
-  # Turning pid, fam_id and role into strings
+  # Turning pid and fam_id into strings
   pid <- as.character(pid)
   fam_id <- as.character(fam_id)
-  role <- as.character(role)
   
   # Checking that the heritability is valid
-  if(validate_proportion(h2)){invisible()}
-  
-  # Checking that .tbl has three columns named pid, fam_id and role
-  if(!(pid %in% colnames(.tbl))) stop(paste0("The column ", pid," does not exist in the tibble .tbl..."))
-  if(!(fam_id %in% colnames(.tbl))) stop(paste0("The column ", fam_id," does not exist in the tibble .tbl..."))
-  if(!(role %in% colnames(.tbl))) stop(paste0("The column ", role," does not exist in the tibble .tbl..."))
-  
-  # In addition, we check that two columns named lower and upper are present
-  if(any(!c("lower","upper") %in% colnames(.tbl))) stop("The tibble .tbl must include two columns named 'lower' and 'upper'!")
+  if (validate_proportion(h2)) invisible()
   
   # Checking that tol is valid
-  if(!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
-  if(tol <= 0) stop("The tolerance must be strictly positive!")
+  if (!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
+  if (tol <= 0) stop("The tolerance must be strictly positive!")
   
-  # Checking that out is either a character vector or a
-  # numeric vector 
-  if(is.numeric(out)){
+  # Checking that out is either a character vector or a numeric vector
+  if (is.numeric(out)) {
     
     out <- intersect(out, c(1,2))
     
-  }else if(is.character(out)){
+  } else if (is.character(out)) {
     
     out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
     out[out == "genetic"] <- 1
     out[out == "full"] <- 2
     out <- as.numeric(out)
-  }else{
+  } else {
     stop("out must be a numeric or character vector!")
   }
   
   # Checking whether out is empty
-  if(length(out) == 0){
-    
+  if (length(out) == 0) {
     cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
     out <- c(1)
   }
@@ -209,96 +166,143 @@ estimate_liability_single <- function(.tbl = NULL,
   # Sorting out
   out <- sort(out)
   
-  # If the tibble consists of more than the required columns, 
-  # we select only the relevant ones.
-  .tbl <- select(.tbl, !!as.symbol(fam_id), !!as.symbol(pid), !!as.symbol(role), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
   
-  # Finally, we also check whether all lower thresholds are 
-  # smaller than or equal to the upper thresholds
-  if(any(pull(.tbl, lower) > pull(.tbl, upper))){
-    cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+  # Validating input specific variables -------------------------------------
+  
+  if ( !is.null(.tbl) ) { #### .tbl input ####
+    
+    # Turning .tbl into a tibble
+    # if it is not of class tbl
+    if (!is.null(.tbl) && !tibble::is_tibble(.tbl))  .tbl <- tibble::as_tibble(.tbl)
+    
+    # role (as string) must be supplied
+    if (is.null(role)) stop("role must be specified.")
+    # if role is supplied, convert to string
+    if (!is.null(role)) role <- as.character(role)
+    
+    # Checking that .tbl has three columns named pid, fam_id and role
+    if (!(pid %in% colnames(.tbl))) stop(paste0("The column ", pid," does not exist in the tibble .tbl..."))
+    if (!(fam_id %in% colnames(.tbl))) stop(paste0("The column ", fam_id," does not exist in the tibble .tbl..."))
+    if (!(role %in% colnames(.tbl))) stop(paste0("The column ", role," does not exist in the tibble .tbl..."))
+    
+    # In addition, we check that two columns named lower and upper are present
+    if (any(!c("lower","upper") %in% colnames(.tbl))) stop("The tibble .tbl must include two columns named 'lower' and 'upper'!")
+    
+    # If the tibble consists of more than the required columns,
+    # we select only the relevant ones.
+    .tbl <- select(.tbl,
+                   !!as.symbol(fam_id),
+                   !!as.symbol(pid),
+                   !!as.symbol(role),
+                   tidyselect::starts_with("lower"),
+                   tidyselect::starts_with("upper"))
+    
+    
+    # Finally, we also check whether all lower thresholds are
+    # smaller than or equal to the upper thresholds
+    if (any(pull(.tbl, lower) > pull(.tbl, upper))) {
+      cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
   The lower and upper thresholds will be swapped...")
+      
+      swapping_indx <- which(pull(.tbl, lower) > pull(.tbl, upper))
+      
+      .tbl$lower[swapping_indx] <- .tbl$lower[swapping_indx] + .tbl$upper[swapping_indx]
+      .tbl$upper[swapping_indx] <- .tbl$lower[swapping_indx] - .tbl$upper[swapping_indx]
+      .tbl$lower[swapping_indx] <- .tbl$lower[swapping_indx] - .tbl$upper[swapping_indx]
+    }
     
-    swapping_indx <- which(pull(.tbl, lower) > pull(.tbl, upper))
+    # Extracting the (unique) family identifiers
+    fam_list <- unique(pull(.tbl, !!as.symbol(fam_id)))
     
-    .tbl$lower[swapping_indx] <- .tbl$lower[swapping_indx] + .tbl$upper[swapping_indx]
-    .tbl$upper[swapping_indx] <- .tbl$lower[swapping_indx] - .tbl$upper[swapping_indx]
-    .tbl$lower[swapping_indx] <- .tbl$lower[swapping_indx] - .tbl$upper[swapping_indx]
-  }
+  } else if ( !is.null(family_graphs) ) { #### Graph input ####
+    
+    #check if family_graphs is present, and if the pid column is present.
+    if ( !(pid %in% colnames(family_graphs)) ) {
+      stop(paste0("The column ", pid," does not exist in the tibble family_graphs."))
+    }
+    # checking if the family graph column present.
+    if ( !(family_graphs_col %in% colnames(family_graphs)) ) {
+      stop(paste0("The column ", family_graphs_col," does not exist in the tibble family_graphs."))
+    }
+    
+    # extract attributes from graph
+    graph_attrs = get.vertex.attribute((family_graphs %>% pull(!!as.symbol(family_graphs_col)))[[1]])
+    
+    if ( !(any(c("lower", "upper") %in% names(graph_attrs))) ) {
+      stop("lower and upper are not present as attributes in family_graph.")
+    }
+    
+    # Extracting the (unique) family identifiers
+    fam_list <- unique(pull(family_graphs, !!as.symbol(pid)))
+    
+  } else ( stop("no valid input used.") )
   
-
-  # Extracting the family identifiers
-  fam_list <- unique(pull(.tbl, !!as.symbol(fam_id)))
-
-  
+  # how many workers are we using?
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
-  # # If progress = TRUE, a progress bar will be displayed
-  # if(progress){
-  #   pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-  #   j <- 0
-  # }
-  #   
+  # actual liability estimates happen below
   gibbs_res <- future.apply::future_lapply(X = 1:length(fam_list), FUN = function(i){
     
-    # Extract the personal numbers and roles for all
-    # family members
-    pids <- pull(filter(.tbl, !!as.symbol(fam_id) == fam_list[i]), !!as.symbol(pid))
-    roles <- pull(filter(.tbl, !!as.symbol(fam_id) == fam_list[i]), !!as.symbol(role))
+    # current family id (proband id for graphs)
+    cur_fam_id = fam_list[i]
     
-    # Constructing the covariance matrix.
-    cov <- construct_covmat(fam_vec = roles, n_fam = NULL, add_ind = TRUE, h2 = h2)
+    ##### Ultimately, we get cov and temp_tbl from both of the cases below ##### 
     
-    # Extracting the thresholds for all family members
-    # including the thresholds for o and/or g
-    temp_tbl = filter(.tbl, !!as.symbol(fam_id) == fam_list[i])
-    
-    # If the thresholds for o and/or g are missing, they will
-    # be set to -Inf (lower threshold) and Inf (upper 
-    # threshold)
-    
-    if(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role))) == "g") {
+    if ( !is.null(family_graphs) ) { # family_graph based covariance construction
       
-      if("o" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- pull(filter(temp_tbl, !!as.symbol(role)== "o"), !!as.symbol(pid))
-      if(!"o" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- paste0(pull(temp_tbl, !!as.symbol(fam_id))[1], "_g")
+      # extract current (local) family graph
+      cur_fam_graph = family_graphs[[family_graphs_col]][[i]]
       
-      temp_tbl <- bind_rows(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                           !!as.symbol(pid) := i_pid, 
-                                           !!as.symbol(role) := "g",
-                                           lower = -Inf, 
-                                           upper = Inf), 
-                            temp_tbl)
-    }else if(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role))) == "o"){
+      # construct covariance and extract threshold information from graph.
+      cov_obj = graph_based_covariance_construction(pid = pid,
+                                                    cur_proband_id = cur_fam_id,
+                                                    cur_family_graph = cur_fam_graph,
+                                                    h2 = h2)
       
-      if("g" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- pull(filter(temp_tbl, !!as.symbol(role)== "g"), !!as.symbol(pid))
-      if(!"g" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- paste0(pull(temp_tbl, !!as.symbol(fam_id))[1], "_o")
+      # cov and temp_tbl are ordered during construction
       
-      temp_tbl <- bind_rows(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                           !!as.symbol(pid) := i_pid, 
-                                           !!as.symbol(role) := "o",
-                                           lower = -Inf, 
-                                           upper = Inf), 
-                            temp_tbl)
-    }else if(sort(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role)))) == c("g","o")){
+      # threshold information
+      temp_tbl = cov_obj$temp_tbl
       
-      i_pid <- pull(temp_tbl, !!as.symbol(fam_id))[1]
+      # check whether covariance matrix is positive definite
+      # correct if needed.
+      cov_PD = correct_positive_definite_simplified(covmat = cov_obj$covmat)
+      cov = cov_PD$covmat
       
-      temp_tbl <- bind_rows(tibble::tibble(!!as.symbol(fam_id) := rep(pull(temp_tbl, !!as.symbol(fam_id))[1],2), 
-                                           !!as.symbol(pid) := c(paste0(i_pid, "_g"), paste0(i_pid, "_o")), 
-                                           !!as.symbol(role) := c("g","o"),
-                                           lower = c(-Inf, -Inf), 
-                                           upper = c(Inf, Inf)), 
-                            temp_tbl)
-    }else{}
-    
-    # Now that we have extracted all the relevant information, we 
-    # only need to order the observations before we can run
-    # Gibbs sampler, as g and o need to be the first two 
-    # observations.
-    first_indx <- match(c("g","o"), pull(temp_tbl, !!as.symbol(role)))
-    other_indx <- setdiff(1:length(pull(temp_tbl, !!as.symbol(role))), first_indx)
-    temp_tbl <- temp_tbl[c(first_indx, other_indx),]
-    
+      
+    } else { # role based covariance construction
+      
+      # extract all with current family ID.
+      temp_tbl = filter(.tbl, !!as.symbol(fam_id) == cur_fam_id)
+      
+      # Extract the personal numbers and roles for all family members
+      pids  <- pull(temp_tbl, !!as.symbol(pid))
+      roles <- pull(temp_tbl, !!as.symbol(role))
+      
+      # Constructing the covariance matrix.
+      cov_obj <- construct_covmat(fam_vec = roles, n_fam = NULL, add_ind = TRUE, h2 = h2)
+      
+      # check for whether covariance matrix is positive definite
+      # correct if needed.
+      cov_PD = correct_positive_definite_simplified(covmat = cov_obj)
+      cov = cov_PD$covmat
+      
+      # adding missing roles (of either g or o)
+      temp_tbl = add_missing_roles_for_proband(temp_tbl = temp_tbl,
+                                               role = role,
+                                               cur_roles = roles,
+                                               cur_fam_id = cur_fam_id,
+                                               pid = pid,
+                                               fam_id = fam_id)
+      
+      # Now that we have extracted all the relevant information, we
+      # only need to order the observations before we can run
+      # Gibbs sampler, as g and o need to be the first two observations.
+      
+      first_indx <- match(c("g","o"), pull(temp_tbl, !!as.symbol(role)))
+      other_indx <- setdiff(1:length(pull(temp_tbl, !!as.symbol(role))), first_indx)
+      temp_tbl <- temp_tbl[c(first_indx, other_indx),]
+    }
     
     # Setting the variables needed for Gibbs sampler
     fixed <- (pull(temp_tbl,upper) - pull(temp_tbl,lower)) < 1e-04
@@ -312,8 +316,8 @@ estimate_liability_single <- function(.tbl = NULL,
       if(n_gibbs == 1){
         
         est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(temp_tbl, lower), upper = pull(temp_tbl, upper),
-                                    fixed = fixed, out = out, burn_in = 1000) %>% 
-          `colnames<-`(c("genetic", "full")[out]) %>% 
+                                    fixed = fixed, out = out, burn_in = 1000) %>%
+          `colnames<-`(c("genetic", "full")[out]) %>%
           tibble::as_tibble()
         
       }else{
@@ -321,42 +325,33 @@ estimate_liability_single <- function(.tbl = NULL,
         est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(temp_tbl, lower), upper = pull(temp_tbl, upper),
                                     fixed = fixed, out = out, burn_in = 1000) %>%
           `colnames<-`(c("genetic", "full")[out]) %>%
-          tibble::as_tibble() %>% 
+          tibble::as_tibble() %>%
           bind_rows(est_liabs)
       }
       
       # Computing the standard error
       std_err <- batchmeans::bmmat(est_liabs)[,2]
       # Adding one to the counter
-      n_gibbs <- n_gibbs +1
+      n_gibbs <- n_gibbs + 1
     }
     
-    # If all standard errors are below the tolerance, 
-    # the estimated liabilities as well as the corresponding 
+    # If all standard errors are below the tolerance,
+    # the estimated liabilities as well as the corresponding
     # standard error can be returned
-    res <- tibble::as_tibble(batchmeans::bmmat(est_liabs), rownames = "out") %>% 
-      tidyr::pivot_longer(., cols = c(est,se)) %>% 
-      mutate(., name = paste0(out, "_", name), .keep = "unused") %>% 
+    res <- tibble::as_tibble(batchmeans::bmmat(est_liabs), rownames = "out") %>%
+      tidyr::pivot_longer(., cols = c(est,se)) %>%
+      mutate(., name = paste0(out, "_", name), .keep = "unused") %>%
       tibble::deframe(.)
     
-    res <- c(unlist(select(filter(temp_tbl, !!as.symbol(role)=="o"), !!as.symbol(fam_id), !!as.symbol(pid))),
-             res)
+    # formatting and returning result
+    tibble(!!as.symbol(fam_id) := cur_fam_id,
+           !!as.symbol(pid) := cur_fam_id,
+           genetic_est = res[[1]],
+           genetic_se  = res[[2]])
     
-    return(res)
-    
-    # If progress = TRUE, a progress bar will be displayed
-    # if(progress){
-    #   j <- j+1
-    #   utils::setTxtProgressBar(pb, j)
-    # }
-    
-    
-  }, future.seed = TRUE) %>% 
+  }, future.seed = TRUE) %>%
     do.call("bind_rows", .)
-    
-  # # Close the connection 
-  # if(progress) close(pb)  
-
+  
   return(gibbs_res)
 }
 
@@ -389,35 +384,8 @@ estimate_liability_single <- function(.tbl = NULL,
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to \code{NULL}.
-#' @param family A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least two columns that hold the family identifier and the corresponding
-#' personal identifiers, respectively. That is, for each family in fam_id there should
-#' be a list holding all individuals belonging to that family in pid. Note that the 
-#' personal identifiers for all individuals must have a special format. It must be end
-#' with _?, where ? is one of the following abbreviations 
-#' - \code{g} (Genetic component of full liability)
-#' - \code{o} (Full liability)
-#' - \code{m} (Mother)
-#' - \code{f} (Father)
-#' - \code{c[0-9]*.[0-9]*} (Children)
-#' - \code{mgm} (Maternal grandmother)
-#' - \code{mgf} (Maternal grandfather)
-#' - \code{pgm} (Paternal grandmother)
-#' - \code{pgf} (Paternal grandfather)
-#' - \code{s[0-9]*} (Full siblings)
-#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
-#' - \code{phs[0-9]*} (Half-siblings - paternal side)
-#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
-#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
-#' See also \code{\link{construct_covmat}}.
-#' Defaults to \code{NULL}.
-#' @param threshs A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least five columns; one holding the personal identifier for all individuals,
-#' and the remaining four holding the lower and upper thresholds for the first and second
-#' phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-#' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
-#' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-#' thresholds corresponding to the first phenotype. Defaults to \code{NULL}.
+#' @param family_graphs A tibble with columns pid and family_graph_col. 
+#' See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.
 #' @param genetic_corrmat A numeric matrix holding the genetic correlations between the desired 
 #' phenotypes. All diagonal entries must be equal to one, while all off-diagonal entries 
 #' must be between -1 and 1. In addition, the matrix must be symmetric.
@@ -451,6 +419,7 @@ estimate_liability_single <- function(.tbl = NULL,
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to "role".
+#' @param family_graphs_col Name of column with family graphs in family_graphs. Defaults to "fam_graph".
 #' @param out A character or numeric vector indicating whether the genetic component
 #' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
 #' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
@@ -493,240 +462,276 @@ estimate_liability_single <- function(.tbl = NULL,
 #' #
 #' sims <- simulate_under_LTM(fam_vec = c("m","f"), n_fam = NULL, add_ind = TRUE, 
 #' genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat, h2 = rep(.5,3), 
-#' n_sim = 10, pop_prev = rep(.1,3))
-#' #
-#' full_covmat = lapply(sims[-which(names(sims) == "thresholds")], function(x) {
-#'    dplyr::select(x[[1]], dplyr::starts_with("o") & dplyr::ends_with("status"))
-#'    })
-#' full_covmat = cov(dplyr::bind_cols(full_covmat))
-#' diag(full_covmat) = 1
+#' n_sim = 1, pop_prev = rep(.1,3))
 #' estimate_liability_multi(.tbl = sims$thresholds, h2_vec = rep(.5,3), 
-#' genetic_corrmat = genetic_corrmat, full_corrmat = full_covmat,
+#' genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
 #' pid = "indiv_ID", fam_id = "fam_ID", role = "role", out = c(1), 
-#' tol = 0.01)
+#' phen_names = paste0("phenotype", 1:3), tol = 0.01)
 #' 
 #' 
 #' @seealso \code{\link[future.apply]{future_apply}}, \code{\link{estimate_liability_single}},
 #' \code{\link{estimate_liability}}
 #' 
-#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename arrange left_join
+#' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename arrange left_join slice tibble
 #' @importFrom rlang :=
 #' @importFrom stringr str_detect
 #' @importFrom tidyselect starts_with
+#' @importFrom igraph get.vertex.attribute
 #' 
 #' @export
-estimate_liability_multi <- function(.tbl = NULL, 
-                                     family = NULL, 
-                                     threshs = NULL, 
-                                     h2_vec, 
-                                     genetic_corrmat, 
+estimate_liability_multi <- function(.tbl = NULL,
+                                     family_graphs = NULL,
+                                     h2_vec,
+                                     genetic_corrmat,
                                      full_corrmat,
                                      phen_names = NULL, 
                                      pid = "PID",
                                      fam_id = "fam_ID",
                                      role = "role",
-                                     out = c(1), 
+                                     family_graphs_col = "fam_graph",
+                                     out = c(1),
                                      tol = 0.01){
   
-  # Making sure input is valid--------------------------------------------
+  # validating input-agnostic variables --------------------------------------
   
-  # Turning .tbl into a tibble
-  # if it is not of class tbl
-  if(!tibble::is_tibble(.tbl))  .tbl <- tibble::as_tibble(.tbl)
-  
-  # If .tbl is NULL and family and threshs are given as the input,
-  # the data must be converted to the correct format
-  if (is.null(.tbl) || nrow(.tbl) == 0) .tbl <- convert_format(family = family, threshs = threshs, personal_id_col = pid, role_col = role)
-  
-  # Turning progress into class logical
-  # progress <- as.logical(progress)
-  
-  # Turning pid, fam_id and role into strings
+  # Turning pid, fam_id into strings
   pid <- as.character(pid)
   fam_id <- as.character(fam_id)
-  role <- as.character(role)
   
   # Checking that the heritability is valid
-  if(validate_proportion(h2_vec)){invisible()}
+  if (validate_proportion(h2_vec)) invisible()
   
   # Checking that all correlations are valid
-  if(validate_correlation_matrix(genetic_corrmat)){invisible()}
-  if(validate_correlation_matrix(full_corrmat)){invisible()}
-  
-  # Checking that .tbl has three columns named pid_col, fam_id and role
-  if(!(pid %in% colnames(.tbl))) stop(paste0("The column ", pid," does not exist in the tibble .tbl..."))
-  if(!(fam_id %in% colnames(.tbl))) stop(paste0("The column ", fam_id," does not exist in the tibble .tbl..."))
-  if(!(role %in% colnames(.tbl))) stop(paste0("The column ", role," does not exist in the tibble .tbl..."))
-  
-  # In addition, we check that the two columns lower and upper are present
-  if(any(!c("lower","upper") %in% gsub("_.*", "", colnames(.tbl), ignore.case = TRUE))) stop("The tibble .tbl must include two columns named 'lower' and 'upper'!")
+  if (validate_correlation_matrix(genetic_corrmat)) invisible()
+  if (validate_correlation_matrix(full_corrmat)) invisible()
   
   # Checking that tol is valid
-  if(!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
-  if(tol <= 0) stop("The tolerance must be strictly positive!")
+  if (!is.numeric(tol) && !is.integer(tol)) stop("The tolerance must be numeric!")
+  if (tol <= 0) stop("The tolerance must be strictly positive!")
   
-  # Checking that out is either a character vector or a
-  # numeric vector 
-  if(is.numeric(out)){
+  # Checking that out is either a character vector or a numeric vector
+  if (is.numeric(out)) {
     
     out <- intersect(out, c(1,2))
     
-  }else if(is.character(out)){
+  } else if (is.character(out)) {
     
     out <- c("genetic", "full")[rowSums(sapply(out, grepl, x = c("genetic", "full"))) > 0]
     out[out == "genetic"] <- 1
     out[out == "full"] <- 2
     out <- as.numeric(out)
-  }else{
+    
+  } else {
     stop("out must be a numeric or character vector!")
   }
   
   # Checking whether out is empty
-  if(length(out) == 0){
+  if (length(out) == 0) {
     
     cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
     out <- c(1)
+    
   }
   
   # Sorting out
   out <- sort(out)
   
-  # If the tibble consists of more than the required columns, 
-  # we select only the relevant ones.
-  .tbl <- select(.tbl, !!as.symbol(fam_id), !!as.symbol(pid), !!as.symbol(role), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
-  
   # Now we can extract the number of phenotypes
   n_pheno <- length(h2_vec)
   
-  if(ncol(.tbl) != (2*n_pheno + 3)) stop("Something is wrong with the number of phenotypes... \n 
-The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in h2_vec...\
+  
+  # Validating input specific variables -------------------------------------
+  if ( !is.null(.tbl) ) {  #### .tbl input ####
+    
+    # Turning .tbl into a tibble
+    # if it is not of class tbl
+    if (!tibble::is_tibble(.tbl)) .tbl <- tibble::as_tibble(.tbl)
+    
+    # Turning role into string
+    role <- as.character(role)
+    
+    # Checking that .tbl has three columns named pid_col, fam_id and role
+    if (!(pid %in% colnames(.tbl))) stop(paste0("The column ", pid," does not exist in the tibble .tbl..."))
+    if (!(fam_id %in% colnames(.tbl))) stop(paste0("The column ", fam_id," does not exist in the tibble .tbl..."))
+    if (!(role %in% colnames(.tbl))) stop(paste0("The column ", role," does not exist in the tibble .tbl..."))
+    
+    # In addition, we check that the two columns lower and upper are present
+    if (any(!c("lower","upper") %in% gsub("_.*", "", colnames(.tbl), ignore.case = TRUE))) stop("The tibble .tbl must include columns named 'lower' and 'upper'!")
+    
+    # If the tibble consists of more than the required columns,
+    # we select only the relevant ones.
+    .tbl <- select(.tbl, !!as.symbol(fam_id), !!as.symbol(pid), !!as.symbol(role), tidyselect::starts_with("lower"), tidyselect::starts_with("upper"))
+    
+    # checking if the correct number of columns is present
+    if (ncol(.tbl) != (2*n_pheno + 3)) stop("Something is wrong with the number of phenotypes... \n
+The number of pairs of lower and upper thresholds is not equal to the number of phenotypes specified in h2_vec...\n
 Does all columns have the required names?")
-  
-  # As well as the phenotype names
-  phen_names <- gsub("lower_", "", colnames(.tbl)[str_detect(colnames(.tbl), "^lower_")], ignore.case = TRUE)
-  
-  # Finally, we also check whether all lower thresholds are 
-  # smaller than or equal to the upper thresholds
-  for ( pheno in phen_names ) {
     
-    
-    if(any(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))){
-      cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+    # We check whether all lower thresholds are
+    # smaller than or equal to the upper thresholds
+    for (pheno in phen_names) {
+      
+      
+      if (any(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))) {
+        cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
 The lower and upper thresholds will be swapped...")
-      
-      swapping_indx <- which(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))
-      
-      .tbl <- mutate(.tbl, !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) + !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno)))) %>% 
-        mutate(., !!as.symbol(paste0("upper_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("upper_", pheno)))) %>% 
-        mutate(., !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno))))
+        
+        swapping_indx <- which(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))
+        
+        .tbl <- mutate(.tbl, !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) + !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno)))) %>%
+          mutate(., !!as.symbol(paste0("upper_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("upper_", pheno)))) %>%
+          mutate(., !!as.symbol(paste0("lower_", pheno)) := ifelse(row_number() %in% swapping_indx, !!as.symbol(paste0("lower_", pheno)) - !!as.symbol(paste0("upper_", pheno)), !!as.symbol(paste0("lower_", pheno))))
+      }
     }
-  }
+    
+    #  Extracting the (unique) family identifiers
+    fam_list <- unique(pull(.tbl, !!as.symbol(fam_id)))
+    
+  } else if ( !is.null(family_graphs) ) { #### Graph input ####
+    
+    #check if family_graphs is present, and if the pid column is present.
+    if ( !(pid %in% colnames(family_graphs)) ) {
+      stop(paste0("The column ", pid," does not exist in the tibble family_graphs."))
+    }
+    # checking if the family graph column present.
+    if ( !(family_graphs_col %in% colnames(family_graphs)) ) {
+      stop(paste0("The column ", family_graphs_col," does not exist in the tibble family_graphs."))
+    }
+    # extract graph attributes
+    graph_attrs = get.vertex.attribute((family_graphs %>% pull(!!as.symbol(family_graphs_col)))[[1]])
+    
+    # check if the upper and lower thresholds are present for each provided phenotype name in phen_names.
+    if ( !(any(paste(rep(c("lower", "upper"), length(phen_names)), rep(phen_names, each = 2), sep = "_") %in% names(graph_attrs))) ) {
+      stop("not all lower and upper columns are present as attributes in family_graph for a multi trait analysis.")
+    }
+    
+    # Extracting the (unique) family identifiers
+    fam_list <- unique(pull(family_graphs, !!as.symbol(pid)))
+    
+  } else ( stop("no valid input used.") )
   
-  #  Extracting the family identifiers
-  fam_list <- unique(pull(.tbl, !!as.symbol(fam_id)))
-  
+  # how many workers are we using?
   cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
-  # If progress = TRUE, a progress bar will be displayed
-  # if(progress){
-  #   pb <- utils::txtProgressBar(min = 0, max = nrow(family), style = 3, char = "=")
-  #   j <- 0
-  # }
-  
-  gibbs_res <- future.apply::future_lapply(X= 1:length(fam_list), FUN = function(i){
+  # actual liability estimates happen below
+  gibbs_res <- future.apply::future_lapply(X = 1:length(fam_list), FUN = function(i){
     
-    # Extract the personal numbers and roles for all
-    # family members
-    pids <- pull(filter(.tbl, !!as.symbol(fam_id) == fam_list[i]), !!as.symbol(pid))
-    roles <- pull(filter(.tbl, !!as.symbol(fam_id) == fam_list[i]), !!as.symbol(role))
+    # current family id (proband id for graphs)
+    cur_fam_id = fam_list[i]
     
-    # Constructing the covariance matrix.
-    cov <- construct_covmat(fam_vec = roles, n_fam = NULL, add_ind = TRUE, 
-                            genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
-                            h2 = h2_vec, phen_names = phen_names)
+    ##### Ultimately, we get cov and temp_tbl from both of the cases below ##### 
     
-    # Sometimes the constructed matrix was not positive definite, leading to computational
-    # issues in the gibbs sampler. This check ensures the matrix will be PD.
-    tmp_covmat = eigen(cov)
-    
-    if (any(tmp_covmat$values < 0)) {
-      eigen_vals = tmp_covmat$values
-      eigen_vecs = tmp_covmat$vectors
-      eigen_vals2 = ifelse(eigen_vals < 0, 1e-4, eigen_vals)
-      cov = eigen_vecs %*% diag(eigen_vals2) %*% t(eigen_vecs)
-    }
-    # Extracting the thresholds for all family members,
-    # including the thresholds for o and/or g,
-    # and all phenotypes
-    temp_tbl = filter(.tbl, !!as.symbol(fam_id) == fam_list[i])
-    
-    # If the thresholds for o and/or g are missing, they will
-    # be set to -Inf (lower threshold) and Inf (upper 
-    # threshold)
-    
-    if(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role))) == "g") {
+    if ( !is.null(.tbl) ) {
       
-      if("o" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- pull(filter(temp_tbl, !!as.symbol(role)== "o"), !!as.symbol(pid))
-      if(!"o" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- paste0(pull(temp_tbl, !!as.symbol(fam_id))[1], "_g")
+      # Extracting the thresholds for all family members,
+      # including the thresholds for o and/or g,
+      # and all phenotypes
+      temp_tbl = filter(.tbl, !!as.symbol(fam_id) == cur_fam_id)
       
-      temp_tbl <- bind_rows(bind_cols(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                                     !!as.symbol(pid) := i_pid, 
-                                                     !!as.symbol(role) := "g"),
-                                      tibble::tibble(!!!c(stats::setNames(rep(-Inf, n_pheno), paste0("lower_", phen_names)), stats::setNames(rep(Inf, n_pheno), paste0("upper_", phen_names))))), 
-                            temp_tbl)
-    }else if(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role))) == "o"){
+      # Extract the personal IDs and roles for all family members
+      pids  <- pull(temp_tbl, !!as.symbol(pid))
+      roles <- pull(temp_tbl, !!as.symbol(role))
       
-      if("g" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- pull(filter(temp_tbl, !!as.symbol(role)== "g"), !!as.symbol(pid))
-      if(!"g" %in% pull(temp_tbl, !!as.symbol(role))) i_pid <- paste0(pull(temp_tbl, !!as.symbol(fam_id))[1], "_o")
+      # Constructing the covariance matrix.
+      cov <- construct_covmat(fam_vec = roles, n_fam = NULL, add_ind = TRUE,
+                              genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+                              h2 = h2_vec, phen_names = phen_names)
       
-      temp_tbl <- bind_rows(bind_cols(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                                     !!as.symbol(pid) := i_pid, 
-                                                     !!as.symbol(role) := "o"),
-                                      tibble::tibble(!!!c(stats::setNames(rep(-Inf, n_pheno), paste0("lower_", phen_names)), stats::setNames(rep(Inf, n_pheno), paste0("upper_", phen_names))))), 
-                            temp_tbl)
-    }else if(sort(setdiff(c("g","o"), pull(temp_tbl, !!as.symbol(role)))) == c("g","o")){
       
-      i_pid <- pull(temp_tbl, !!as.symbol(fam_id))[1]
+      # Sometimes the constructed matrix was not positive definite, leading to computational
+      # issues in the gibbs sampler. This check ensures the matrix will be PD.
       
-      temp_tbl <- bind_rows(bind_cols(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                                     !!as.symbol(pid) := i_pid, 
-                                                     !!as.symbol(role) := "g"),
-                                      tibble::tibble(!!!c(stats::setNames(rep(-Inf, n_pheno), paste0("lower_", phen_names)), stats::setNames(rep(Inf, n_pheno), paste0("upper_", phen_names))))), 
-                            bind_cols(tibble::tibble(!!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1], 
-                                                     !!as.symbol(pid) := i_pid, 
-                                                     !!as.symbol(role) := "o"),
-                                      tibble::tibble(!!!c(stats::setNames(rep(-Inf, n_pheno), paste0("lower_", phen_names)), stats::setNames(rep(Inf, n_pheno), paste0("upper_", phen_names))))), 
-                            temp_tbl)
-    }else{}
-    
-    
-    
-    # Now that we have extracted all the relevant information, we 
-    # only need to order the observations before we can turn the 
-    # format from wide to long and run Gibbs sampler.
-    # This is due to the fact that g and o need to be the first two 
-    # observations.
-    first_indx <- match(c("g","o"), pull(temp_tbl, !!as.symbol(role)))
-    other_indx <- setdiff(1:length(pull(temp_tbl, !!as.symbol(role))), first_indx)
-    
-    temp_tbl <- mutate(temp_tbl, !!as.symbol(role) := factor(!!as.symbol(role), levels = pull(temp_tbl,!!as.symbol(role))[c(first_indx, other_indx)])) %>% 
-      arrange(., !!as.symbol(role))
-    
-    # Now, we need to lengthen the data
-    fam_threshs <- select(temp_tbl, -c(starts_with("upper"))) %>% 
-      tidyr::pivot_longer(., cols = starts_with("lower"), names_to = "phenotype", values_to = "lower") %>% 
-      mutate(., phenotype = gsub("lower_","",phenotype))
-    
-    fam_threshs <- select(temp_tbl, -c(starts_with("lower"))) %>% 
-      tidyr::pivot_longer(., cols = starts_with("upper"), names_to = "phenotype", values_to = "upper") %>% 
-      mutate(., phenotype = gsub("upper_","",phenotype)) %>% 
-      left_join(fam_threshs,., by = stats::setNames(c(fam_id,pid,role,"phenotype"), c(fam_id,pid,role,"phenotype"))) %>% 
-      mutate(., phenotype = factor(phenotype, levels = phen_names)) %>% 
-      arrange(., phenotype, !!as.symbol(role))
+      cov_PD = correct_positive_definite_simplified(covmat = cov)
+      cov = cov_PD$covmat
+      
+      # If the thresholds for o and/or g are missing, they will
+      # be set to -Inf (lower threshold) and Inf (upper
+      # threshold)
+      
+      temp_tbl = add_missing_roles_for_proband(
+        temp_tbl = temp_tbl,
+        role = role,
+        cur_roles = roles,
+        cur_fam_id = cur_fam_id,
+        pid = pid,
+        fam_id = fam_id,
+        phen_names = phen_names
+      )
+      
+      # Ordering temp_tbl to match the order in cov.
+      first_indx <- match(c("g","o"), pull(temp_tbl, !!as.symbol(role)))
+      other_indx <- setdiff(1:length(pull(temp_tbl, !!as.symbol(role))), first_indx)
+      
+      temp_tbl <- mutate(temp_tbl, !!as.symbol(role) := factor(!!as.symbol(role), levels = pull(temp_tbl,!!as.symbol(role))[c(first_indx, other_indx)])) %>%
+        arrange(., !!as.symbol(role))
+      
+      
+      # Now, we need to lengthen the data
+      
+      # extract lower thresholds
+      fam_threshs <- select(temp_tbl, -c(starts_with("upper"))) %>%
+        tidyr::pivot_longer(., cols = starts_with("lower"), names_to = "phenotype", values_to = "lower") %>%
+        mutate(., phenotype = gsub("lower_","",phenotype))
+      
+      # extract upper thresholds
+      fam_threshs <- select(temp_tbl, -c(starts_with("lower"))) %>%
+        tidyr::pivot_longer(., cols = starts_with("upper"), names_to = "phenotype", values_to = "upper") %>%
+        mutate(., phenotype = gsub("upper_","",phenotype)) %>%
+        # join upper and left thresholds
+        left_join(fam_threshs,., by = stats::setNames(c(fam_id,pid,role,"phenotype"), c(fam_id,pid,role,"phenotype"))) %>%
+        mutate(., phenotype = factor(phenotype, levels = phen_names)) %>%
+        # order the tibble, such that it matches the covariance matrix
+        arrange(., phenotype, !!as.symbol(role))
+      
+    } else if ( !is.null(family_graphs) ) {
+      
+      # extracting current (local) family graph
+      cur_fam_graph = family_graphs[[family_graphs_col]][[i]]
+      
+      # construct covariance and extract threshold information from graph.
+      cov_obj = graph_based_covariance_construction_multi(fam_id = fam_id,
+                                                          pid = pid,
+                                                          cur_proband_id = cur_fam_id,
+                                                          cur_family_graph = cur_fam_graph,
+                                                          h2_vec = h2_vec,
+                                                          genetic_corrmat = genetic_corrmat,
+                                                          phen_names = phen_names)
+      # cov and temp_tbl are ordered during construction, but lengthening messes 
+      # with the ordering of temp_tbl.
+      
+      # threshold information
+      temp_tbl = cov_obj$temp_tbl
+      newOrder = cov_obj$newOrder
+      
+      
+      cov_PD = correct_positive_definite_simplified(covmat = cov_obj$cov)
+      cov = cov_PD$covmat
+      #correction_itr = cov_PD$nitr
+      
+      # Now, we need to lengthen the data
+      
+      # extract lower thresholds
+      fam_threshs <- select(temp_tbl, -c(starts_with("upper"))) %>%
+        tidyr::pivot_longer(., cols = starts_with("lower"), names_to = "phenotype", values_to = "lower") %>%
+        mutate(., phenotype = gsub("lower_","",phenotype))
+      
+      # extract upper thresholds
+      fam_threshs <- select(temp_tbl, -c(starts_with("lower"))) %>%
+        tidyr::pivot_longer(., cols = starts_with("upper"), names_to = "phenotype", values_to = "upper") %>%
+        mutate(., phenotype = gsub("upper_","",phenotype)) %>%
+        # join upper and left thresholds
+        left_join(fam_threshs,., by = stats::setNames(c(fam_id,pid,"phenotype"), c(fam_id,pid,"phenotype"))) %>%
+        # mutate(., phenotype = factor(phenotype, levels = phen_names)) %>%
+        # order the tibble, such that it matches the covariance matrix
+        slice(match(newOrder, paste0(!!as.symbol(pid), "_", phenotype)))
+      
+    } else { stop("How did you even get here?") }
     
     
     # Setting the variables needed for Gibbs sampler
-    fixed <- (pull(fam_threshs,upper) - pull(fam_threshs,lower)) < 1e-04
+    lower = pull(fam_threshs,lower)
+    upper = pull(fam_threshs,upper)
+    fixed <- (upper - lower) < 1e-04
     std_err <- matrix(Inf, ncol =  length(out), nrow = n_pheno)
     colnames(std_err) <- c("genetic", "full")[out]
     n_gibbs <- 1
@@ -734,60 +739,51 @@ The lower and upper thresholds will be swapped...")
     # And change the variable out, as we need to extract the
     # genetic and/or full liability for each phenotype.
     # And as all thresholds in fam_threshs are ordered according
-    # to the phenotype and the role, we need to extract every 
+    # to the phenotype and the role, we need to extract every
     # (number of individuals)'th entry starting from the entries
     # specified in out.
-    updated_out <- sort(sapply(out, function(k) k + length(levels(pull(fam_threshs, !!as.symbol(role))))*(0:(n_pheno-1))))
+    updated_out <- sort(sapply(out, function(k) k + nrow(temp_tbl)*(0:(n_pheno - 1))))
     
     # Running Gibbs sampler
-    while(any(std_err > tol)){
+    while (any(std_err > tol)) {
       
-      if(n_gibbs == 1){
+      if (n_gibbs == 1) {
         
-        est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                    fixed = fixed, out = updated_out, burn_in = 1000) %>% 
-          `colnames<-`(paste0(rep(c("genetic", "full")[out], n_pheno),"_", rep(phen_names, each = length(out)))) %>% 
+        est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = lower, upper = upper,
+                                    fixed = fixed, out = updated_out, burn_in = 1000) %>%
+          `colnames<-`(paste0(rep(c("genetic", "full")[out], n_pheno),"_", rep(phen_names, each = length(out)))) %>%
           tibble::as_tibble()
         
-      }else{
+      } else {
         
         est_liabs <- rtmvnorm.gibbs(n_sim = 1e+05, covmat = cov, lower = pull(fam_threshs, lower), upper = pull(fam_threshs, upper),
-                                    fixed = fixed, out = updated_out, burn_in = 1000) %>% 
-          `colnames<-`(paste0(rep(c("genetic", "full")[out], n_pheno),"_", rep(phen_names, each = length(out)))) %>% 
-          tibble::as_tibble() %>% 
+                                    fixed = fixed, out = updated_out, burn_in = 1000) %>%
+          `colnames<-`(paste0(rep(c("genetic", "full")[out], n_pheno),"_", rep(phen_names, each = length(out)))) %>%
+          tibble::as_tibble() %>%
           bind_rows(est_liabs,.)
       }
       
       # Computing the standard error
       std_err[1:n_pheno,1:length(out)] <- matrix(batchmeans::bmmat(est_liabs)[,2], ncol =  length(out), nrow = n_pheno, byrow = TRUE)
       # Adding one to the counter
-      n_gibbs <- n_gibbs +1
+      n_gibbs <- n_gibbs + 1
     }
     
-    # # If progress = TRUE, a progress bar will be displayed
-    # if(progress){
-    #   j <- j+1
-    #   utils::setTxtProgressBar(pb, j)
-    # }
-    
-    # If all standard errors are below the tolerance, 
-    # the estimated liabilities as well as the corresponding 
+    # If all standard errors are below the tolerance,
+    # the estimated liabilities as well as the corresponding
     # standard error can be returned
-    res <- tibble::as_tibble(batchmeans::bmmat(est_liabs), rownames = "out") %>% 
-      tidyr::pivot_longer(., cols = c(est,se)) %>% 
-      mutate(., name = paste0(out, "_", name), .keep = "unused") %>% 
+    res <- tibble::as_tibble(batchmeans::bmmat(est_liabs), rownames = "out") %>%
+      tidyr::pivot_longer(., cols = c(est,se)) %>%
+      mutate(., name = paste0(out, "_", name), .keep = "unused") %>%
       tibble::deframe(.)
     
-    res <- c(unlist(select(filter(temp_tbl, !!as.symbol(role)=="o"), !!as.symbol(fam_id), !!as.symbol(pid))),
-             res)
+    # formatting and returning result
+    tibble(!!as.symbol(fam_id) := cur_fam_id,
+           !!as.symbol(pid) := cur_fam_id,
+           !!!stats::setNames(res, names(res)))
     
-    return(res)
-    
-  }, future.seed = TRUE) %>% 
+  }, future.seed = TRUE) %>%
     do.call("bind_rows",.)
-  
-  # # Close the connection 
-  # if(progress) close(pb)  
   
   return(gibbs_res)
 }
@@ -823,35 +819,8 @@ The lower and upper thresholds will be swapped...")
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to \code{NULL}.
-#' @param family A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least two columns that hold the family identifier and the corresponding
-#' personal identifiers, respectively. That is, for each family in fam_id there should
-#' be a list holding all individuals belonging to that family in pid. Note that the 
-#' personal identifiers for all individuals must have a special format. It must be end
-#' with _?, where ? is one of the following abbreviations 
-#' - \code{g} (Genetic component of full liability)
-#' - \code{o} (Full liability)
-#' - \code{m} (Mother)
-#' - \code{f} (Father)
-#' - \code{c[0-9]*.[0-9]*} (Children)
-#' - \code{mgm} (Maternal grandmother)
-#' - \code{mgf} (Maternal grandfather)
-#' - \code{pgm} (Paternal grandmother)
-#' - \code{pgf} (Paternal grandfather)
-#' - \code{s[0-9]*} (Full siblings)
-#' - \code{mhs[0-9]*} (Half-siblings - maternal side)
-#' - \code{phs[0-9]*} (Half-siblings - paternal side)
-#' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
-#' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
-#' See also \code{\link{construct_covmat}}.
-#' Defaults to \code{NULL}.
-#' @param threshs A matrix, list or data frame that can be converted into a tibble.
-#' Must have at least five columns; one holding the personal identifier for all individuals,
-#' and the remaining four holding the lower and upper thresholds for the first and second
-#' phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-#' to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
-#' the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-#' thresholds corresponding to the first phenotype. Defaults to \code{NULL}.
+#' @param family_graphs A tibble with columns pid and family_graph_col. 
+#' See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.
 #' @param h2 Either a number representing the heritability on liability scale for a 
 #' single phenotype, or a numeric vector representing the liability-scale heritabilities
 #' for all phenotypes. All entries in h2 must be non-negative and at most 1.
@@ -876,6 +845,7 @@ The lower and upper thresholds will be swapped...")
 #' - \code{mau[0-9]*} (Aunts/Uncles - maternal side)
 #' - \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 #' Defaults to "role".
+#' @param family_graphs_col Name of column with family graphs in family_graphs. Defaults to "fam_graph".
 #' @param out A character or numeric vector indicating whether the genetic component
 #' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
 #' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
@@ -950,35 +920,34 @@ The lower and upper thresholds will be swapped...")
 #' 
 #' @export
 estimate_liability <- function(.tbl = NULL,
-                               family = NULL, 
-                               threshs = NULL, 
+                               family_graphs = NULL,
                                h2 = 0.5, 
                                pid = "PID", 
                                fam_id = "fam_ID", 
                                role = "role",
+                               family_graphs_col = "fam_graph",
                                out = c(1), 
                                tol = 0.01,
                                genetic_corrmat = NULL, 
                                full_corrmat = NULL, 
                                phen_names = NULL){
   
-  if(length(h2) == 1){
+  if (length(h2) == 1) {
     
     return(estimate_liability_single(.tbl = .tbl, 
-                                     family = family, 
-                                     threshs = threshs, 
+                                     family_graphs = family_graphs,
                                      h2 = h2, 
                                      pid = pid, 
                                      fam_id = fam_id, 
                                      role = role,
+                                     family_graphs_col = family_graphs_col,
                                      out = out, 
                                      tol = tol))
 
-  }else{
+  } else {
     
     return(estimate_liability_multi(.tbl = .tbl, 
-                                    family = family, 
-                                    threshs = threshs, 
+                                    family_graphs = family_graphs,
                                     h2_vec = h2, 
                                     genetic_corrmat = genetic_corrmat, 
                                     full_corrmat = full_corrmat,
@@ -986,6 +955,7 @@ estimate_liability <- function(.tbl = NULL,
                                     pid = pid,
                                     fam_id = fam_id,
                                     role = role,
+                                    family_graphs_col = family_graphs_col,
                                     out = out, 
                                     tol = tol))
   } 
