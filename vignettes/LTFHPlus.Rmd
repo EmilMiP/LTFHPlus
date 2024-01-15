@@ -1,6 +1,7 @@
 ---
 title: "LTFHPlus"
 output: rmarkdown::html_vignette
+date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{LTFHPlus}
   %\VignetteEngine{knitr::knitr}
@@ -14,11 +15,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-In the examples, we will go over how the package ***LTFHPlus*** can be used to estimate a refined phenotype for the LT-FH++. More specifically, we will provide reproducible examples with explanations of the method and its code, such that users will be able to play around with the functions themselves. The code will be based on packages from the ***tidyverse***, if the read is not familiar with packages such as ***dplyr***, then a line-by-line understanding might not be possible, however the overall point should hopefully still be clear. 
+In the examples, we will go over how the package ***LTFHPlus*** can be used to estimate a refined phenotype with the LT-FH++ package. More specifically, we will provide reproducible examples with explanations of the method and its code, such that users will be able to play around with the functions themselves. The code will be based on packages from the ***tidyverse***, if the reader is not familiar with packages such as ***dplyr***, then a line-by-line understanding might not be possible, however the overall point should hopefully still be clear. 
 
 ## A word on the examples
 
-The examples included here are meant to represent a simple application of the method, such that users are able to get a good idea of how to use the functions in the package and what to expect as output. The genetic liabilities are meant to be used as a phenotype for genome-wide association studies(GWAS). We recommend using software such as [PLINK](https://www.cog-genomics.org/plink/), [BOLT](https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html), or R-based methods such as [bigsnpr](https://privefl.github.io/bigsnpr/) to perform the GWAS. 
+The examples included here are meant to represent a simple application of the method, such that users are able to get a good idea of how to use the functions in the package and what to expect as output. The genetic liabilities are meant to be used as a phenotype for genome-wide association studies(GWAS). We recommend using software such as [PLINK](https://www.cog-genomics.org/plink/), [BOLT](https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html), [Regenie](https://doi.org/10.1038/s41588-021-00870-7), or R-based methods such as [bigsnpr](https://privefl.github.io/bigsnpr/) to perform the GWAS. 
 
 
 

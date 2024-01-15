@@ -1,7 +1,7 @@
 ---
 title: "From CIP and family to LT-FH++ input"
 author: "Emil M. Pedersen"
-date: "2022-09-06"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
@@ -15,66 +15,82 @@ library(LTFHPlus)
 library(dplyr)
 ```
 
-### dummy input
+### Dummy input
 
-Here we will simply simulate a potential input format. We create `fam`, which contains the family information and `CIP`, which contains the cumulative incidence proportions. The CIP is stratified by birth year and sex for illustrative purposes. If users only have CIPs stratified by sex, it would simply have one fewer columns. Please not that all values shown here are only for illustrative purposes. 
+Here we will simply simulate a potential input format. We create `tbæ`, which contains information on each person to attach thresholds to. It should contain each family member along with the needed information. Here, we simply use the proband with no family members. Next, we create `CIP`, which contains the cumulative incidence proportions. The CIP is stratified by birth year and sex for illustrative purposes. If users only have CIPs stratified by sex, it would simply have one fewer columns. **Please note that all values shown here are only for illustrative purposes.** 
 
 ```{r}
-fam = tibble(fam_id = list(fam_id = c(1, 2, 3)),
-             pid    = list(pid    = c(list(paste0("pid", 1:4)), list(paste0("pid", 5:10)), list("pid11"))),
-             role   = list(role   = c(list(c("o", "f", "m", "s1")), list(c("o", "f", "m", "s1", "s2", "s3")), list(c("o"))))) %>%
-  tidyr::unnest(cols = c(fam_id, pid, role)) %>%
-  #just adding some info as an example
-  mutate(sex    = sample(x = 0:1, size = n(), replace = T),
-         status = sample(x = 0:1, size = n(), replace = T),
-         current_age    = sample(x = 10:100, size = n(), replace = T),
-         aoo    = sapply(seq_along(status), function(cur_ind) {
-           ifelse(status[cur_ind] == 1, sample(10:current_age[cur_ind], size = 1), NA)
-           }),
-         age = pmin(current_age, aoo, na.rm = T),
-         birth_year = 2022 - age) %>% 
+n_sim = 10
+tbl = tibble(
+  fam_id = paste0("fam", 1:n_sim),
+  pid = 1:n_sim,
+  role = rep("o", n_sim),
+  sex = sample(x = 0:1, size = n_sim, replace = T),
+  status = sample(size = n_sim, x = 0:1, replace = T),
+  age = sample(size = n_sim, x = 1:90, replace = T),
+  birth_year = 2023 - age,
+  aoo = purrr::map2_dbl(.x = status, .y = age, .f = ~ ifelse(.x == 1, sample(size = 1, x = 1:.y), NA))
+) %>% 
   print()
 
-
+#### THIS IS DUMMY CIP. DO NOT USE FOR REAL-WORLD DATA USE ####
 CIP = expand.grid(list(age = 1:100,
-                       birth_year = 1900:2022,
+                       birth_year = 1900:2024,
                        sex = 0:1)) %>%
   group_by(sex, birth_year) %>%
   mutate(cip = (1:n() - 1)/n() * .1) %>%
   ungroup() %>% 
   print()
-
+#### THIS IS DUMMY CIP. DO NOT USE FOR REAL-WORLD DATA USE ####
 ```
-In `fam` we have list entries, corresponding to an input format that is still supported, but for ease of use, will be replaced by a longer format. If the list entry format is used, a note will be printed that tells the users that a conversion happened internally. It will look like this:
+### Preparing input
+Assigning thresholds to each person in `tbl` can now be done with the function `prepare_LTFHPlus_input`. The thresholds can be assigned in two ways. The first is matching directly on the combinations of birth year, sex, and age of each person to the combinations that are present in the `CIP` object. The second uses interpolation to predict the CIP value between the observed combinations of birth year, sex, and age that is present in the CIP object. Currently, only interpolation with ***xgboost*** package is supported. The interpolation can be useful, since real-world data often lead to ages or age of onsets that can be expressed as decimals and rounding may lead to large jumps in CIP values. 
+   The outputs below can be subset such that only the required information is left. For direct input into `estimate_liability()`, only the family and personal id columns are needed as well as role (if the graph input is not used) and the lower and upper columns. 
+
+#### No interpolation
+Without using interpolation, meaning we match on the combinations of birth year, sex and age that are present in both the `tbl` and `CIP` objects. The thresholds can then be assigned in the following way:
 
 ```{r}
-input =  prepare_LTFHPlus_input(family = fam, CIP = CIP, role_col = "role", use_fixed_case_thr = F)
+tbl2 = prepare_LTFHPlus_input(.tbl = tbl,
+                              CIP = CIP, 
+                              age_col = "age",
+                              aoo_col = "aoo",
+                              CIP_merge_columns = c("age","birth_year", "sex"),
+                              CIP_cip_col = "cip",
+                              status_col = "status",
+                              use_fixed_case_thr = F,
+                              fam_id_col = "fam_id",
+                              personal_id_col = "pid",
+                              interpolation = NA,
+                              min_CIP_value = 1e-4)
+tbl2
+```
 
-input_fam = input %>% tidyr::unnest(cols = c(pid, role)) %>% mutate(pid = paste0(pid, "_", role)) %>% dplyr::select(., fam_id, pid) %>% tidyr::nest(data = pid)
-thr = input %>% tidyr::unnest(cols = pid) %>% dplyr::select(-role, -fam_id)# %>% rename(fam_id2 = fam_id, fam_id = pid) %>% rename(pid = fam_id2) %>% select(-1)
+#### Interpolation with Xgboost
 
-.tbl = convert_format(family = input_fam, threshs = thr, personal_id_col = "pid", role_col = "role")
-.tbl
+If decimal ages and ages of onset are present, then we can interpolate the cip values with the xgboost package. The input does not change, except for `interpolate = "xgboost"`. The current input data does not contain decimal values, but for illustrative purposes, we will use it as-is. Parameters can be passed to xgboost through the `bst.params` variable. 
+
+```{r}
+tbl2_xgb = prepare_LTFHPlus_input(.tbl = tbl,
+                                 CIP = CIP, 
+                                 age_col = "age",
+                                 aoo_col = "aoo",
+                                 CIP_merge_columns = c("age","birth_year", "sex"),
+                                 CIP_cip_col = "cip",
+                                 status_col = "status",
+                                 use_fixed_case_thr = F,
+                                 fam_id_col = "fam_id",
+                                 personal_id_col = "pid",
+                                 interpolation = "xgboost", 
+                                 xgboost_itr = 30,
+                                 min_CIP_value = 1e-4)
+tbl2_xgb
 ```
 
 
 
 ### Estimating liabilities
 
-From here both input formats can be used to estimate the desired liabilities. Either with the set of inputs `family` and `threshs` that is based on the list entries or the long format supported by `.tbl`. For the long format the input is given as 
-```{r}
-estimate_liability(family = input_fam,
-                   threshs = thr,
-                   h2 = .5,
-                   pid = "pid",
-                   fam_id = "fam_id")
-```
+From here, the above objects `tbl2` and `tbl2_xgb` can be subset to the relevant columns and used in `estimate_liability()`. See ***LT-FH++ Example*** for an example of this.
 
-A note is printed to let the user know that the conversion to the longer format happened internally, suggesting the use of the longer format. The output should be the same. If the conversion fails, an error will be given, with another suggestion to use the longer format and the `prepare_LTFHPlus_input` function.
-```{r}
-estimate_liability(.tbl = .tbl,
-                   h2 = .5,
-                   pid = "pid",
-                   fam_id = "fam_id")
-
-```
+The objects can also be subset to contain just the family and personal ID columns, as well as the lower and upper columns, and then used as input in `prepare_graph()` to assign each individual with the threshold information as attributes. See ***LT-FH++ Graph Example*** for details.

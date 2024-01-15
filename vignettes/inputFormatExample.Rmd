@@ -1,7 +1,7 @@
 ---
 title: "How the covariance is constructed"
 author: "Emil M. Pedersen"
-date: '2022-09-07'
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{How the covariance is constructed}
@@ -26,21 +26,18 @@ With version 2.0, updates have been made to the input and the functions availabl
 
 ### Family Input 
 
-The function used to estimate the genetic (or full liability) of an individual is `estimate_liability`. The family input is either input through `.tbl`, which is a long format where each row is an individual, or `family`, which is a list entry format, where each row is a full family. If the `family` object is used, it must be accompanied by another object with the thresholds for each individual in the families.  
+The function used to estimate the genetic (or full liability) of an individual is `estimate_liability`. The family input is input through `.tbl`, which is a long format where each row is an individual. A role must accompany each individual. The family relationship to the proband has its own column.
 
-### Family relationship
-
-In either family input format a role must accompany each individual. In the long format, the family relationship to the proband has its own column. In the list entry format, it is combined into a string with the id of an individual. As a result, the IDs of family members must contain the family member's ID and end in the shorthand notation for their familial relation to the proband. For example, for a mother it would be "motherID_m", father would be "fatherID_f", and siblings must be "siblingID_s[0-9]". The relationship to the proband is needed to properly construct the covariance. An example of the different input formats can be seen in *From CIP and family to LT-FH++ input*. 
 
 ### Simulate data
 
-From `simulate_under_LTM` an example of the full input data can be seen in the longer format. It returns a list, first entry is `sim_obs`, and contains all the underlying liabilities, status, and age of onset or age for controls. The second entry is called `thresholds` and is the longer format. It contains a family ID, individual ID, family relationship to the proband, and a lower and upper threshold for each individual. The following example simulates a family with the index person, a mother, a father, and a single sibling.
+From `simulate_under_LTM` an example of the full input data can be seen. It returns a list, first entry is `sim_obs`, and contains all the underlying liabilities, status, and age of onset or age for controls. The second entry is called `thresholds` and it contains a family ID, individual ID, family relationship to the proband, and a lower and upper threshold for each individual. The following example simulates a family with the index person, a mother, a father, and a single sibling. Other family members can also be used. See the documentation for `simulate_under_LTM()` for more information.
 ```{r}
  sims <- simulate_under_LTM(fam_vec = c("m","f","s1"),
                             n_fam = NULL, 
                             add_ind = TRUE, 
                             h2 = 0.5, 
-                            n_sim=10, 
+                            n_sim = 10, 
                             pop_prev = .05)
 
 sims$sim_obs
@@ -54,7 +51,7 @@ sims$thresholds
 
 We construct the covariance matrix for each family being analysed during run-time. The covariance function that is used internally in `estimate_liability` has been updated to allow for a higher degree of flexibility. This means it is up to the user to provide the familial relationship, and `construct_covmat` creates the corresponding covariance matrix based on the heritability and expected genetic overlap between two individuals. 
 
-`construct_covmat` defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format for `construct_covmat` can be specified in two different ways, either `fam_vec` (the method used internally in `estimate_liability`) or with <tt>n_fam</tt>. For <tt>fam_vec</tt> a vector of strings from the list of possible familial relationships must be provided For the full list, please see documentation for `construct_covmat`. Family members will then appear in the covariance matrix in the same order as they appear in <tt>fam_vec</tt>. For <tt>n_fam</tt> a named vector is provided, where the *names* of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears. 
+`construct_covmat` defaults to a family structure with both parents, one sibling, and the paternal and maternal grandparents. The input format for `construct_covmat` can be specified in two different ways, either `fam_vec` (the method used internally in `estimate_liability`) or with `n_fam`. For `fam_vec` a vector of strings from the list of possible familial relationships must be provided For the full list, please see documentation for `construct_covmat`. Family members will then appear in the covariance matrix in the same order as they appear in `fam_vec`. For `n_fam` a named vector is provided, where the *names* of the named vector corresponding to the familial relationship and the values of the vector corresponds to how often that particular familial role appears. 
 
 In order to illustrate the different possible families, we will provide some examples. If no family information is available, but the age of onset information is still available, we can use the simplest covariance, which only contains the genetic and full liability of the index person:
 ```{r}

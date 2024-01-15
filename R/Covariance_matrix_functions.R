@@ -782,3 +782,184 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
                                   h2_vec = h2, phen_names = phen_names))
   } 
 }
+
+
+
+#' 
+#' Constructing covariance matrix from local family graph
+#' 
+#' Function that constructs the genetic covariance matrix given a graph around a proband
+#' and extracts the threshold information from the graph.
+#' 
+#' @param pid Name of column of personal ID 
+#' @param cur_proband_id id of proband
+#' @param cur_family_graph local graph of current proband
+#' @param h2 liability scale heritability
+#' @param add_ind whether to add genetic liability of the proband or not. Defaults to true.
+#' 
+#' @return list with two elements. The first element is temp_tbl, which contains the id of 
+#' the current proband, the family ID and the lower and upper thresholds. The second element,
+#' cov, is the covariance matrix of the local graph centered on the current proband.
+#' 
+#' @importFrom dplyr as_tibble tibble mutate bind_rows %>% 
+#' @importFrom igraph get.vertex.attribute
+#' 
+#' @export
+#' 
+
+graph_based_covariance_construction = function(pid,
+                                               cur_proband_id,
+                                               cur_family_graph,
+                                               h2,
+                                               add_ind = TRUE) {
+  # constructing tibble with ids and thresholds
+  temp_tbl = as_tibble(get.vertex.attribute(cur_family_graph)) %>%
+    rename(!!as.symbol(pid) := name) %>%
+    relocate(!!as.symbol(pid))
+  
+  # add genetic liability if required
+  if (add_ind) {
+    temp_tbl = temp_tbl %>%
+      bind_rows(
+        tibble(
+          !!as.symbol(pid) := paste0(cur_proband_id,"_g"),
+          lower = -Inf,
+          upper = Inf),
+        .
+      )
+  }
+  
+  
+  # graph based kinship matrix, with genetic liability added
+  cov = get_kinship(fam_graph = cur_family_graph,
+                    h2 = h2,
+                    add_ind = add_ind,
+                    index_id = cur_proband_id)
+  
+  # Now that we have extracted all the relevant information, we
+  # only need to order the observations before we can run
+  # Gibbs sampler, as g and o need to be the first two
+  # observations.
+  rnames = rownames(cov)
+  to_put_first = paste0(cur_proband_id, c("_g", ""))
+  to_put_last  = setdiff(rnames, to_put_first)
+  newOrder = c(to_put_first, to_put_last)
+  
+  # new ordering
+  temp_tbl = temp_tbl[match(newOrder, pull(temp_tbl, !!as.symbol(pid))),]
+  cov  = cov[newOrder,newOrder]
+  return(list(temp_tbl = temp_tbl, covmat = cov))
+}
+
+
+
+#' 
+#' Constructing covariance matrix from local family graph for multi trait analysis
+#' 
+#' Function that constructs the genetic covariance matrix given a graph around a proband
+#' and extracts the threshold information from the graph.
+#' 
+#' @param fam_id Name of column with the family ID
+#' @param pid Name of column of personal ID 
+#' @param cur_proband_id id of proband
+#' @param cur_family_graph local graph of current proband
+#' @param h2_vec vector of liability scale heritabilities
+#' @param genetic_corrmat matrix with genetic correlations between considered phenotypes. Must have same order as h2_vec.
+#' @param phen_names Names of the phenotypes, as given in cur_family_graph.
+#' @param add_ind whether to add genetic liability of the proband or not. Defaults to true.
+#' 
+#' @return list with three elements. The first element is temp_tbl, which contains the id of 
+#' the current proband, the family ID and the lower and upper thresholds for all phenotypes. The second element,
+#' cov, is the covariance matrix of the local graph centred on the current proband. The third element is newOrder,
+#' which is the order of ids from pid and phen_names pasted together, such that order can be enforced elsewhere too.  
+#'  
+#' @importFrom dplyr as_tibble tibble mutate bind_rows %>% 
+#' @importFrom igraph get.vertex.attribute
+#' @importFrom stringr str_replace_all
+#' @export
+#' 
+
+graph_based_covariance_construction_multi = function(fam_id,
+                                                     pid,
+                                                     cur_proband_id,
+                                                     cur_family_graph,
+                                                     h2_vec,
+                                                     genetic_corrmat,
+                                                     phen_names,
+                                                     add_ind = TRUE) {
+  # only calculate number of traits once
+  ntrait = length(phen_names)
+  
+  # constructing tibble with ids and thresholds
+  temp_tbl = as_tibble(get.vertex.attribute(cur_family_graph)) %>%
+    rename(!!as.symbol(pid) := name) %>%
+    mutate(!!as.symbol(fam_id) := cur_proband_id) %>%
+    relocate(!!as.symbol(fam_id), !!as.symbol(pid))
+  
+  # add genetic liability if required
+  if (add_ind) {
+    temp_tbl = tibble(
+      !!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1],
+      !!as.symbol(pid)    := paste0(cur_proband_id, "_g")
+    ) %>%
+      bind_cols(
+        tibble::tibble(!!!c(stats::setNames(rep(-Inf, ntrait), paste0("lower_", phen_names)), # all lower
+                            stats::setNames(rep( Inf, ntrait), paste0("upper_", phen_names))))# all upper
+      ) %>%
+      bind_rows(# add to original temp_tbl
+        .,
+        temp_tbl
+      )
+  }
+  
+  fam_size = nrow(temp_tbl)
+  cov = matrix(NA, nrow = fam_size * ntrait, ncol = fam_size * ntrait)
+  
+  # graph based kinship matrix, with genetic liability added
+  for (i in 1:ntrait) {
+    i_ind = 1:fam_size + fam_size * (i - 1)
+    for (j in i:ntrait) {
+      j_ind = 1:fam_size + fam_size * (j - 1)
+      if (i == j) {
+        cov[i_ind, j_ind] <- get_kinship(fam_graph = cur_family_graph,
+                                         h2 = h2_vec[i],
+                                         add_ind = add_ind,
+                                         index_id = cur_proband_id)
+      } else {
+        cov[i_ind, j_ind] <- cov[j_ind, i_ind] <- get_kinship(fam_graph = cur_family_graph,
+                                                              h2 = sqrt(h2_vec[i] * h2_vec[j]) * genetic_corrmat[i,j],
+                                                              add_ind = add_ind,
+                                                              index_id = cur_proband_id, fix_diag = F)
+        
+      }
+    }
+  }
+  
+  for_name = get_kinship(fam_graph = cur_family_graph,
+                         h2 = h2_vec[1],
+                         add_ind = add_ind,
+                         index_id = cur_proband_id)
+  colnames(cov) <- rownames(cov) <- paste(rep(colnames(for_name), ntrait), rep(phen_names, each = fam_size), sep = "_")
+  
+  # Now that we have extracted all the relevant information, we
+  # only need to order the observations before we can run
+  # Gibbs sampler, as g and o need to be the first two
+  # observations.
+  
+  # get current order within one phenotype (same order for all)
+  rnames = str_subset(rownames(cov), paste0(phen_names[1], "$")) %>%
+    #removing phenotype name for just the IDs
+    str_replace_all(paste0("_", phen_names[1]), "")
+  
+  
+  to_put_first = paste0(cur_proband_id, c("_g", ""))
+  to_put_last  = setdiff(rnames, to_put_first)
+  withinPhenotypeOrder = c(to_put_first, to_put_last)
+  newOrder = paste0(rep(withinPhenotypeOrder, ntrait), "_", rep(phen_names, each = fam_size))
+  
+  # new ordering
+  temp_tbl = temp_tbl[match(withinPhenotypeOrder, pull(temp_tbl, !!as.symbol(pid))),]
+  cov  = cov[newOrder,newOrder]
+  
+  return(list(temp_tbl = temp_tbl, cov = cov, newOrder = newOrder))
+}
