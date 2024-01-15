@@ -43,7 +43,13 @@ estimate_liability_single and estimate_liability_multi."><!-- mathjax --><script
       <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
     </li>
     <li>
+      <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
+    </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
     <li>
       <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
@@ -80,12 +86,12 @@ on their family history for one or more phenotypes.  It is a wrapper around
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_liability</span><span class="op">(</span></span>
 <span>  .tbl <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  family <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  threshs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  family_graphs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  h2 <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  pid <span class="op">=</span> <span class="st">"PID"</span>,</span>
 <span>  fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>,</span>
 <span>  role <span class="op">=</span> <span class="st">"role"</span>,</span>
+<span>  family_graphs_col <span class="op">=</span> <span class="st">"fam_graph"</span>,</span>
 <span>  out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  genetic_corrmat <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -118,39 +124,9 @@ Defaults to <code>NULL</code>.</p></li>
 </ul></dd>
 
 
-<dt>family</dt>
-<dd><p>A matrix, list or data frame that can be converted into a tibble.
-Must have at least two columns that hold the family identifier and the corresponding
-personal identifiers, respectively. That is, for each family in fam_id there should
-be a list holding all individuals belonging to that family in pid. Note that the
-personal identifiers for all individuals must have a special format. It must be end
-with _?, where ? is one of the following abbreviations</p><ul><li><p><code>g</code> (Genetic component of full liability)</p></li>
-<li><p><code>o</code> (Full liability)</p></li>
-<li><p><code>m</code> (Mother)</p></li>
-<li><p><code>f</code> (Father)</p></li>
-<li><p><code>c[0-9]*.[0-9]*</code> (Children)</p></li>
-<li><p><code>mgm</code> (Maternal grandmother)</p></li>
-<li><p><code>mgf</code> (Maternal grandfather)</p></li>
-<li><p><code>pgm</code> (Paternal grandmother)</p></li>
-<li><p><code>pgf</code> (Paternal grandfather)</p></li>
-<li><p><code>s[0-9]*</code> (Full siblings)</p></li>
-<li><p><code>mhs[0-9]*</code> (Half-siblings - maternal side)</p></li>
-<li><p><code>phs[0-9]*</code> (Half-siblings - paternal side)</p></li>
-<li><p><code>mau[0-9]*</code> (Aunts/Uncles - maternal side)</p></li>
-<li><p><code>pau[0-9]*</code> (Aunts/Uncles - paternal side).
-See also <code><a href="construct_covmat.html">construct_covmat</a></code>.
-Defaults to <code>NULL</code>.</p></li>
-</ul></dd>
-
-
-<dt>threshs</dt>
-<dd><p>A matrix, list or data frame that can be converted into a tibble.
-Must have at least five columns; one holding the personal identifier for all individuals,
-and the remaining four holding the lower and upper thresholds for the first and second
-phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-to a specific phenotype uniquely. This is done easily by adding _name_of_phenotype to
-the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-thresholds corresponding to the first phenotype. Defaults to <code>NULL</code>.</p></dd>
+<dt>family_graphs</dt>
+<dd><p>A tibble with columns pid and family_graph_col.
+See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.</p></dd>
 
 
 <dt>h2</dt>
@@ -187,6 +163,10 @@ holds the role.Each role must be chosen from the following list of abbreviations
 <li><p><code>pau[0-9]*</code> (Aunts/Uncles - paternal side).
 Defaults to "role".</p></li>
 </ul></dd>
+
+
+<dt>family_graphs_col</dt>
+<dd><p>Name of column with family graphs in family_graphs. Defaults to "fam_graph".</p></dd>
 
 
 <dt>out</dt>

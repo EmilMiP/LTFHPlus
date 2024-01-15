@@ -3,10 +3,12 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   FromCIPFamilyToLTFHPlusInput: FromCIPFamilyToLTFHPlusInput.html
+  FromTrioToFamilies: FromTrioToFamilies.html
   LTFHPlus: LTFHPlus.html
   LTFHPlusExample: LTFHPlusExample.html
+  LTFHPlusGraphExample: LTFHPlusGraphExample.html
   inputFormatExample: inputFormatExample.html
-last_built: 2023-11-29T12:44Z
+last_built: 2024-01-15T13:16Z
 urls:
   reference: EmilMiP.github.io/LTFHPlus/reference
   article: EmilMiP.github.io/LTFHPlus/articles
