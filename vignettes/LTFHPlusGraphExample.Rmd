@@ -9,19 +9,19 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, message=FALSE}
 library(LTFHPlus)
 library(dplyr)
 library(igraph)
 ```
 
 
-## Automatic family construction
+### Automatic family construction
 
 Manually constructing family history from registers can be tedious. It can be easily done for first and second degree relatives, however, it starts to become very difficult once further degrees of relatives needs to be identified. Other R packages, such as *Kinship2* or *FamAgg*, allows users to manipulate pedigrees and perform certain actions and calculations on them, however, to the best of our knowledge, they do not allow one to find all relatives of degree $n$ or closer of a given individual. This particular problem is core to LT-FH++, as the family members of a proband (often the genotyped individual) will need to be identified as well as the family members' mutual kinship coefficient for the covariance matrix. 
    With the introduction of the function `prepare_graph()`, we have made it possible to automatically construct families for a list of probands. Below, we will provide an example of how the function can be used in connection with the `estimate_liability()` function of the package. *All data is simulated and should not be used as-is in any real-world analysis.*
 
-## Constructing the population pedigree
+### Constructing the population pedigree
 
 The input is inspired by register information such as the trio information provided by the danish CPR register. It usually follows the format of having a column with the child's ID (here simply `id`), followed by columns for the mother's and father's ID (here `momcol` and `dadcol`). Here, we provide an illustrative example of how the register information may look. The names used are representative of their relation to a proband named "pid", with "pgm" refering to paternal grandmother, "mgf" refering to maternal grandfather, the "hs" prefix means half-sibling, the new parents of half-siblings will appear with the "H" or "W" suffix for husband or wife, cousins are prefaced with the first two letters of their parents, etc.. 
 
@@ -56,6 +56,7 @@ thrs =  tibble(
  lower = sample(c(-Inf, 2), size = length(id), replace = TRUE),
  upper = sample(c(2, Inf), size = length(id), replace = TRUE)) %>% print()
 ```
+### Constructing the graph
 With the above input, we can construct the graph for the population specified in `family` and attach the information in `thrs`:
 
 ```{r}
@@ -67,7 +68,10 @@ graph = prepare_graph(.tbl = family,
 graph
 ```
 The object `graph` is a directed graph with the connections specified in the `family` object and attributes (attr) from `thrs`. The package *igraph* can be used to do any manipulation of the object `graph`.
-   The object `graph` only contains a single family in this example, however, it could just as easily contain the entirety of the danish CPR register, totalling more than $10$ million individuals. We can create a local graph (formally, a neighborhood sub-graph) around a proband, only including individuals that are within $n$ steps of said proband. From this local graph, we can construct a kinship matrix and the covariance matrix required by `estimate_liability()`.
+   The object `graph` only contains a single family in this example, however, it could just as easily contain the entirety of the danish CPR register, totalling more than $10$ million individuals. We can create a local graph (formally, a neighborhood sub-graph) around a proband, only including individuals that are within $n$ steps of said proband. The $n$ steps correspond to $n$ degree relatives, such that $n = 1$ yields all first degree relatives, $n = 2$ yields all second degree relatives, etc.. From this local graph, we can construct a kinship matrix and the covariance matrix required by `estimate_liability()`.
+
+### Extracting local graphs
+
    If we have constructed a graph on the entire Danish CPR register and a subset of these individuals have been genotyped, then we can create local graphs around each of the genotyped individuals. Here, we simply use every individual for the illustration:
 ```{r}
 genotyped_ids = V(graph)$name
@@ -78,6 +82,8 @@ family_graphs = tibble(
 )
 ```
 Here, `family_graphs` is a tibble with an id column called "pid" and a column called "fam_graph" with list of all the local graphs, centred on the individual from "pid". 
+
+### Construct kinship matrix
    We can construct a kinship matrix for a local graph in the following way:
    
 ```{r}
@@ -85,7 +91,7 @@ get_kinship(family_graphs$fam_graph[[1]], h2 = 1, index_id = family_graphs$pid[1
 ```
 Note: individuals such as "hspaunt" are not present, since they are third degree relation.
 
-## Calculating genetic liabilities
+### Calculating genetic liabilities
 
 With the object `family_graphs`, we have constructed an object with the required information and format for estimating the genetic liabilities of a list of probands. We have automatically extracted the family present for a given proband up to degree $2$ (can be generalised to any integer $n$), which allows us to construct the kinship matrix. Next, we have attached the lower and upper threshold for each individual during the construction of the graph, and as such follow the indivdual in whatever local graph they are a part of. Finally, we need a liability-scale heritability. We will simply use $h^2 = 0.5$ for illustrative purposes. We will use `estimate_liability()` in the folling way:
 

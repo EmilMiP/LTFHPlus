@@ -81,6 +81,8 @@ plot(fam_graph, layout = layout_as_tree,
 
   In particular, individuals such as paternal uncle's child (i.e a cousin, coded as pucousin above) is not present with this relatedness cut-off as such family members are of degree $3$. 
 
+### Calculate kinship matrix
+
 Finally, the kinship matrix can be calculated with `get_kinship()` (output made nicer with round) in the following way:
 ```{r}
 # the kinship matrix is multiplied by 100 and rounded for illustrative purposes!

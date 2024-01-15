@@ -15,7 +15,7 @@ library(LTFHPlus)
 library(dplyr)
 ```
 
-### dummy input
+### Dummy input
 
 Here we will simply simulate a potential input format. We create `tbæ`, which contains information on each person to attach thresholds to. It should contain each family member along with the needed information. Here, we simply use the proband with no family members. Next, we create `CIP`, which contains the cumulative incidence proportions. The CIP is stratified by birth year and sex for illustrative purposes. If users only have CIPs stratified by sex, it would simply have one fewer columns. **Please note that all values shown here are only for illustrative purposes.** 
 
