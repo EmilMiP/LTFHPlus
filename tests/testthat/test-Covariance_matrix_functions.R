@@ -9,30 +9,69 @@
 # assert row names are correct ?
 # assert no relatedness between father and mothers side of family ?
 
-random_symmetric <- function(n, min = -1, max = 1, diag = NULL) {
-  x <- matrix(runif(n ^ 2, min = min, max = max), n) 
-  ind <- lower.tri(x) 
-  x[ind] <- t(x)[ind]
-  if (!is.null(diag)) diag(x) <- diag
-  return(x)
-}
-
-symmetrize <- function(mat) {
+symmetrize <- function(mat, vals) {
+  mat[upper.tri(mat, diag = TRUE)] <- vals
   ind <- lower.tri(mat) 
   mat[ind] <- t(mat)[ind]
   diag(mat) <- 1
   return(mat)
 }
 
-n_fam <- stats::setNames(c(rbinom(6, 1, 0.6), rbinom(6, 9, 0.15)), c("m", "f", "mgm", "mgf", "pgm", "pgf", "c", "s", "mhs", "phs", "mau", "pau"))
+n_phen_min <- 2
+n_phen_max <- 5
+
+unique_member_chance <- 0.6
+plural_member_chance <- 0.15
+family_members <- c("m", "f", "mgm", "mgf", "pgm", "pgf", "c1", "s", "mhs", "phs", "mau", "pau")
+
+n_fam <- stats::setNames(c(rbinom(6, 1, unique_member_chance), rbinom(6, 9, plural_member_chance)), family_members)
 h2_single <- runif(1)
-phen_no <- sample(2:4, 1)
-h2_multi <- runif(phen_no)
 
-full <- matrix(runif(phen_no ^ 2, min = -1, max = 1), phen_no)
-genetic <- full * rbinom(phen_no ^ 2, 1, 0.9) * runif(phen_no ^ 2)
+n_phen <- sample(n_phen_min : n_phen_max, 1)
+h2_multi <- runif(n_phen)
 
-full_corrmat <- symmetrize(full)
-genetic_corrmat <- symmetrize(genetic)
+n <- (n_phen * (n_phen + 1)) / 2
+fvals <- runif(n, min = -1, max = 1)
+gvals <- fvals * rbinom(n, 1, 0.9) * runif(n)
 
+full_corrmat <- symmetrize(matrix(nrow = n_phen, ncol = n_phen), fvals)
+genetic_corrmat <- symmetrize(matrix(nrow = n_phen, ncol = n_phen), gvals)
+
+# testing construct_covmat_single
+
+covmat_single <- construct_covmat_single(fam_vec = NULL, n_fam = n_fam, h2 = h2_single)
+
+test_that("construct_covmat_single produces diagonal with h2 in first entry and 1s after", {
+  expect_equal(unname(diag(covmat_single)), c(h2_single, rep(1, nrow(covmat_single) - 1)))
+})
+
+test_that("construct_covmat_single produces symmetric matrix", {
+  expect_true(isSymmetric(covmat_single))
+})
+
+test_that("construct_covmat_single produces positive definite matrix", {
+  expect_true(!(any(eigen(covmat_single)$values < 0)))
+})
+
+# testing construct_covmat_multi
+
+covmat_multi <- construct_covmat_multi(fam_vec = NULL, n_fam = n_fam, h2 = h2_multi, full_corrmat = full_corrmat, genetic_corrmat = genetic_corrmat)
+
+test_that("construct_covmat_multi produces diagonal with h2 in first entry and 1s after", {
+  print("")
+  print(length(diag(covmat_multi)))
+  print(nrow(covmat_multi))
+  print(ncol(covmat_multi))
+  
+  print(length(rep(1, nrow(covmat_multi) - 1)))
+  expect_equal(unname(diag(covmat_multi)), c(h2_multi, rep(1, nrow(covmat_multi) - 1)))
+})
+
+test_that("construct_covmat_multi produces symmetric matrix", {
+  expect_true(isSymmetric(covmat_multi))
+})
+
+test_that("construct_covmat_multi produces positive definite matrix", {
+  expect_true(!(any(eigen(covmat_multi)$values < 0)))
+})
 
