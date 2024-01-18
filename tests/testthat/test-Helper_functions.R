@@ -106,48 +106,48 @@ test_that("convert_age_to_cir rejects non-numeric arguments", {
 # Positive Tests
 test_that("convert_age_to_thresh works with default parameters in logistic mode", {
   age <- 40
-  expected_value <- 2.428256
+  expected_value <- 2.428255857
   test <- convert_age_to_thresh(age)
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh defaults to logistic with invalid dist", {
   age <- 40
-  expected_value <- 2.428256
+  expected_value <- 2.428255857
   test <- convert_age_to_thresh(age, dist = "invalid")
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh uses first valid dist", {
   age <- 40
-  expected_value <- 2.128167
+  expected_value <- 2.1280452341849840359
   test <- convert_age_to_thresh(age, dist = c("invalid", "normal", "logistic"))
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh works with default parameters in normal mode", {
   age <- 40
-  expected_value <- 2.128167
+  expected_value <- 2.1280452341849840359
   test <- convert_age_to_thresh(age, dist = "normal")
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh works in normal mode with min and max age swapped", {
   age <- 40
   min_age <- 90
   max_age <- 10
-  expected_value <- 2.128167
+  expected_value <- 2.1280452341849840359
   test <- convert_age_to_thresh(age, dist = "normal", min_age = min_age, max_age = max_age)
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh works in normal mode with lower and upper swapped", {
   age <- 40
   lower <- Inf
-  upper <- 1.645
-  expected_value <- 2.128167
+  upper <- 1.644853626951472636
+  expected_value <- 2.1280452341849840359
   test <- convert_age_to_thresh(age, dist = "normal", lower = lower, upper = upper)
-  expect_equal(test, expected_value, tolerance = testing_tolerance)
+  expect_equal(test, expected_value)
 })
 
 test_that("convert_age_to_thresh works with non-default parameters", {
@@ -159,11 +159,11 @@ test_that("convert_age_to_thresh works with non-default parameters", {
   max_age <- 80
   lower <- 1.96
   upper <- 3
-  expected_value_logistic <- 1.980199
-  expected_value_normal <- 2.318249
+  expected_value_logistic <- 1.98019903
+  expected_value_normal <- 2.318248972
   test_logistic <- convert_age_to_thresh(age, dist = "logistic", pop_prev = pop_prev, mid_point = mid_point, slope = slope)
   test_normal <- convert_age_to_thresh(age, dist = "normal", min_age = min_age, max_age = max_age, lower = lower, upper = upper)
-  expect_equal(test_logistic, expected_value_logistic, tolerance = testing_tolerance)
+  expect_equal(test_logistic, expected_value_logistic)
   expect_equal(test_normal, expected_value_normal)
 })
 
@@ -207,9 +207,9 @@ test_that("convert_age_to_thresh rejects non-numeric arguments", {
 # Positive Tests
 test_that("convert_cir_to_age works with default parameters", {
   cir <- 0.08
-  expected_age <- 71.09035
+  expected_age <- 71.09035489
   test <- convert_cir_to_age(cir)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_cir_to_age works with non-default parameters", {
@@ -217,9 +217,9 @@ test_that("convert_cir_to_age works with non-default parameters", {
   pop_prev <- 0.2
   mid_point <- 70
   slope <- 1/10
-  expected_age <- 65.94535
+  expected_age <- 65.94534892
   test <- convert_cir_to_age(cir, pop_prev, mid_point, slope)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_cir_to_age works with boundary values", {
@@ -227,9 +227,9 @@ test_that("convert_cir_to_age works with boundary values", {
   pop_prev <- 1
   mid_point <- 0.0001
   slope <- -1/8
-  expected_age <- 73.68202
+  expected_age <- 73.68202294
   test <- convert_cir_to_age(cir, pop_prev, mid_point, slope)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_cir_to_age returns 0 instead of negative value", {
@@ -275,16 +275,16 @@ test_that("convert_cir_to_age rejects non-numeric arguments", {
 # Positive Tests
 test_that("convert_liability_to_aoo works with default parameters in logistic mode", {
   liability <- 2
-  expected_age <- 50.22021
+  expected_age <- 50.2202059
   test <- convert_liability_to_aoo(liability)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo works with default parameters in normal mode", {
   liability <- 2
-  expected_age <- 97.54887
+  expected_age <- 97.547511875336127218
   test <- convert_liability_to_aoo(liability, dist = "normal")
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo works with non-default parameters", {
@@ -297,49 +297,49 @@ test_that("convert_liability_to_aoo works with non-default parameters", {
   lower <- 1.96
   upper <- 3
   
-  expected_age_logistic <- 49.47011
-  expected_age_normal <- 99.82018
+  expected_age_logistic <- 49.47010524
+  expected_age_normal <- 99.82017894
   
   test_logistic <- convert_liability_to_aoo(liability, dist = "logistic", pop_prev = pop_prev, mid_point = mid_point, slope = slope)
   test_normal <- convert_liability_to_aoo(liability, dist = "normal", min_aoo = min_aoo, max_aoo = max_aoo, lower = lower, upper = upper)
-  expect_equal(test_logistic, expected_age_logistic, tolerance = testing_tolerance)
-  expect_equal(test_normal, expected_age_normal, tolerance = testing_tolerance)
+  expect_equal(test_logistic, expected_age_logistic)
+  expect_equal(test_normal, expected_age_normal)
 })
 
 test_that("convert_liability_to_aoo works with boundary values in logistic mode", {
   liability <- 2
   pop_prev <- 1
-  expected_age <- 29.91863
+  expected_age <- 29.91862861
   test <- convert_liability_to_aoo(liability, pop_prev = pop_prev)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo defaults to logistic with invalid dist", {
   liability <- 2
-  expected_age <- 50.22021
+  expected_age <- 50.2202059
   test <- convert_liability_to_aoo(liability, dist = "invalid")
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo uses first valid dist", {
   liability <- 2
-  expected_age <- 97.54887
+  expected_age <- 97.54751188
   test <- convert_liability_to_aoo(liability, dist = c("invalid", "normal", "logistic"))
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo can swap lower and upper in normal mode", {
   liability <- 2
-  expected_age <- 97.54887
-  test <- convert_liability_to_aoo(liability, dist = "normal", lower = Inf, upper = 1.645)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expected_age <- 97.547511875336127218
+  test <- convert_liability_to_aoo(liability, dist = "normal", lower = Inf, upper = 1.644853626951472636)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo can swap min_aoo and max_aoo in normal mode", {
   liability <- 2
-  expected_age <- 97.54887
+  expected_age <- 97.547511875336127218
   test <- convert_liability_to_aoo(liability, dist = "normal", min_aoo = 90, max_aoo = 10)
-  expect_equal(test, expected_age, tolerance = testing_tolerance)
+  expect_equal(test, expected_age)
 })
 
 test_that("convert_liability_to_aoo returns 0 instead of negative values in logistic mode", {
@@ -358,7 +358,7 @@ test_that("convert_liability_to_aoo returns 0 instead of negative values in norm
 
 # Negative Tests
 test_that("convert_liability_to_aoo defaults to logistic when given invalid dist value", {
-  expect_equal(convert_liability_to_aoo(2, dist = "invalid_dist"), 50.22021, tolerance = testing_tolerance)
+  expect_equal(convert_liability_to_aoo(2, dist = "invalid_dist"), 50.2202059)
 })
 
 test_that("convert_liability_to_aoo returns NA when liability is too low in logistic mode", {
