@@ -5,22 +5,34 @@
 \title{Prepares input for \code{estimate_liability}}
 \usage{
 prepare_LTFHPlus_input(
-  family,
+  .tbl,
   CIP,
-  CIP_columns = c("sex", "birth_year", "age"),
+  age_col,
+  aoo_col,
+  CIP_merge_columns = c("sex", "birth_year", "age"),
+  CIP_cip_col = "cip",
   status_col = "status",
   use_fixed_case_thr = F,
   fam_id_col = "fam_id",
   personal_id_col = "pid",
-  role_col = "role"
+  interpolation = NULL,
+  bst.params = list(max_depth = 10, base_score = 0, nthread = 4, min_child_weight = 10),
+  min_CIP_value = 1e-05,
+  xgboost_itr = 50
 )
 }
 \arguments{
-\item{family}{contains family and personal ids and role with a family.}
+\item{.tbl}{contains family and personal ids and role with a family.}
 
-\item{CIP}{tibble with population representative cumulative incidence proportions has the interpretation of "proportion of people that has experienced the trait subset by \code{CIP_columns}.}
+\item{CIP}{tibble with population representative cumulative incidence proportions. CIP values should be merged by \code{CIP_columns}.}
 
-\item{CIP_columns}{the columns the CIPs are subset by, e.g. CIPs by birth_year, sex.}
+\item{age_col}{name of column with age}
+
+\item{aoo_col}{name of column with age of onset}
+
+\item{CIP_merge_columns}{The columns the CIPs are subset by, e.g. CIPs by birth_year, sex.}
+
+\item{CIP_cip_col}{name of column with CIP values}
 
 \item{status_col}{Column that contains the status of each family member}
 
@@ -30,7 +42,13 @@ prepare_LTFHPlus_input(
 
 \item{personal_id_col}{Column that contains the personal ID}
 
-\item{role_col}{Column that cotnains the role of each individual}
+\item{interpolation}{type of interpolation, defaults to NULL.}
+
+\item{bst.params}{list of parameters to pass on to xgboost}
+
+\item{min_CIP_value}{minimum cip value to allow, too low values may lead to numerical instabilities.}
+
+\item{xgboost_itr}{Number of iterations to run xgboost for.}
 }
 \description{
 Prepares input for \code{estimate_liability}

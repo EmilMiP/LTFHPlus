@@ -6,8 +6,7 @@
 \usage{
 estimate_liability_multi(
   .tbl = NULL,
-  family = NULL,
-  threshs = NULL,
+  family_graphs = NULL,
   h2_vec,
   genetic_corrmat,
   full_corrmat,
@@ -15,6 +14,7 @@ estimate_liability_multi(
   pid = "PID",
   fam_id = "fam_ID",
   role = "role",
+  family_graphs_col = "fam_graph",
   out = c(1),
   tol = 0.01
 )
@@ -42,38 +42,8 @@ of interest. Note that the role must be one of the following abbreviations
 Defaults to \code{NULL}.
 }}
 
-\item{family}{A matrix, list or data frame that can be converted into a tibble.
-Must have at least two columns that hold the family identifier and the corresponding
-personal identifiers, respectively. That is, for each family in fam_id there should
-be a list holding all individuals belonging to that family in pid. Note that the
-personal identifiers for all individuals must have a special format. It must be end
-with _?, where ? is one of the following abbreviations
-\itemize{
-\item \code{g} (Genetic component of full liability)
-\item \code{o} (Full liability)
-\item \code{m} (Mother)
-\item \code{f} (Father)
-\item \code{c[0-9]*.[0-9]*} (Children)
-\item \code{mgm} (Maternal grandmother)
-\item \code{mgf} (Maternal grandfather)
-\item \code{pgm} (Paternal grandmother)
-\item \code{pgf} (Paternal grandfather)
-\item \code{s[0-9]*} (Full siblings)
-\item \code{mhs[0-9]*} (Half-siblings - maternal side)
-\item \code{phs[0-9]*} (Half-siblings - paternal side)
-\item \code{mau[0-9]*} (Aunts/Uncles - maternal side)
-\item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
-See also \code{\link{construct_covmat}}.
-Defaults to \code{NULL}.
-}}
-
-\item{threshs}{A matrix, list or data frame that can be converted into a tibble.
-Must have at least five columns; one holding the personal identifier for all individuals,
-and the remaining four holding the lower and upper thresholds for the first and second
-phenotype, respectively. It must be possible to tie each pair of lower and upper thresholds
-to a specific phenotype uniquely. This is done easily by adding _{name_of_phenotype} to
-the column names lower and upper, e.g. lower_p1 and upper_p1 for the lower and upper
-thresholds corresponding to the first phenotype. Defaults to \code{NULL}.}
+\item{family_graphs}{A tibble with columns pid and family_graph_col.
+See prepare_graph for construction of the graphs. The family graphs Defaults to NULL.}
 
 \item{h2_vec}{A numeric vector representing the liability-scale heritabilities
 for all phenotypes. All entries in h2_vec must be non-negative and at most 1.}
@@ -116,6 +86,8 @@ holds the role.Each role must be chosen from the following list of abbreviations
 \item \code{pau[0-9]*} (Aunts/Uncles - paternal side).
 Defaults to "role".
 }}
+
+\item{family_graphs_col}{Name of column with family graphs in family_graphs. Defaults to "fam_graph".}
 
 \item{out}{A character or numeric vector indicating whether the genetic component
 of the full liability, the full liability or both should be returned. If \code{out = c(1)} or
@@ -170,17 +142,11 @@ diag(full_corrmat) <- 1
 #
 sims <- simulate_under_LTM(fam_vec = c("m","f"), n_fam = NULL, add_ind = TRUE, 
 genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat, h2 = rep(.5,3), 
-n_sim = 10, pop_prev = rep(.1,3))
-#
-full_covmat = lapply(sims[-which(names(sims) == "thresholds")], function(x) {
-   dplyr::select(x[[1]], dplyr::starts_with("o") & dplyr::ends_with("status"))
-   })
-full_covmat = cov(dplyr::bind_cols(full_covmat))
-diag(full_covmat) = 1
+n_sim = 1, pop_prev = rep(.1,3))
 estimate_liability_multi(.tbl = sims$thresholds, h2_vec = rep(.5,3), 
-genetic_corrmat = genetic_corrmat, full_corrmat = full_covmat,
+genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
 pid = "indiv_ID", fam_id = "fam_ID", role = "role", out = c(1), 
-tol = 0.01)
+phen_names = paste0("phenotype", 1:3), tol = 0.01)
 
 
 }

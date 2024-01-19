@@ -328,3 +328,68 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
     }) %>% do.call("bind_rows",.)
   }
 }
+
+#' 
+#' Add in missing roles for proband
+#' 
+#' This function adds missing roles for a proband and fills lower threshold values with -Inf and upper threshold values with Inf.
+#' 
+#' @param temp_tbl tibble to add missing proband roles to; originates from .tbl of estimate_liability.
+#' @param role name of role column
+#' @param cur_roles values of the role column
+#' @param cur_fam_id current family ID being worked on
+#' @param pid name of column with personal IDs
+#' @param fam_id name of column with family IDs
+#' @param phen_names vector of phenotype names as given in .tbl of estimate_liability. Defaults to NULL (which is single trait).
+#' 
+#' @return The provided temp_tbl object is returned, but with the missing "g" and/or "o" roles added, where -Inf and Inf values
+#' have been used to fill the lower and upper threshold values. If phen_names is provided, a pair of upper and lower values is 
+#' provided for each entry in phen_names.
+#' 
+#' @importFrom dplyr filter pull tibble %>% bind_rows
+#' 
+
+add_missing_roles_for_proband = function(temp_tbl, role, cur_roles, cur_fam_id, pid, fam_id, phen_names = NULL) {
+  # role types to check for, centered on proband
+  to_check_for = c("g", "o")
+  
+  # roles is already calculated; are they present?
+  to_be_added = setdiff(to_check_for,   cur_roles)
+  present     = intersect(to_check_for, cur_roles)
+  
+  # if some present, extract individual ID, if not, get family ID
+  if (length(present) > 0 ) {
+    i_pid = (temp_tbl %>% filter(!!as.symbol(role) == present) %>% pull(!!as.symbol(pid)))[1]
+  } else {
+    i_pid = pull(temp_tbl, !!as.symbol(fam_id))[1]
+  }
+  # suffixes of roles to be added
+  id_suffixes = paste0("_",to_be_added) %>% stringr::str_replace_all(., "_o", "")
+  
+  if ( is.null(phen_names) ) { # single trait
+    # construct tibble with desired roles
+    tibble(
+      !!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1],
+      !!as.symbol(pid)    := paste0(i_pid, id_suffixes),
+      !!as.symbol(role)   := to_be_added,
+      lower = rep(-Inf, length(to_be_added)),
+      upper = rep( Inf, length(to_be_added))
+    ) %>%
+      bind_rows(., temp_tbl)
+    
+  } else { # multi trait
+    # constructs id rows, then adds lower and upper thresholds from phen_names provided
+    tibble(
+      !!as.symbol(fam_id) := pull(temp_tbl, !!as.symbol(fam_id))[1],
+      !!as.symbol(pid)    := paste0(i_pid, id_suffixes),
+      !!as.symbol(role)   := to_be_added
+    ) %>%
+      bind_cols(
+        tibble(!!!c(stats::setNames(rep(-Inf, length(phen_names)), paste0("lower_", phen_names)),
+                    stats::setNames(rep( Inf, length(phen_names)), paste0("upper_", phen_names))))) %>%
+      bind_rows(
+        .,
+        temp_tbl
+      )
+  }
+}

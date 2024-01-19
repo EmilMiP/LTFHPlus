@@ -56,10 +56,16 @@
       <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
     </li>
     <li>
+      <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
+    </li>
+    <li>
       <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
+    </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
   </ul>
 </li>
@@ -88,7 +94,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">6/9/2022</h4>
+            <h4 data-toc-skip class="date">2024-01-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/LTFHPlusExample.Rmd" class="external-link"><code>vignettes/LTFHPlusExample.Rmd</code></a></small>
       <div class="hidden name"><code>LTFHPlusExample.Rmd</code></div>
@@ -105,10 +111,12 @@ example:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.apply.futureverse.org" class="external-link">future.apply</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>For simplicty’s sake, we will use the same prevalence for both sexes.
-However, it is worth noting that in real-world applications, the
-cumulative incidence proportions needed for the thresholds, will rarely
-be identical for both sexes.</p>
+<p>For simplicity’s sake, we will use the same prevalence for both
+sexes. However, it is worth noting that in real-world applications, the
+cumulative incidence proportions (CIPs) needed for the thresholds will
+rarely be identical for both sexes. A common way to estimate the CIP is
+with the Aalen-Johansen estimator that accounts for competing
+events.</p>
 <div class="section level3">
 <h3 id="setting-up-input">Setting up input<a class="anchor" aria-label="anchor" href="#setting-up-input"></a>
 </h3>
@@ -136,7 +144,7 @@ CIP and family to LT-FH++ input</em>.</p>
 <p>We have implemented a function that allows users to simulate under
 the liability threshold model for a given family structure, i.e. mother,
 father, sibling, or sibling1, sibling2, child1, child2, etc. The
-function simply needs a family structure, heritablity, and population
+function simply needs a family structure, heritability, and population
 prevalence.For simplicity’s sake, we will use the same prevalence for
 both sexes. However, it is worth noting that in real-world applications,
 the cumulative incidence proportions needed for the thresholds, will
@@ -151,54 +159,53 @@ is ready to be input to estimate the genetic liability.</p>
 <span>                           n_fam <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>                           add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                           h2 <span class="op">=</span> <span class="va">h2</span>, </span>
-<span>                           n_sim <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           n_sim <span class="op">=</span> <span class="fl">10</span>, </span>
 <span>                           pop_prev <span class="op">=</span> <span class="fl">.1</span><span class="op">)</span></span>
 <span><span class="va">sims</span></span></code></pre></div>
 <pre><code><span><span class="co">## $sim_obs</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 14</span></span></span>
-<span><span class="co">##    fam_ID         g         o       m       f      s1 o_status m_status f_status</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1   0.405  0.632     1.02   -<span style="color: #BB0000;">1.28</span>    0.753  FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  -<span style="color: #BB0000;">0.735</span> -<span style="color: #BB0000;">1.46</span>      0.627  -<span style="color: #BB0000;">1.65</span>   -<span style="color: #BB0000;">0.257</span>  FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  -<span style="color: #BB0000;">0.256</span> -<span style="color: #BB0000;">0.384</span>     0.092<span style="text-decoration: underline;">2</span> -<span style="color: #BB0000;">0.500</span>  -<span style="color: #BB0000;">0.282</span>  FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4   0.753  1.40      0.251   1.79    1.61   TRUE     FALSE    TRUE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5   0.297  0.790     0.145   0.162   0.028<span style="text-decoration: underline;">7</span> FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  -<span style="color: #BB0000;">1.07</span>  -<span style="color: #BB0000;">0.499</span>     0.212  -<span style="color: #BB0000;">0.343</span>  -<span style="color: #BB0000;">0.039</span><span style="color: #BB0000; text-decoration: underline;">3</span> FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  -<span style="color: #BB0000;">0.177</span> -<span style="color: #BB0000;">0.000</span><span style="color: #BB0000; text-decoration: underline;">604</span> -<span style="color: #BB0000;">0.552</span>  -<span style="color: #BB0000;">0.246</span>  -<span style="color: #BB0000;">0.099</span><span style="color: #BB0000; text-decoration: underline;">5</span> FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  -<span style="color: #BB0000;">1.12</span>  -<span style="color: #BB0000;">1.57</span>     -<span style="color: #BB0000;">0.033</span><span style="color: #BB0000; text-decoration: underline;">8</span> -<span style="color: #BB0000;">1.80</span>   -<span style="color: #BB0000;">0.109</span>  FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  -<span style="color: #BB0000;">0.831</span> -<span style="color: #BB0000;">0.401</span>    -<span style="color: #BB0000;">1.73</span>   -<span style="color: #BB0000;">0.047</span><span style="color: #BB0000; text-decoration: underline;">7</span> -<span style="color: #BB0000;">1.24</span>   FALSE    FALSE    FALSE   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 -<span style="color: #BB0000;">0.872</span> -<span style="color: #BB0000;">1.57</span>      1.56   -<span style="color: #BB0000;">1.62</span>    0.099<span style="text-decoration: underline;">3</span> FALSE    TRUE     FALSE   </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 90 more rows, and 5 more variables: s1_status &lt;lgl&gt;, o_aoo &lt;dbl&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;, s1_aoo &lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 14</span></span></span>
+<span><span class="co">##    fam_ID           g       o       m       f      s1 o_status m_status f_status</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  -<span style="color: #BB0000;">0.093</span><span style="color: #BB0000; text-decoration: underline;">0</span>   0.438  -<span style="color: #BB0000;">0.514</span>  -<span style="color: #BB0000;">0.244</span>   0.022<span style="text-decoration: underline;">3</span> FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2   0.575    0.150   0.175   0.698  -<span style="color: #BB0000;">0.208</span>  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  -<span style="color: #BB0000;">0.219</span>   -<span style="color: #BB0000;">0.349</span>  -<span style="color: #BB0000;">2.40</span>   -<span style="color: #BB0000;">0.441</span>   0.108  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4   0.692    0.880  -<span style="color: #BB0000;">1.09</span>    3.65   -<span style="color: #BB0000;">0.202</span>  FALSE    FALSE    TRUE    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5   0.702    0.846  -<span style="color: #BB0000;">0.789</span>   0.016<span style="text-decoration: underline;">4</span>  0.526  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  -<span style="color: #BB0000;">0.093</span><span style="color: #BB0000; text-decoration: underline;">5</span>  -<span style="color: #BB0000;">0.072</span><span style="color: #BB0000; text-decoration: underline;">3</span> -<span style="color: #BB0000;">0.644</span>   0.044<span style="text-decoration: underline;">7</span> -<span style="color: #BB0000;">1.34</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">31</span> -<span style="color: #BB0000;">0.497</span>  -<span style="color: #BB0000;">0.102</span>   1.12    0.430  FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  -<span style="color: #BB0000;">1.30</span>    -<span style="color: #BB0000;">1.33</span>   -<span style="color: #BB0000;">2.62</span>    0.318  -<span style="color: #BB0000;">1.23</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">3</span>   0.063<span style="text-decoration: underline;">2</span> -<span style="color: #BB0000;">0.715</span>  -<span style="color: #BB0000;">1.00</span>   -<span style="color: #BB0000;">1.60</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10  0.061<span style="text-decoration: underline;">6</span>   0.528   0.011<span style="text-decoration: underline;">2</span> -<span style="color: #BB0000;">0.939</span>  -<span style="color: #BB0000;">1.68</span>   FALSE    FALSE    FALSE   </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: s1_status &lt;lgl&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;int&gt;</span></span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $thresholds</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 400 × 5</span></span></span>
-<span><span class="co">##    fam_ID    indiv_ID    role    lower upper</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o     -<span style="color: #BB0000;">Inf</span>     2.76</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o     -<span style="color: #BB0000;">Inf</span>     2.43</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o     -<span style="color: #BB0000;">Inf</span>     2.72</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o        1.41  1.41</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o     -<span style="color: #BB0000;">Inf</span>     3.31</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o     -<span style="color: #BB0000;">Inf</span>     2.91</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o     -<span style="color: #BB0000;">Inf</span>     3.52</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o     -<span style="color: #BB0000;">Inf</span>     3.35</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o     -<span style="color: #BB0000;">Inf</span>     2.59</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o     -<span style="color: #BB0000;">Inf</span>     2.59</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 390 more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 40 × 5</span></span></span>
+<span><span class="co">##    fam_ID    indiv_ID    role  lower upper</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  o      -<span style="color: #BB0000;">Inf</span>  3.35</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  o      -<span style="color: #BB0000;">Inf</span>  3.28</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  o      -<span style="color: #BB0000;">Inf</span>  2.59</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  o      -<span style="color: #BB0000;">Inf</span>  2.51</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  o      -<span style="color: #BB0000;">Inf</span>  3.52</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  o      -<span style="color: #BB0000;">Inf</span>  2.91</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  o      -<span style="color: #BB0000;">Inf</span>  3.38</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  o      -<span style="color: #BB0000;">Inf</span>  3.24</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  o      -<span style="color: #BB0000;">Inf</span>  3.28</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 o      -<span style="color: #BB0000;">Inf</span>  2.43</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 30 more rows</span></span></span></code></pre>
 <p><code>thresholds</code> keeps track of families and family members
 with <code>fam_id</code> and <code>indiv_id</code>. Here we simply use
 dummy variables for both. In real-world data, the <code>indiv_id</code>
 is usually some pseudonymized identifier unique to each individual.
 There is total freedom to set <code>fam_id</code> to whatever, as long
 as it is unique to each family. One choice could be the pseudonymized
-identifier for the index person in a family, or simply 1 to the total
-number of families. Next, <code>role</code> identifies each family
-member’s relationship to the index person. They follow a system shown in
-the documentation for <code>construct_covmat</code>. If a family member
-does not fit one of the shown, a suitable covariance matrix cannot be
+identifier for the index person in a family, or simply numerate the
+families from <span class="math inline">\(1\)</span> to the total number
+of families. Next, <code>role</code> identifies each family member’s
+relationship to the index person. They follow a system shown in the
+documentation for <code>construct_covmat</code>. If a family member does
+not fit one of the shown, a suitable covariance matrix cannot be
 constructed. If more detailed family structures are needed, please
 contact one of the maintainers of <tt>LTFHPlus</tt>. Finally, the lower
 and upper liability thresholds are provided for each family member.
@@ -208,6 +215,22 @@ format, but in order to ease the use of non-<tt>R</tt> users, we have
 opted for a long format, where each row is an indivdual instead of a
 family, such that the input can be generated with the user’s preferred
 software.</p>
+<div class="section level4">
+<h4 id="generating-your-own-input-data">Generating your own input data<a class="anchor" aria-label="anchor" href="#generating-your-own-input-data"></a>
+</h4>
+<p>If you would like to use LTFHPlus, then the above can provide a
+template for the input format. The object <code>sims</code> is a list of
+two entries, namely <code>sim_obs</code> and <code>thresholds</code>.
+The values in <code>sim_obs</code> are values such as the true
+underlying liabilities, simulated ages and onset ages. etc.. The values
+in <code>thresholds</code> are ready to be used in
+<code><a href="../reference/estimate_liability.html">estimate_liability()</a></code>. Generating this input from ones own
+register data can be tedious, as it requires identifying parents (role
+for parents are <span class="math inline">\(m\)</span> and <span class="math inline">\(f\)</span>), then one can identify siblings (roles
+for siblings are <span class="math inline">\(s1, s2, etc.\)</span>), and
+so on for all available roles. The available roles can be seen in the
+documentation for <code><a href="../reference/estimate_liability.html">estimate_liability()</a></code>.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="running-lt-fh">Running LT-FH++<a class="anchor" aria-label="anchor" href="#running-lt-fh"></a>
@@ -232,21 +255,19 @@ future framework also allows for easy use on high performance computing
 <pre><code><span><span class="co">## The number of workers is 4</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simu_liab</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 100 × 4</span></span></span>
-<span><span class="co">##    fam_ID    indiv_ID    genetic_est         genetic_se         </span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1_1  -0.0531477028067799 0.00389831404002632</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2_1  -0.0737168604325842 0.00417842233131317</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3_1  -0.0687847218314176 0.00412632758467259</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4_1  0.994865510369331   0.00156734507855174</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5_1  -0.0252623364994963 0.00429382718643834</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6_1  -0.0377097297129352 0.00439927601059298</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7_1  -0.0112107025418805 0.00418252460156715</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8_1  -0.0450003159251684 0.00409834186919946</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9_1  -0.0488948270620043 0.00416339007257541</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10_1 0.355497032122711   0.00353649235222693</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 90 more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
+<span><span class="co">##    fam_ID    indiv_ID  genetic_est genetic_se</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam_ID_1  fam_ID_1     -<span style="color: #BB0000;">0.009</span><span style="color: #BB0000; text-decoration: underline;">98</span>    0.004<span style="text-decoration: underline;">17</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam_ID_2  fam_ID_2     -<span style="color: #BB0000;">0.015</span><span style="color: #BB0000; text-decoration: underline;">8</span>     0.003<span style="text-decoration: underline;">91</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam_ID_3  fam_ID_3     -<span style="color: #BB0000;">0.059</span><span style="color: #BB0000; text-decoration: underline;">2</span>     0.004<span style="text-decoration: underline;">18</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam_ID_4  fam_ID_4      0.836      0.003<span style="text-decoration: underline;">15</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam_ID_5  fam_ID_5     -<span style="color: #BB0000;">0.073</span><span style="color: #BB0000; text-decoration: underline;">4</span>     0.004<span style="text-decoration: underline;">24</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam_ID_6  fam_ID_6     -<span style="color: #BB0000;">0.035</span><span style="color: #BB0000; text-decoration: underline;">3</span>     0.004<span style="text-decoration: underline;">23</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam_ID_7  fam_ID_7     -<span style="color: #BB0000;">0.010</span><span style="color: #BB0000; text-decoration: underline;">8</span>     0.003<span style="text-decoration: underline;">97</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8     -<span style="color: #BB0000;">0.020</span><span style="color: #BB0000; text-decoration: underline;">4</span>     0.004<span style="text-decoration: underline;">09</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9     -<span style="color: #BB0000;">0.047</span><span style="color: #BB0000; text-decoration: underline;">9</span>     0.004<span style="text-decoration: underline;">07</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10    -<span style="color: #BB0000;">0.073</span><span style="color: #BB0000; text-decoration: underline;">5</span>     0.003<span style="text-decoration: underline;">88</span></span></span></code></pre>
 <p>From here the object <code>simu_liab</code> can be saved and used in
 your GWAS method of choice.</p>
 </div>
@@ -267,7 +288,7 @@ your GWAS method of choice.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

@@ -38,10 +38,16 @@
       <a href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a>
     </li>
     <li>
+      <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
+    </li>
+    <li>
       <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
+    </li>
+    <li>
+      <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -76,6 +82,14 @@ phenotypes</p></td>
           <p class="section-desc"></p><p>Collection of functions used as examples of how to include additional information.</p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="prepare_LTFHPlus_input.html">prepare_LTFHPlus_input()</a></code> </p>
+        </td>
+        <td><p>Prepares input for <code>estimate_liability</code></p></td>
+      </tr><tr><td>
+          <p><code><a href="prepare_graph.html">prepare_graph()</a></code> </p>
+        </td>
+        <td><p>Construct graph from register information</p></td>
+      </tr><tr><td>
           <p><code><a href="convert_age_to_cir.html">convert_age_to_cir()</a></code> </p>
         </td>
         <td><p>Convert age to cumulative incidence rate</p></td>
@@ -100,10 +114,6 @@ phenotypes</p></td>
         </td>
         <td><p>Convert the heritability on the observed scale to that on the liability scale</p></td>
       </tr><tr><td>
-          <p><code><a href="prepare_LTFHPlus_input.html">prepare_LTFHPlus_input()</a></code> </p>
-        </td>
-        <td><p>Prepares input for <code>estimate_liability</code></p></td>
-      </tr><tr><td>
           <p><code><a href="simulate_under_LTM.html">simulate_under_LTM()</a></code> </p>
         </td>
         <td><p>Simulate under the liability threshold model.</p></td>
@@ -119,6 +129,10 @@ phenotypes</p></td>
           <p><code><a href="rtmvnorm.gibbs.html">rtmvnorm.gibbs()</a></code> </p>
         </td>
         <td><p>Gibbs Sampler for the truncated multivariate normal distribution</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_kinship.html">get_kinship()</a></code> </p>
+        </td>
+        <td><p>Construct kinship matrix from graph</p></td>
       </tr><tr><td>
           <p><code><a href="get_relatedness.html">get_relatedness()</a></code> </p>
         </td>
@@ -140,11 +154,35 @@ phenotypes</p></td>
           <p><code><a href="correct_positive_definite.html">correct_positive_definite()</a></code> </p>
         </td>
         <td><p>Positive definite matrices</p></td>
+      </tr><tr><td>
+          <p><code><a href="correct_positive_definite_simplified.html">correct_positive_definite_simplified()</a></code> </p>
+        </td>
+        <td><p>A simplied version of correct_positive_definite</p></td>
+      </tr><tr><td>
+          <p><code><a href="graph_based_covariance_construction.html">graph_based_covariance_construction()</a></code> </p>
+        </td>
+        <td><p>Constructing covariance matrix from local family graph</p></td>
+      </tr><tr><td>
+          <p><code><a href="graph_based_covariance_construction_multi.html">graph_based_covariance_construction_multi()</a></code> </p>
+        </td>
+        <td><p>Constructing covariance matrix from local family graph for multi trait analysis</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="legacy-internal-functions">Legacy &amp; internal functions <a href="#legacy-internal-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.</p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="add_gen_liab_to_graph.html">add_gen_liab_to_graph()</a></code> </p>
+        </td>
+        <td><p>Add pseudo point to graph</p></td>
+      </tr><tr><td>
+          <p><code><a href="add_missing_roles_for_proband.html">add_missing_roles_for_proband()</a></code> </p>
+        </td>
+        <td><p>Add in missing roles for proband</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_all_combs.html">get_all_combs()</a></code> </p>
+        </td>
+        <td><p>construct all combinations of input vector</p></td>
+      </tr><tr><td>
           <p><code><a href="construct_aoo.html">construct_aoo()</a></code> </p>
         </td>
         <td><p>Constructing age of onset (aoo)</p></td>
@@ -222,7 +260,7 @@ using prevalence information</p></td>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
