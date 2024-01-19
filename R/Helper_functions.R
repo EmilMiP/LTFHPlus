@@ -213,10 +213,6 @@ truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail
     cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
     
-    #TODO why swap values in this way
-    #lower <- lower + upper
-    #upper <- lower - upper
-    #lower <- lower - upper
     temp <- lower
     lower <- upper
     upper <- temp
@@ -333,8 +329,6 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   # Checking that dist is either logistic or normal.
   if(is.character(dist)){
     
-    #TODO will always default to logistic given multiple valid inputs
-    #dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]  
     valid_is <- grep("logistic|normal", dist)
     
   }else{
@@ -383,7 +377,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
       cat("The latest age max_age is below the earliest age min_age! \n 
 The earliest and latest age will be swapped...")
       
-      min_age <- min_age + max_age #TODO why swap values in this way
+      min_age <- min_age + max_age
       max_age <- min_age - max_age
       min_age <- min_age - max_age
     }
@@ -395,10 +389,6 @@ The earliest and latest age will be swapped...")
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
       
-      #TODO why swap values in this way
-      #lower <- lower + upper
-      #upper <- lower - upper
-      #lower <- lower - upper
       temp <- lower
       lower <- upper
       upper <- temp
@@ -528,8 +518,6 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   # Checking that dist is either logistic or normal.
   if(is.character(dist)){
     
-    #TODO will always default to logistic given multiple valid inputs
-    #dist <- c("logistic", "normal")[rowSums(sapply(dist, grepl, x = c("logistic", "normal"))) > 0]
     valid_is <- grep("logistic|normal", dist)
     
   }else{
@@ -586,7 +574,6 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
       cat("The latest age of onset max_aoo is below the earliest age of onset min_aoo! \n 
 The earliest and latest age of onset will be swapped...")
       
-      #TODO why swap values in this way
       min_aoo <- min_aoo + max_aoo
       max_aoo <- min_aoo - max_aoo
       min_aoo <- min_aoo - max_aoo
@@ -598,11 +585,7 @@ The earliest and latest age of onset will be swapped...")
     if(upper < lower){
       cat("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
-      
-      #TODO why swap values in this way
-      #lower <- lower + upper TODO same as above
-      #upper <- lower - upper
-      #lower <- lower - upper
+
       temp <- lower
       lower <- upper
       upper <- temp
@@ -612,9 +595,6 @@ The upper and lower cutoff points will be swapped...")
     res <- (1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo
     
     return(res)
-    #TODO impossible
-    #if(res > 0) return(res)
-    #if(res <= 0) return(0)
   }
 }
 

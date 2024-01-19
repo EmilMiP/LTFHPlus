@@ -1,5 +1,3 @@
-testing_tolerance <- 1e-4 #TODO remove this, use higher precision values instead
-
 ################################################################################
 # Testing truncated_normal_cdf
 ################################################################################
