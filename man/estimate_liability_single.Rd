@@ -119,6 +119,7 @@ This function can be used to estimate either the genetic component of the
 full liability, the full liability or both. It is possible to input either
 }
 \examples{
+\dontshow{if (rlang::is_installed("tidyr")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 #
@@ -132,7 +133,7 @@ h2 = 0.5, n_sim=10, pop_prev = .05)
 estimate_liability_single(.tbl = sims$thresholds, 
 h2 = 0.5, pid = "indiv_ID", fam_id = "fam_ID", role = "role",
 out = c("genetic"), tol = 0.01)
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[future.apply]{future_apply}}, \code{\link{estimate_liability_multi}},

@@ -28,6 +28,7 @@ Other contributors:
 \itemize{
   \item Bjarni Jóhann Vilhjálmsson \email{bjv@econ.au.dk} [thesis advisor]
   \item Esben Agerbo \email{ea@econ.au.dk} [thesis advisor]
+  \item Lucas Rasmussen \email{lar.ncrr@au.dk} [contributor]
 }
 
 }

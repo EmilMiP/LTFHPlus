@@ -94,7 +94,7 @@ utils::globalVariables("name")
 #' sixth column hold the estimated full liability as well as the corresponding 
 #' standard error, respectively.
 #' 
-#' @examples
+#' @examplesIf rlang::is_installed("tidyr")
 #' sims <- simulate_under_LTM(fam_vec = c("m","f","s1"), n_fam = NULL, 
 #' add_ind = TRUE, h2 = 0.5, n_sim=10, pop_prev = .05)
 #' #
@@ -454,7 +454,7 @@ estimate_liability_single <- function(.tbl = NULL,
 #' The remaining columns hold the estimated genetic liabilities and/or the estimated full 
 #' liabilities as well as the corresponding standard errors for the remaining phenotypes.
 #' 
-#' @examples 
+#' @examplesIf rlang::is_installed("tidyr")
 #' genetic_corrmat <- matrix(0.4, 3, 3)
 #' diag(genetic_corrmat) <- 1
 #' full_corrmat <- matrix(0.6, 3, 3)
