@@ -8,12 +8,13 @@ Authors@R: c(
     person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
     person("Bjarni Jóhann", "Vilhjálmsson", email = "bjv@econ.au.dk", role = "ths"),
     person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"),
-    person("Jette", "Steinbach", , "jst@econ.au.dk", role = "aut"))
+    person("Jette", "Steinbach", , "jst@econ.au.dk", role = "aut"),
+    person("Lucas", "Rasmussen", email = "lar.ncrr@au.dk", role = "ctb"))
 Description: Implementation of 'LT-FH++', an extension of 'LT-FH'
     which uses a Gibbs sampler for sampling from the truncated
     multivariate normal distribution. 'LT-FH++' allows for 
     flexible family structures.
-License: GPL (>= 2)
+License: GPL-3
 Imports: 
     batchmeans,
     dplyr,
