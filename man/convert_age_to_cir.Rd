@@ -35,7 +35,5 @@ by the formula
 \deqn{pop_prev / (1 + exp((mid_point - age) * slope))}
 }
 \examples{
-\dontrun{
-curve(convert_age_to_cir, from = 10, to = 110, xname = "age")
-}
+curve(sapply(age, convert_age_to_cir), from = 10, to = 110, xname = "age")
 }

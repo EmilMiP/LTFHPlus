@@ -58,14 +58,12 @@ by valid abbreviations. A valid abbreviation is one of the following:
 }
 }
 \examples{
-\dontrun{
-validate_relatives("g")
-validate_relatives("o")
-validate_relatives("mgm")
+LTFHPlus:::validate_relatives("g")
+LTFHPlus:::validate_relatives("o")
+LTFHPlus:::validate_relatives("mgm")
 
 # This will result in errors:
-validate_relatives("a")
-validate_relatives(m)
-}
+try(LTFHPlus:::validate_relatives("a"))
+try(LTFHPlus:::validate_relatives(m))
 
 }

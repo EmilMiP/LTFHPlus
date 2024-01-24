@@ -29,13 +29,11 @@ entries equal to 1 and off-diagonal entries between -1 and 1 as well as whether
 it is symmetric.
 }
 \examples{
-\dontrun{
-validate_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
-validate_correlation_matrix(diag(3))
+LTFHPlus:::validate_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
+LTFHPlus:::validate_correlation_matrix(diag(3))
 
 # This will result in errors:
-validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2))
-validate_correlation_matrix(matrix(nrow=2, ncol = 2))
-}
+try(LTFHPlus:::validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2)))
+try(LTFHPlus:::validate_correlation_matrix(matrix(nrow=2, ncol = 2)))
 
 }

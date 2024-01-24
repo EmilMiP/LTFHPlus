@@ -69,10 +69,8 @@ while it is given by
 under the truncated normal distribution.
 }
 \examples{
-\dontrun{
-curve(convert_liability_to_aoo, from = 1.3, to = 3.5, 
-      xname = "Underlying liability")
-curve(convert_liability_to_aoo, from = qnorm(0.05, lower.tail = F), to = 3.5, 
-      xname = "Underlying liability", dist = "normal")
-}
+curve(sapply(liability, convert_liability_to_aoo), from = 1.3, to = 3.5, xname = "liability") 
+curve(sapply(liability, convert_liability_to_aoo, dist = "normal"),
+ from = qnorm(0.05, lower.tail = FALSE), to = 3.5, xname = "liability") 
+
 }

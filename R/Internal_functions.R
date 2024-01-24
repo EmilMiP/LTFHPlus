@@ -45,15 +45,13 @@ utils::globalVariables("role")
 #' then the function will return TRUE. Otherwise, the function is aborted.
 #' 
 #' @examples
-#' \dontrun{
-#' validate_relatives("g")
-#' validate_relatives("o")
-#' validate_relatives("mgm")
+#' LTFHPlus:::validate_relatives("g")
+#' LTFHPlus:::validate_relatives("o")
+#' LTFHPlus:::validate_relatives("mgm")
 #' 
 #' # This will result in errors:
-#' validate_relatives("a")
-#' validate_relatives(m)
-#' }
+#' try(LTFHPlus:::validate_relatives("a"))
+#' try(LTFHPlus:::validate_relatives(m))
 #' 
 #' @importFrom stringr str_detect
 validate_relatives <- function(relatives){
@@ -103,16 +101,14 @@ validate_relatives <- function(relatives){
 #' then the function will return TRUE. Otherwise, the function aborts.
 #' 
 #' @examples
-#' \dontrun{
-#' validate_proportion(0.2)
-#' validate_proportion(0.04)
-#' validate_proportion(0)
-#' validate_proportion(1)
+#' LTFHPlus:::validate_proportion(0.2)
+#' LTFHPlus:::validate_proportion(0.04)
+#' LTFHPlus:::validate_proportion(0)
+#' LTFHPlus:::validate_proportion(1)
 #' 
 #' # This will result in errors:
-#' validate_proportion(2)
-#' validate_proportion(-0.5)
-#' }
+#' try(LTFHPlus:::validate_proportion(2))
+#' try(LTFHPlus:::validate_proportion(-0.5))
 #' 
 validate_proportion <- function(prop, from_covmat = FALSE){
   if(is.null(prop)){
@@ -158,14 +154,12 @@ validate_proportion <- function(prop, from_covmat = FALSE){
 #' then the function will return TRUE. Otherwise, the function will be aborted.
 #' 
 #' @examples
-#' \dontrun{
-#' validate_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
-#' validate_correlation_matrix(diag(3))
+#' LTFHPlus:::validate_correlation_matrix(matrix(c(1,0.4,0.4,1), nrow = 2))
+#' LTFHPlus:::validate_correlation_matrix(diag(3))
 #' 
 #' # This will result in errors:
-#' validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2))
-#' validate_correlation_matrix(matrix(nrow=2, ncol = 2))
-#' }
+#' try(LTFHPlus:::validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2)))
+#' try(LTFHPlus:::validate_correlation_matrix(matrix(nrow=2, ncol = 2)))
 #' 
 validate_correlation_matrix <- function(corrmat){
   

@@ -71,6 +71,5 @@ while it is given by
 under the truncated normal distribution.
 }
 \examples{
-# curve(convert_age_to_thresh, from = 10, to = 110, xname = "Age")
-# curve(convert_age_to_thresh, from = 10, to = 100, xname = "Age")
+curve(sapply(age, convert_age_to_thresh), from = 10, to = 110, xname = "age")
 }

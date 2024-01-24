@@ -26,15 +26,13 @@ This function can be used to check whether proportions are non-negative
 and at most one.
 }
 \examples{
-\dontrun{
-validate_proportion(0.2)
-validate_proportion(0.04)
-validate_proportion(0)
-validate_proportion(1)
+LTFHPlus:::validate_proportion(0.2)
+LTFHPlus:::validate_proportion(0.04)
+LTFHPlus:::validate_proportion(0)
+LTFHPlus:::validate_proportion(1)
 
 # This will result in errors:
-validate_proportion(2)
-validate_proportion(-0.5)
-}
+try(LTFHPlus:::validate_proportion(2))
+try(LTFHPlus:::validate_proportion(-0.5))
 
 }

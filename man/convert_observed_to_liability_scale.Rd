@@ -21,8 +21,9 @@ If it is a vector, it must have the same length as obs_h2. Defaults to 0.05.}
 
 \item{prop_cases}{Either NULL or a number or a numeric vector representing the proportion
 of cases in the sample. All entries must be non-negative and at most one.
-If it is a vector, it must have the same length as obs_h2. Defaults to 0.5.
-
+If it is a vector, it must have the same length as obs_h2. Defaults to 0.5.}
+}
+\value{
 If \code{obs_h2}, \code{pop_prev} and \code{prop_cases} are non-negative numbers
 that are at most one, the function returns the heritability on the liability
 scale using Equation 23 from
@@ -45,7 +46,7 @@ If \code{obs_h2} and \code{pop_prev} are non-negative numeric vectors such that
 all entries are at most one, while \code{prop_cases} is \code{NULL},
 \code{convert_observed_to_liability_scale} returns a vector of the same
 length as obq_h2. Each entry holds to the liability-scale heritability that
-was obtained from the corresponding entry in obs_h2 using Equation 17.}
+was obtained from the corresponding entry in obs_h2 using Equation 17.
 }
 \description{
 \code{convert_observed_to_liability_scale} transforms the heritability on the

@@ -40,11 +40,9 @@ utils::globalVariables("h2")
 #' get_relatedness("o","s", h2 = 0.3)
 #'
 #'
-#' \dontrun{
 #' # This will result in errors:
-#' get_relatedness("a","b")
-#' get_relatedness(m, mhs)
-#' }
+#' try(get_relatedness("a","b"))
+#' try(get_relatedness(m, mhs))
 #' 
 #' @importFrom stringr str_detect
 #' 

@@ -16,8 +16,6 @@ A vector of strings is returned.
 pastes together all combinations of input vector
 }
 \examples{
-\dontrun{
 get_all_combs(letters[1:3])
-}
 
 }

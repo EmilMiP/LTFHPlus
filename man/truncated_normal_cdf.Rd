@@ -38,8 +38,6 @@ density function for a truncated normal distribution given an
 individual's true underlying liability.
 }
 \examples{
-\dontrun{
- curve(truncated_normal_cdf, from = qnorm(0.05, lower.tail = F), to = 3.5, 
-       xname = "Underlying liability")
-}
+curve(sapply(liability, truncated_normal_cdf), from = qnorm(0.05, lower.tail = FALSE), to = 3.5,
+ xname = "liability")
 }

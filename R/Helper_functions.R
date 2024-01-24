@@ -197,10 +197,8 @@ correct_positive_definite_simplified = function(covmat, correction_limit = 100, 
 #' or equal to \code{liability}.
 #'
 #' @examples
-#' \dontrun{
-#'  curve(truncated_normal_cdf, from = qnorm(0.05, lower.tail = F), to = 3.5, 
-#'        xname = "Underlying liability")
-#' }
+#' curve(sapply(liability, truncated_normal_cdf), from = qnorm(0.05, lower.tail = FALSE), to = 3.5,
+#'  xname = "liability")
 #' @export
 truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
   
@@ -246,9 +244,7 @@ The upper and lower cutoff points will be swapped...")
 #' the cumulative incidence rate.
 #'
 #' @examples 
-#' \dontrun{
-#' curve(convert_age_to_cir, from = 10, to = 110, xname = "age")
-#' }
+#' curve(sapply(age, convert_age_to_cir), from = 10, to = 110, xname = "age")
 #' @export
 convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
@@ -317,8 +313,7 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' the threshold.
 #' 
 #' @examples 
-#' # curve(convert_age_to_thresh, from = 10, to = 110, xname = "Age")
-#' # curve(convert_age_to_thresh, from = 10, to = 100, xname = "Age")
+#' curve(sapply(age, convert_age_to_thresh), from = 10, to = 110, xname = "age")
 #' @export
 convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
                                  min_age = 10, max_age = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
@@ -423,10 +418,8 @@ The upper and lower cutoff points will be swapped...")
 #' then \code{convert_cir_to_age} returns a number, which is equal to
 #' the current age.
 #' 
-#' @examples 
-#' \dontrun{
-#' curve(convert_cir_to_age, from = 0, to = 0.1, xname = "Cumulative incidence rate")
-#' }
+#' @examples
+#' curve(sapply(cir, convert_cir_to_age), from = 0.001, to = 0.099, xname = "cir") 
 #' @export
 convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
   
@@ -501,13 +494,11 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' then \code{convert_liability_to_aoo} returns a positive number, which is equal to
 #' the age of onset.
 #' 
-#' @examples 
-#' \dontrun{
-#' curve(convert_liability_to_aoo, from = 1.3, to = 3.5, 
-#'       xname = "Underlying liability")
-#' curve(convert_liability_to_aoo, from = qnorm(0.05, lower.tail = F), to = 3.5, 
-#'       xname = "Underlying liability", dist = "normal")
-#' }
+#' @examples
+#' curve(sapply(liability, convert_liability_to_aoo), from = 1.3, to = 3.5, xname = "liability") 
+#' curve(sapply(liability, convert_liability_to_aoo, dist = "normal"),
+#'  from = qnorm(0.05, lower.tail = FALSE), to = 3.5, xname = "liability") 
+#' 
 #' @export
 convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
                                     min_aoo = 10, max_aoo = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf ) {
@@ -622,7 +613,7 @@ The upper and lower cutoff points will be swapped...")
 #' of cases in the sample. All entries must be non-negative and at most one. 
 #' If it is a vector, it must have the same length as obs_h2. Defaults to 0.5.
 #' 
-#' If \code{obs_h2}, \code{pop_prev} and \code{prop_cases} are non-negative numbers 
+#' @return If \code{obs_h2}, \code{pop_prev} and \code{prop_cases} are non-negative numbers 
 #' that are at most one, the function returns the heritability on the liability
 #' scale using Equation 23 from 
 #' Sang Hong Lee, Naomi R. Wray, Michael E. Goddard and Peter M. Visscher, "Estimating
@@ -823,9 +814,7 @@ get_kinship = function(fam_graph, h2, index_id = NA, add_ind = TRUE, fix_diag = 
 #' @return A vector of strings is returned.
 #' 
 #' @examples
-#' \dontrun{
 #' get_all_combs(letters[1:3])
-#' }
 #' 
 #' @export
 get_all_combs = function(vec) {
