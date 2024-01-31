@@ -912,6 +912,20 @@ The lower and upper thresholds will be swapped...")
 #' The remaining columns hold the estimated genetic liabilities and/or the estimated full 
 #' liabilities as well as the corresponding standard errors for the remaining phenotypes.
 #' 
+#' @examplesIf rlang::is_installed("tidyr")
+#' genetic_corrmat <- matrix(0.4, 3, 3)
+#' diag(genetic_corrmat) <- 1
+#' full_corrmat <- matrix(0.6, 3, 3)
+#' diag(full_corrmat) <- 1
+#' #
+#' sims <- simulate_under_LTM(fam_vec = c("m","f"), n_fam = NULL, add_ind = TRUE, 
+#' genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat, h2 = rep(.5,3), 
+#' n_sim = 1, pop_prev = rep(.1,3))
+#' estimate_liability(.tbl = sims$thresholds, h2 = rep(.5,3), 
+#' genetic_corrmat = genetic_corrmat, full_corrmat = full_corrmat,
+#' pid = "indiv_ID", fam_id = "fam_ID", role = "role", out = c(1), 
+#' phen_names = paste0("phenotype", 1:3), tol = 0.01)
+#' 
 #' @seealso \code{\link[future.apply]{future_apply}}, \code{\link{estimate_liability_single}},
 #' \code{\link{estimate_liability_multi}}
 #' 

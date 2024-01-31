@@ -49,6 +49,20 @@ utils::globalVariables("thresh")
 #' is positive definite,the new covariance matrix is returned. 
 #' Otherwise, \code{correct_positive_definite} returns the original covariance matrix.
 #' 
+#' @examples
+#' ntrait <- 2
+#' genetic_corrmat <- matrix(0.6, ncol = ntrait, nrow = ntrait)
+#' diag(genetic_corrmat) <- 1
+#' full_corrmat <- matrix(-0.25, ncol = ntrait, nrow = ntrait)
+#' diag(full_corrmat) <- 1
+#' h2_vec <- rep(0.6, ntrait)
+#' cov <- construct_covmat(fam_vec = c("m", "f"),
+#'   genetic_corrmat = genetic_corrmat,
+#'   h2 = h2_vec,
+#'   full_corrmat = full_corrmat)
+#' cov
+#' correct_positive_definite(cov)
+#' 
 #' @seealso \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
 #' \code{\link{construct_covmat_multi}}.
 #' 
@@ -149,7 +163,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
 #' @param correction_val The value to multiply on the off-diagnoal elements.
 #' 
 #' @return Returns list with the corrected covmat and number of iterations used to achieve positive definite.
-#' 
+#' @noRd
 
 correct_positive_definite_simplified = function(covmat, correction_limit = 100, correction_val = 0.99) {
   eigen_val = eigen(covmat)
@@ -164,7 +178,7 @@ correct_positive_definite_simplified = function(covmat, correction_limit = 100, 
       n = n + 1
     }
 
-    if (eigen(eigen_val$values < 0)) stop("Unable to enforce a positive definite covariance matrix.")
+    if (any(eigen_val$values < 0)) stop("Unable to enforce a positive definite covariance matrix.")
     return(list(covmat = covmat, nitr = n))
   } else {
     return(list(covmat = covmat, nitr = 0))
@@ -199,6 +213,7 @@ correct_positive_definite_simplified = function(covmat, correction_limit = 100, 
 #' @examples
 #' curve(sapply(liability, truncated_normal_cdf), from = qnorm(0.05, lower.tail = FALSE), to = 3.5,
 #'  xname = "liability")
+#'  
 #' @export
 truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
   
@@ -228,7 +243,7 @@ The upper and lower cutoff points will be swapped...")
 #' Given a person's age, \code{convert_age_to_cir} can be used
 #' to compute the cumulative incidence rate (cir), which is given
 #' by the formula 
-#' \deqn{pop_prev / (1 + exp((mid_point - age) * slope))}
+#' \deqn{pop\_prev / (1 + exp((mid\_point - age) * slope))}
 #'
 #' @param age A non-negative number representing the individual's age.
 #' @param pop_prev A positive number representing the overall
@@ -280,9 +295,9 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' logistic function or the truncated normal distribution.
 #' Under the logistic function, the formula used to compute
 #' the threshold from an individual's age is given by
-#' \deqn{qnorm(pop_prev / (1 + exp((mid_point - age) * slope)), lower.tail = F)},
+#' \deqn{qnorm(pop\_prev / (1 + exp((mid\_point - age) * slope)), lower.tail = F)},
 #' while it is given by 
-#' \deqn{qnorm((1 - (age-min_age)/max_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
+#' \deqn{qnorm((1 - (age-min\_age)/max\_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
 #' under the truncated normal distribution.
 #'
 #' @param age A non-negative number representing the individual's age.
@@ -401,7 +416,7 @@ The upper and lower cutoff points will be swapped...")
 #' 
 #' Given a person's cumulative incidence rate (cir), \code{convert_cir_to_age} 
 #' can be used to compute the corresponding age, which is given by
-#' \deqn{mid_point - \log(pop_prev/cir - 1) * 1/slope}
+#' \deqn{mid\_point - \log(pop\_prev/cir - 1) * 1/slope}
 #'
 #' @param cir A positive number representing the individual's cumulative 
 #' incidence rate.
@@ -461,9 +476,9 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' Given a person's cumulative incidence rate (cir), \code{convert_liability_to_aoo} 
 #' can be used to compute the corresponding age. Under the logistic function,
 #' the age is given by
-#' \deqn{mid_point - log(pop_prev/cir - 1) * 1/slope},
+#' \deqn{mid\_point - log(pop\_prev/cir - 1) * 1/slope},
 #' while it is given by 
-#' \deqn{(1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo}
+#' \deqn{(1 - truncated\_normal\_cdf(liability = liability, lower = lower , upper = upper)) * max\_aoo + min\_aoo}
 #' under the truncated normal distribution.
 #' 
 #' @param liability A number representing the individual's 
@@ -698,8 +713,7 @@ convert_observed_to_liability_scale <- function(obs_h2 = 0.5, pop_prev = 0.05, p
 #' @param index_id id of proband.
 #' 
 #' @return returns family graph with a pseudo point added that will have the same connections as the proband point. For kinship construction, the relationship to the proband must be adjusted to 1 \* h2 (and not 0.5 \* h2).
-#' @export
-#' 
+#' @noRd
 
 add_gen_liab_to_graph = function(fam_graph, index_id) {
   # find all index edges
@@ -751,6 +765,23 @@ add_gen_liab_to_graph = function(fam_graph, index_id) {
 #' genetic liability.
 #' 
 #' @return A kinship matrix. 
+#' 
+#' @examples
+#' fam <- data.frame(
+#' i = c(1, 2, 3, 4),
+#' f = c(3, 0, 4, 0),
+#' m = c(2, 0, 0, 0)
+#' )
+#' 
+#' thresholds <- data.frame(
+#'   i = c(1, 2, 3, 4),
+#'   lower = c(-Inf, -Inf, 0.8, 0.7),
+#'   upper = c(0.8, 0.8, 0.8, 0.7)
+#' )
+#' 
+#' graph <- prepare_graph(fam, icol = "i", fcol = "f", mcol = "m", thresholds = thresholds)
+#' 
+#' get_kinship(graph, h2 = 0.5, index_id = "1")
 #' 
 #' @export
 #' 

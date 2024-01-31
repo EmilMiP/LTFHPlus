@@ -33,7 +33,7 @@ from a person's cumulative incidence rate.
 \details{
 Given a person's cumulative incidence rate (cir), \code{convert_cir_to_age}
 can be used to compute the corresponding age, which is given by
-\deqn{mid_point - \log(pop_prev/cir - 1) * 1/slope}
+\deqn{mid\_point - \log(pop\_prev/cir - 1) * 1/slope}
 }
 \examples{
 curve(sapply(cir, convert_cir_to_age), from = 0.001, to = 0.099, xname = "cir") 

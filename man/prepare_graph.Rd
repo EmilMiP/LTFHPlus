@@ -38,3 +38,17 @@ An igraph object. A (directed) graph object based on the links provided in .tbl 
 \description{
 \code{prepare_graph} constructs a graph based on mother, father, and offspring links.
 }
+\examples{
+fam <- data.frame(
+  id = c("pid", "mom", "dad", "pgf"),
+  dadcol = c("dad", 0, "pgf", 0),
+  momcol = c("mom", 0, 0, 0))
+
+thresholds <- data.frame(
+  id = c("pid", "mom", "dad", "pgf"),
+  lower = c(-Inf, -Inf, 0.8, 0.7),
+  upper = c(0.8, 0.8, 0.8, 0.7))
+
+prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+
+}

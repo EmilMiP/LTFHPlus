@@ -24,3 +24,21 @@ A kinship matrix.
 \description{
 construct the kinship matrix from a graph representation of a family, centered on an index person (proband).
 }
+\examples{
+fam <- data.frame(
+i = c(1, 2, 3, 4),
+f = c(3, 0, 4, 0),
+m = c(2, 0, 0, 0)
+)
+
+thresholds <- data.frame(
+  i = c(1, 2, 3, 4),
+  lower = c(-Inf, -Inf, 0.8, 0.7),
+  upper = c(0.8, 0.8, 0.8, 0.7)
+)
+
+graph <- prepare_graph(fam, icol = "i", fcol = "f", mcol = "m", thresholds = thresholds)
+
+get_kinship(graph, h2 = 0.5, index_id = "1")
+
+}

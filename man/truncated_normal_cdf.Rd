@@ -40,4 +40,5 @@ individual's true underlying liability.
 \examples{
 curve(sapply(liability, truncated_normal_cdf), from = qnorm(0.05, lower.tail = FALSE), to = 3.5,
  xname = "liability")
+ 
 }

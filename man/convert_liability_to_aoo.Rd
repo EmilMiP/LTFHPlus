@@ -63,9 +63,9 @@ either the logistic function or the truncated normal distribution.
 Given a person's cumulative incidence rate (cir), \code{convert_liability_to_aoo}
 can be used to compute the corresponding age. Under the logistic function,
 the age is given by
-\deqn{mid_point - log(pop_prev/cir - 1) * 1/slope},
+\deqn{mid\_point - log(pop\_prev/cir - 1) * 1/slope},
 while it is given by
-\deqn{(1 - truncated_normal_cdf(liability = liability, lower = lower , upper = upper)) * max_aoo + min_aoo}
+\deqn{(1 - truncated\_normal\_cdf(liability = liability, lower = lower , upper = upper)) * max\_aoo + min\_aoo}
 under the truncated normal distribution.
 }
 \examples{

@@ -18,7 +18,19 @@ utils::globalVariables(c("n_tot", "prob", "probs", ".", "post_gen_liab",
 #' @return Returns the estimated genetic liabilities.
 #'
 #' @examples 
-#' # See R/Example/example_nosib.R for an example of use and input.
+#' phen <- data.frame(
+#' CHILD_STATUS = c(0,0),
+#' P1_STATUS = c(1,1),
+#' P2_STATUS = c(0,1),
+#' SIB_STATUS = c(1,0),
+#' NUM_SIBS = c(2,0))
+#' 
+#' h2 <- 0.5
+#' child_threshold <- 0.7
+#' parent_threshold <- 0.8
+#' 
+#' estimate_gen_liability_ltfh(h2, phen, child_threshold, parent_threshold)
+#' 
 #' @importFrom dplyr %>%
 #' @export
 estimate_gen_liability_ltfh = function(h2,
@@ -82,7 +94,7 @@ estimate_gen_liability_ltfh = function(h2,
                      }
                    )
       
-      cov = construct_covmat()
+      cov = construct_covmat(fam_vec = c("m","f"))
 
       cov_size = nrow(cov)
       
@@ -148,7 +160,7 @@ estimate_gen_liability_ltfh = function(h2,
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
 
-      cov <- construct_covmat()
+      cov <- construct_covmat(fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib)))
       tmp <- rtmvnorm.gibbs(n_sim = 100e3,
                             covmat = cov,
                             lower = lower,
@@ -234,7 +246,7 @@ estimate_gen_liability_ltfh = function(h2,
         vals.ctr = 1
         while (is.null(se) || se > tol) {
           gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
-                                               covmat = construct_covmat(),
+                                               covmat = construct_covmat(fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib))),
                                                lower = lower,
                                                upper = upper,
                                                fixed = fixed,

@@ -62,6 +62,21 @@ tries to modify the underlying correlation matrices (called \code{genetic_corrma
 \code{full_corrmat} in \code{\link{construct_covmat}} or \code{\link{construct_covmat_multi}}) by
 multiplying all off-diagonal entries in the correlation matrices by a given number.
 }
+\examples{
+ntrait <- 2
+genetic_corrmat <- matrix(0.6, ncol = ntrait, nrow = ntrait)
+diag(genetic_corrmat) <- 1
+full_corrmat <- matrix(-0.25, ncol = ntrait, nrow = ntrait)
+diag(full_corrmat) <- 1
+h2_vec <- rep(0.6, ntrait)
+cov <- construct_covmat(fam_vec = c("m", "f"),
+  genetic_corrmat = genetic_corrmat,
+  h2 = h2_vec,
+  full_corrmat = full_corrmat)
+cov
+correct_positive_definite(cov)
+
+}
 \seealso{
 \code{\link{construct_covmat}}, \code{\link{construct_covmat_single}} and
 \code{\link{construct_covmat_multi}}.

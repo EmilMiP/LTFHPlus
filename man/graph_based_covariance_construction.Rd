@@ -32,3 +32,22 @@ cov, is the covariance matrix of the local graph centered on the current proband
 Function that constructs the genetic covariance matrix given a graph around a proband
 and extracts the threshold information from the graph.
 }
+\examples{
+fam <- data.frame(
+  id = c("pid", "mom", "dad", "pgf"),
+  dadcol = c("dad", 0, "pgf", 0),
+  momcol = c("mom", 0, 0, 0))
+
+thresholds <- data.frame(
+  id = c("pid", "mom", "dad", "pgf"),
+  lower = c(-Inf, -Inf, 0.8, 0.7),
+  upper = c(0.8, 0.8, 0.8, 0.7))
+
+graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+
+graph_based_covariance_construction(pid = "id",
+                                    cur_proband_id = "pid",
+                                    cur_family_graph = graph,
+                                    h2 = 0.5)
+
+}

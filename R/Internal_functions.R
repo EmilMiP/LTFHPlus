@@ -54,6 +54,7 @@ utils::globalVariables("role")
 #' try(LTFHPlus:::validate_relatives(m))
 #' 
 #' @importFrom stringr str_detect
+#' @noRd
 validate_relatives <- function(relatives){
   
   if(!is.character(relatives)){
@@ -109,7 +110,7 @@ validate_relatives <- function(relatives){
 #' # This will result in errors:
 #' try(LTFHPlus:::validate_proportion(2))
 #' try(LTFHPlus:::validate_proportion(-0.5))
-#' 
+#' @noRd
 validate_proportion <- function(prop, from_covmat = FALSE){
   if(is.null(prop)){
     
@@ -160,7 +161,7 @@ validate_proportion <- function(prop, from_covmat = FALSE){
 #' # This will result in errors:
 #' try(LTFHPlus:::validate_correlation_matrix(matrix(c(0.2,0.4,0.4,0.2), nrow = 2)))
 #' try(LTFHPlus:::validate_correlation_matrix(matrix(nrow=2, ncol = 2)))
-#' 
+#' @noRd
 validate_correlation_matrix <- function(corrmat){
   
   if(is.null(corrmat)){
@@ -203,6 +204,7 @@ validate_correlation_matrix <- function(corrmat){
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_cols
 #' @importFrom rlang :=
+#' @noRd
 construct_aoo <- function(fam_mem,.tbl, pop_prev, phen_name = NULL){
   
   # Removing the genetic component from the 
@@ -266,6 +268,7 @@ construct_aoo <- function(fam_mem,.tbl, pop_prev, phen_name = NULL){
 #' present in \code{fam_mem}.
 #' 
 #' @importFrom dplyr %>% rowwise select mutate bind_rows ungroup
+#' @noRd
 construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
   
   # Removing the genetic component from the 
@@ -341,7 +344,7 @@ construct_thresholds <- function(fam_mem, .tbl, pop_prev, phen_name = NULL){
 #' provided for each entry in phen_names.
 #' 
 #' @importFrom dplyr filter pull tibble %>% bind_rows
-#' 
+#' @noRd
 
 add_missing_roles_for_proband = function(temp_tbl, role, cur_roles, cur_fam_id, pid, fam_id, phen_names = NULL) {
   # role types to check for, centered on proband

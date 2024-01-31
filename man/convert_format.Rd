@@ -21,3 +21,19 @@ returns a format similar to \code{prepare_LTFHPlus_input}, which is used by \cod
 \description{
 Attempts to convert the list entry input format to a long format
 }
+\examples{
+family <- data.frame(
+fam_id = c(1, 1, 1, 1),
+pid = c(1, 2, 3, 4),
+role = c("o", "m", "f", "pgf")
+)
+
+threshs <- data.frame(
+  pid = c(1, 2, 3, 4),
+  lower = c(-Inf, -Inf, 0.8, 0.7),
+  upper = c(0.8, 0.8, 0.8, 0.7)
+)
+
+convert_format(family, threshs)
+
+}

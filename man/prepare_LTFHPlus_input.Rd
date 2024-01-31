@@ -50,6 +50,33 @@ prepare_LTFHPlus_input(
 
 \item{xgboost_itr}{Number of iterations to run xgboost for.}
 }
+\value{
+tibble formatted for \code{estimate_liability}
+}
 \description{
 Prepares input for \code{estimate_liability}
+}
+\examples{
+tbl = data.frame(
+  fam_id = c(1, 1, 1, 1),
+  pid = c(1, 2, 3, 4),
+  role = c("o", "m", "f", "pgf"),
+  sex = c(1, 0, 1, 1),
+  status = c(0, 0, 1, 1),
+  age = c(22, 42, 48, 78),
+  birth_year = 2023 - c(22, 42, 48, 78),
+  aoo = c(NA, NA, 43, 45))
+
+cip = data.frame(
+  age = c(22, 42, 43, 45, 48, 78),
+  birth_year = c(2001, 1981, 1975, 1945, 1975, 1945),
+  sex = c(1, 0, 1, 1, 1, 1),
+  cip = c(0.1, 0.2, 0.3, 0.3, 0.3, 0.4))
+
+prepare_LTFHPlus_input(.tbl = tbl,
+                       CIP = cip, 
+                       age_col = "age",
+                       aoo_col = "aoo",
+                       interpolation = NA)
+
 }

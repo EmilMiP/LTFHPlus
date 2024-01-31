@@ -42,3 +42,35 @@ which is the order of ids from pid and phen_names pasted together, such that ord
 Function that constructs the genetic covariance matrix given a graph around a proband
 and extracts the threshold information from the graph.
 }
+\examples{
+fam <- data.frame(
+fam = c(1, 1, 1,1),
+id = c("pid", "mom", "dad", "pgf"),
+dadcol = c("dad", 0, "pgf", 0),
+momcol = c("mom", 0, 0, 0))
+
+thresholds <- data.frame(
+  id = c("pid", "mom", "dad", "pgf"),
+  lower_1 = c(-Inf, -Inf, 0.8, 0.7),
+  upper_1 = c(0.8, 0.8, 0.8, 0.7),
+  lower_2 = c(-Inf, 0.3, -Inf, 0.2),
+  upper_2 = c(0.3, 0.3, 0.3, 0.2))
+
+graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+
+ntrait <- 2
+genetic_corrmat <- matrix(0.2, ncol = ntrait, nrow = ntrait)
+diag(genetic_corrmat) <- 1
+full_corrmat <- matrix(0.3, ncol = ntrait, nrow = ntrait)
+diag(full_corrmat) <- 1
+h2_vec <- rep(0.6, ntrait)
+
+graph_based_covariance_construction_multi(fam_id = "fam",
+                                          pid = "id",
+                                          cur_proband_id = "pid",
+                                          cur_family_graph = graph,
+                                          h2_vec = h2_vec,
+                                          genetic_corrmat = genetic_corrmat,
+                                          phen_names = c("1", "2"))
+
+}

@@ -6,19 +6,19 @@
 #' @param h2 Heritability estimate on liability scale to construct the covariance matrix off of.
 #' @param n_sib Number of Siblings to include in the covariance matrix.
 #'
-#' @return None
+#' @return covariance matrix needed for LT-FH++ based on the heritability estimate and number of siblings
 #'
 #' @examples
 #' get_cov(.5)
 #'
-#' @export
-#constructs covariance matrix with a baseline of 2 parents and n_sib siblings (with-in disorder):
+#' @noRd
 get_cov = function(h2, n_sib = 0) {
   
   warning("'get_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
           Please consider using 'construct_covmat()' instead.\
           The signature and semantics have changed, see '?construct_covmat'.")
   
+  #constructs covariance matrix with a baseline of 2 parents and n_sib siblings (with-in disorder):  
   cov <- matrix(h2/2, 4 + n_sib, 4 + n_sib)
   diag(cov) <- 1
   cov[3,4] <- cov[4,3] <- 0
@@ -39,8 +39,7 @@ get_cov = function(h2, n_sib = 0) {
 #'
 #' @return Returns the covariance matrix needed for LT-FH without family history, and correlated traits.
 #'
-#' @export
-
+#' @noRd
 generate_cov_matrix_noFH = function(h2_vec, gen_cor_vec) {
   
   warning("'generate_cov_matrix_noFH()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
@@ -81,11 +80,12 @@ generate_cov_matrix_noFH = function(h2_vec, gen_cor_vec) {
 #' @param rho Correlation between the two phenotypes.
 #' @param n_sib Number of Siblings to include in the matrix.
 #'
+#' @return gets the correlation between two disorders (between disorder)
+#'
 #' @examples
 #' get_between_trait_cov(.5, .5, .5)
 #'
-#' @export
-#gets the correlation between two disorders (between disorder)
+#' @noRd
 get_between_trait_cov <- function(h2_1, h2_2, rho, n_sib = 0) {
   
   warning("'get_between_trait_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n
@@ -109,8 +109,7 @@ get_between_trait_cov <- function(h2_1, h2_2, rho, n_sib = 0) {
 #' @examples
 #' get_full_cov(matrix(.5, 2, 2))
 #'
-#' @export
-#constructs the full covariate matrix based off of the provided.
+#' @noRd
 get_full_cov = function(corr_mat, n_sib = 0) {
   
   warning("'get_full_cov()' was deprecated in LTFHPlus v1.0.0. It is only kept for legacy reasons.\n

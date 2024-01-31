@@ -21,8 +21,22 @@ utils::globalVariables("thr")
 #' 
 #' @return returns a format similar to \code{prepare_LTFHPlus_input}, which is used by \code{estimate_liability}
 #'
+#' @examples
+#' family <- data.frame(
+#' fam_id = c(1, 1, 1, 1),
+#' pid = c(1, 2, 3, 4),
+#' role = c("o", "m", "f", "pgf")
+#' )
+#' 
+#' threshs <- data.frame(
+#'   pid = c(1, 2, 3, 4),
+#'   lower = c(-Inf, -Inf, 0.8, 0.7),
+#'   upper = c(0.8, 0.8, 0.8, 0.7)
+#' )
+#' 
+#' convert_format(family, threshs)
+#'
 #' @export 
-
 convert_format = function(family, threshs, personal_id_col = "pid", role_col = NULL) {
   # standardising input -----------------------------------------------------
   
@@ -70,8 +84,32 @@ convert_format = function(family, threshs, personal_id_col = "pid", role_col = N
 #' @importFrom stats qnorm predict
 #' @importFrom dplyr all_of mutate select %>% left_join group_by ungroup arrange
 #' 
+#' @return tibble formatted for \code{estimate_liability}
+#' 
+#' @examples
+#' tbl = data.frame(
+#'   fam_id = c(1, 1, 1, 1),
+#'   pid = c(1, 2, 3, 4),
+#'   role = c("o", "m", "f", "pgf"),
+#'   sex = c(1, 0, 1, 1),
+#'   status = c(0, 0, 1, 1),
+#'   age = c(22, 42, 48, 78),
+#'   birth_year = 2023 - c(22, 42, 48, 78),
+#'   aoo = c(NA, NA, 43, 45))
+#' 
+#' cip = data.frame(
+#'   age = c(22, 42, 43, 45, 48, 78),
+#'   birth_year = c(2001, 1981, 1975, 1945, 1975, 1945),
+#'   sex = c(1, 0, 1, 1, 1, 1),
+#'   cip = c(0.1, 0.2, 0.3, 0.3, 0.3, 0.4))
+#' 
+#' prepare_LTFHPlus_input(.tbl = tbl,
+#'                        CIP = cip, 
+#'                        age_col = "age",
+#'                        aoo_col = "aoo",
+#'                        interpolation = NA)
+#' 
 #' @export
-
 prepare_LTFHPlus_input = function(.tbl, 
                                   CIP, 
                                   age_col,
@@ -177,12 +215,22 @@ prepare_LTFHPlus_input = function(.tbl,
 #' 
 #' @return An igraph object. A (directed) graph object based on the links provided in .tbl with the lower and upper thresholds stored as attributes. 
 #' 
-#' @export
 #' @importFrom dplyr %>% rename relocate mutate filter group_by summarise select bind_rows pull
 #' 
+#' @examples
+#' fam <- data.frame(
+#'   id = c("pid", "mom", "dad", "pgf"),
+#'   dadcol = c("dad", 0, "pgf", 0),
+#'   momcol = c("mom", 0, 0, 0))
+#' 
+#' thresholds <- data.frame(
+#'   id = c("pid", "mom", "dad", "pgf"),
+#'   lower = c(-Inf, -Inf, 0.8, 0.7),
+#'   upper = c(0.8, 0.8, 0.8, 0.7))
+#' 
+#' prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+#' 
 #' @export
-
-
 prepare_graph = function(.tbl, icol, fcol, mcol, thresholds, lower_col = "lower", upper_col = "upper", missingID_patterns = "^0$") {
  
   # formatting .tbl from trio info to graph compatible input

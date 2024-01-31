@@ -14,11 +14,7 @@ utils::globalVariables("string")
 #' @param tol Convergence criteria of the gibbs sampler. Default is 0.01, meaning a standard error of the mean below 0.01
 #'
 #' @return Returns the estimated genetic liabilities.
-#'
-#' @examples #See vignettes for example of use and input.
-#' 
-#' 
-#' @export
+#' @noRd
 
 estimate_gen_liability = function(h2,
                                   phen, 

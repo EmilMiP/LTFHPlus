@@ -45,5 +45,17 @@ Returns the estimated genetic liabilities.
 Estimate genetic liability similar to LT-FH
 }
 \examples{
-# See R/Example/example_nosib.R for an example of use and input.
+phen <- data.frame(
+CHILD_STATUS = c(0,0),
+P1_STATUS = c(1,1),
+P2_STATUS = c(0,1),
+SIB_STATUS = c(1,0),
+NUM_SIBS = c(2,0))
+
+h2 <- 0.5
+child_threshold <- 0.7
+parent_threshold <- 0.8
+
+estimate_gen_liability_ltfh(h2, phen, child_threshold, parent_threshold)
+
 }

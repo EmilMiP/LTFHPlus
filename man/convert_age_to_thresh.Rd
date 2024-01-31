@@ -65,9 +65,9 @@ then used to compute the threshold using either the
 logistic function or the truncated normal distribution.
 Under the logistic function, the formula used to compute
 the threshold from an individual's age is given by
-\deqn{qnorm(pop_prev / (1 + exp((mid_point - age) * slope)), lower.tail = F)},
+\deqn{qnorm(pop\_prev / (1 + exp((mid\_point - age) * slope)), lower.tail = F)},
 while it is given by
-\deqn{qnorm((1 - (age-min_age)/max_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
+\deqn{qnorm((1 - (age-min\_age)/max\_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
 under the truncated normal distribution.
 }
 \examples{
