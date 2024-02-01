@@ -70,6 +70,7 @@
 #' @importFrom dplyr %>% pull bind_rows bind_cols select row_number rename
 #' @importFrom rlang :=
 #' 
+#' @noRd
 estimate_liability_prevalence = function(status, h2_vec, genetic_corrmat, full_corrmat,
                                          prevalences, pid = "PID", out = c(1), tol = 0.01, 
                                          parallel = FALSE, progress = FALSE){
