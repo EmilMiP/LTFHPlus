@@ -94,7 +94,7 @@ estimate_gen_liability_ltfh = function(h2,
                      }
                    )
       
-      cov = construct_covmat(fam_vec = c("m","f"))
+      cov = construct_covmat(h2 = h2, fam_vec = c("m","f"))
 
       cov_size = nrow(cov)
       
@@ -160,7 +160,7 @@ estimate_gen_liability_ltfh = function(h2,
       lower[2][(cur_stat[1] == 1)] = child_threshold
       upper[2][(cur_stat[1] != 1)] = child_threshold
 
-      cov <- construct_covmat(fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib)))
+      cov <- construct_covmat(h2 = h2, fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib)))
       tmp <- rtmvnorm.gibbs(n_sim = 100e3,
                             covmat = cov,
                             lower = lower,
@@ -246,7 +246,7 @@ estimate_gen_liability_ltfh = function(h2,
         vals.ctr = 1
         while (is.null(se) || se > tol) {
           gen_liabs = LTFHPlus::rtmvnorm.gibbs(n_sim = 50e3,
-                                               covmat = construct_covmat(fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib))),
+                                               covmat = construct_covmat(h2 = h2, fam_vec = c(c("m", "f"), paste0(rep("s", cur_nsib), 1:cur_nsib))),
                                                lower = lower,
                                                upper = upper,
                                                fixed = fixed,
