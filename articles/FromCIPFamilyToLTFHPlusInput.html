@@ -69,6 +69,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -94,7 +97,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2024-01-22</h4>
+            <h4 data-toc-skip class="date">2024-02-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/FromCIPFamilyToLTFHPlusInput.Rmd" class="external-link"><code>vignettes/FromCIPFamilyToLTFHPlusInput.Rmd</code></a></small>
       <div class="hidden name"><code>FromCIPFamilyToLTFHPlusInput.Rmd</code></div>
@@ -134,16 +137,16 @@ shown here are only for illustrative purposes.</strong></p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 8</span></span></span>
 <span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         1      1    67       <span style="text-decoration: underline;">1</span>956     5</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         1      1    35       <span style="text-decoration: underline;">1</span>988    34</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         1      1    54       <span style="text-decoration: underline;">1</span>969    23</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         1      1    55       <span style="text-decoration: underline;">1</span>968    10</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      0     6       <span style="text-decoration: underline;">2</span>017    <span style="color: #BB0000;">NA</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         0      1    89       <span style="text-decoration: underline;">1</span>934    27</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         1      0    79       <span style="text-decoration: underline;">1</span>944    <span style="color: #BB0000;">NA</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         0      0    69       <span style="text-decoration: underline;">1</span>954    <span style="color: #BB0000;">NA</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    32       <span style="text-decoration: underline;">1</span>991    21</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         0      1    20       <span style="text-decoration: underline;">2</span>003     9</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         1      0    30       <span style="text-decoration: underline;">1</span>993    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         1      1    68       <span style="text-decoration: underline;">1</span>955    60</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         0      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         0      1    70       <span style="text-decoration: underline;">1</span>953    41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      0    48       <span style="text-decoration: underline;">1</span>975    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         1      1    22       <span style="text-decoration: underline;">2</span>001    19</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         0      0    85       <span style="text-decoration: underline;">1</span>938    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         0      0    50       <span style="text-decoration: underline;">1</span>973    <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    48       <span style="text-decoration: underline;">1</span>975    13</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         1      0    32       <span style="text-decoration: underline;">1</span>991    <span style="color: #BB0000;">NA</span></span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### THIS IS DUMMY CIP. DO NOT USE FOR REAL-WORLD DATA USE ####</span></span>
 <span><span class="va">CIP</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,</span>
@@ -213,16 +216,16 @@ following way:</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 12</span></span></span>
 <span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo   cip   thr   lower</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         1      1     5       <span style="text-decoration: underline;">1</span>956     5 0.004  2.65    2.65</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         1      1    34       <span style="text-decoration: underline;">1</span>988    34 0.033  1.84    1.84</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         1      1    23       <span style="text-decoration: underline;">1</span>969    23 0.022  2.01    2.01</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         1      1    10       <span style="text-decoration: underline;">1</span>968    10 0.009  2.37    2.37</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      0     6       <span style="text-decoration: underline;">2</span>017    <span style="color: #BB0000;">NA</span> 0.005  2.58 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         0      1    27       <span style="text-decoration: underline;">1</span>934    27 0.026  1.94    1.94</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         1      0    79       <span style="text-decoration: underline;">1</span>944    <span style="color: #BB0000;">NA</span> 0.078  1.42 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         0      0    69       <span style="text-decoration: underline;">1</span>954    <span style="color: #BB0000;">NA</span> 0.068  1.49 -<span style="color: #BB0000;">Inf</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    21       <span style="text-decoration: underline;">1</span>991    21 0.02   2.05    2.05</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         0      1     9       <span style="text-decoration: underline;">2</span>003     9 0.008  2.41    2.41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         1      0    30       <span style="text-decoration: underline;">1</span>993    <span style="color: #BB0000;">NA</span> 0.029  1.90 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam2       2 o         1      1    60       <span style="text-decoration: underline;">1</span>955    60 0.059  1.56    1.56</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam3       3 o         0      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span> 0.075  1.44 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         0      1    41       <span style="text-decoration: underline;">1</span>953    41 0.04   1.75    1.75</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam5       5 o         1      0    48       <span style="text-decoration: underline;">1</span>975    <span style="color: #BB0000;">NA</span> 0.047  1.67 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam6       6 o         1      1    19       <span style="text-decoration: underline;">2</span>001    19 0.018  2.10    2.10</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam7       7 o         0      0    85       <span style="text-decoration: underline;">1</span>938    <span style="color: #BB0000;">NA</span> 0.084  1.38 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam8       8 o         0      0    50       <span style="text-decoration: underline;">1</span>973    <span style="color: #BB0000;">NA</span> 0.049  1.65 -<span style="color: #BB0000;">Inf</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam9       9 o         1      1    13       <span style="text-decoration: underline;">1</span>975    13 0.012  2.26    2.26</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam10     10 o         1      0    32       <span style="text-decoration: underline;">1</span>991    <span style="color: #BB0000;">NA</span> 0.031  1.87 -<span style="color: #BB0000;">Inf</span>   </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: upper &lt;dbl&gt;</span></span></span></code></pre>
 </div>
 <div class="section level4">
@@ -283,16 +286,16 @@ through the <code>bst.params</code> variable.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 13</span></span></span>
 <span><span class="co">##    fam_id   pid role    sex status   age birth_year   aoo cip_pred event_age</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam1       1 o         1      1    67       <span style="text-decoration: underline;">1</span>956     5  0.004<span style="text-decoration: underline;">01</span>         5</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam5       5 o         1      0     6       <span style="text-decoration: underline;">2</span>017    <span style="color: #BB0000;">NA</span>  0.005<span style="text-decoration: underline;">02</span>         6</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam10     10 o         0      1    20       <span style="text-decoration: underline;">2</span>003     9  0.008<span style="text-decoration: underline;">01</span>         9</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam4       4 o         1      1    55       <span style="text-decoration: underline;">1</span>968    10  0.009<span style="text-decoration: underline;">00</span>        10</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam9       9 o         1      1    32       <span style="text-decoration: underline;">1</span>991    21  0.020<span style="text-decoration: underline;">0</span>         21</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam3       3 o         1      1    54       <span style="text-decoration: underline;">1</span>969    23  0.022<span style="text-decoration: underline;">0</span>         23</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam6       6 o         0      1    89       <span style="text-decoration: underline;">1</span>934    27  0.026<span style="text-decoration: underline;">0</span>         27</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam2       2 o         1      1    35       <span style="text-decoration: underline;">1</span>988    34  0.033<span style="text-decoration: underline;">0</span>         34</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam8       8 o         0      0    69       <span style="text-decoration: underline;">1</span>954    <span style="color: #BB0000;">NA</span>  0.068<span style="text-decoration: underline;">1</span>         69</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam7       7 o         1      0    79       <span style="text-decoration: underline;">1</span>944    <span style="color: #BB0000;">NA</span>  0.077<span style="text-decoration: underline;">9</span>         79</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> fam9       9 o         1      1    48       <span style="text-decoration: underline;">1</span>975    13   0.012<span style="text-decoration: underline;">0</span>        13</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> fam6       6 o         1      1    22       <span style="text-decoration: underline;">2</span>001    19   0.018<span style="text-decoration: underline;">0</span>        19</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> fam1       1 o         1      0    30       <span style="text-decoration: underline;">1</span>993    <span style="color: #BB0000;">NA</span>   0.029<span style="text-decoration: underline;">0</span>        30</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> fam10     10 o         1      0    32       <span style="text-decoration: underline;">1</span>991    <span style="color: #BB0000;">NA</span>   0.031<span style="text-decoration: underline;">0</span>        32</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> fam4       4 o         0      1    70       <span style="text-decoration: underline;">1</span>953    41   0.040<span style="text-decoration: underline;">0</span>        41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> fam5       5 o         1      0    48       <span style="text-decoration: underline;">1</span>975    <span style="color: #BB0000;">NA</span>   0.047<span style="text-decoration: underline;">0</span>        48</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> fam8       8 o         0      0    50       <span style="text-decoration: underline;">1</span>973    <span style="color: #BB0000;">NA</span>   0.049<span style="text-decoration: underline;">0</span>        50</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> fam2       2 o         1      1    68       <span style="text-decoration: underline;">1</span>955    60   0.059<span style="text-decoration: underline;">0</span>        60</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> fam3       3 o         0      0    76       <span style="text-decoration: underline;">1</span>947    <span style="color: #BB0000;">NA</span>   0.075<span style="text-decoration: underline;">1</span>        76</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> fam7       7 o         0      0    85       <span style="text-decoration: underline;">1</span>938    <span style="color: #BB0000;">NA</span>   0.084<span style="text-decoration: underline;">0</span>        85</span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 3 more variables: thr &lt;dbl&gt;, lower &lt;dbl&gt;, upper &lt;dbl&gt;</span></span></span></code></pre>
 </div>
 </div>

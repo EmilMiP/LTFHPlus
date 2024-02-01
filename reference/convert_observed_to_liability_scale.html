@@ -51,6 +51,9 @@ observed scale to the heritability on the liability scale."><!-- mathjax --><scr
       <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -101,7 +104,13 @@ If it is a vector, it must have the same length as obs_h2. Defaults to 0.05.</p>
 <dt>prop_cases</dt>
 <dd><p>Either NULL or a number or a numeric vector representing the proportion
 of cases in the sample. All entries must be non-negative and at most one.
-If it is a vector, it must have the same length as obs_h2. Defaults to 0.5.</p>
+If it is a vector, it must have the same length as obs_h2. Defaults to 0.5.</p></dd>
+
+</dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
 <p>If <code>obs_h2</code>, <code>pop_prev</code> and <code>prop_cases</code> are non-negative numbers
 that are at most one, the function returns the heritability on the liability
 scale using Equation 23 from
@@ -126,9 +135,8 @@ If <code>obs_h2</code> and <code>pop_prev</code> are non-negative numeric vector
 all entries are at most one, while <code>prop_cases</code> is <code>NULL</code>,
 <code>convert_observed_to_liability_scale</code> returns a vector of the same
 length as obq_h2. Each entry holds to the liability-scale heritability that
-was obtained from the corresponding entry in obs_h2 using Equation 17.</p></dd>
-
-</dl></div>
+was obtained from the corresponding entry in obs_h2 using Equation 17.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>This function can be used to transform the heritability on the observed
