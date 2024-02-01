@@ -6,12 +6,13 @@
 \alias{LTFHPlus-package}
 \title{LTFHPlus: Implementation of 'LT-FH++'}
 \description{
-Implementation of 'LT-FH++', an extension of 'LT-FH', a liability threshold model conditioned on family history. 'LT-FH++' uses a Gibbs sampler for sampling from the truncated multivariate normal distribution and allows for flexible family structures. 'LT-FH++' was first described in Pedersen, Emil M., et al. (2022) \url{https://www.cell.com/ajhg/pdf/S0002-9297(22)00009-X.pdf} as an extension to LT-FH with more flexible family structures, and again as "ADuLT" Pedersen, Emil M., et al. (2023) \url{https://www.nature.com/articles/s41467-023-41210-z} as an alternative to traditional time-to-event GWAS, where family history was not considered.
+Implementation of 'LT-FH++', an extension of 'LT-FH', a liability threshold model conditioned on family history. 'LT-FH++' uses a Gibbs sampler for sampling from the truncated multivariate normal distribution and allows for flexible family structures. 'LT-FH++' was first described in Pedersen, Emil M., et al. (2022) \url{https://pure.au.dk/ws/portalfiles/portal/353346245/} as an extension to LT-FH with more flexible family structures, and again as "ADuLT" Pedersen, Emil M., et al. (2023) \url{https://www.nature.com/articles/s41467-023-41210-z} as an alternative to traditional time-to-event GWAS, where family history was not considered.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/EmilMiP/LTFHPlus}
+  \item Report bugs at \url{https://github.com/EmilMiP/LTFHPlus/issues}
 }
 
 }

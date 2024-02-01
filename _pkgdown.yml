@@ -31,32 +31,18 @@ reference:
     - construct_covmat_multi
     - construct_covmat
     - correct_positive_definite
-    - correct_positive_definite_simplified
     - graph_based_covariance_construction
     - graph_based_covariance_construction_multi
   - title: "Legacy & internal functions"
     desc: >
       functions that are not currently being used, but kept for compatabilitity and internal functions used by the package.
     contents:
-    - add_gen_liab_to_graph
-    - add_missing_roles_for_proband
     - get_all_combs
-    - construct_aoo
-    - construct_thresholds
-    - estimate_gen_liability
     - estimate_gen_liability_ltfh
     - estimate_liability_multi
-    - estimate_liability_prevalence
     - estimate_liability_single
-    - generate_cov_matrix_noFH
-    - get_between_trait_cov
-    - get_cov
-    - get_full_cov
     - simulate_under_LTM_multi
     - simulate_under_LTM_single
-    - validate_correlation_matrix
-    - validate_proportion
-    - validate_relatives
 template:
   params:
     bootswatch: darkly
