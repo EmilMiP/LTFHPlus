@@ -243,7 +243,7 @@ The upper and lower cutoff points will be swapped...")
 #' Given a person's age, \code{convert_age_to_cir} can be used
 #' to compute the cumulative incidence rate (cir), which is given
 #' by the formula 
-#' \deqn{pop\_prev / (1 + exp((mid\_point - age) * slope))}
+#' \deqn{pop\_ prev / (1 + exp((mid\_ point - age) * slope))}
 #'
 #' @param age A non-negative number representing the individual's age.
 #' @param pop_prev A positive number representing the overall
@@ -295,9 +295,9 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' logistic function or the truncated normal distribution.
 #' Under the logistic function, the formula used to compute
 #' the threshold from an individual's age is given by
-#' \deqn{qnorm(pop\_prev / (1 + exp((mid\_point - age) * slope)), lower.tail = F)},
+#' \deqn{qnorm(pop\_ prev / (1 + exp((mid\_ point - age) * slope)), lower.tail = F)},
 #' while it is given by 
-#' \deqn{qnorm((1 - (age-min\_age)/max\_age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
+#' \deqn{qnorm((1 - (age-min\_ age)/max\_ age) * (pnorm(upper) - pnorm(lower)) + pnorm(lower))}
 #' under the truncated normal distribution.
 #'
 #' @param age A non-negative number representing the individual's age.
@@ -416,7 +416,7 @@ The upper and lower cutoff points will be swapped...")
 #' 
 #' Given a person's cumulative incidence rate (cir), \code{convert_cir_to_age} 
 #' can be used to compute the corresponding age, which is given by
-#' \deqn{mid\_point - \log(pop\_prev/cir - 1) * 1/slope}
+#' \deqn{mid\_ point - \log(pop\_ prev/cir - 1) * 1/slope}
 #'
 #' @param cir A positive number representing the individual's cumulative 
 #' incidence rate.
@@ -476,9 +476,9 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' Given a person's cumulative incidence rate (cir), \code{convert_liability_to_aoo} 
 #' can be used to compute the corresponding age. Under the logistic function,
 #' the age is given by
-#' \deqn{mid\_point - log(pop\_prev/cir - 1) * 1/slope},
+#' \deqn{mid\_ point - log(pop\_ prev/cir - 1) * 1/slope},
 #' while it is given by 
-#' \deqn{(1 - truncated\_normal\_cdf(liability = liability, lower = lower , upper = upper)) * max\_aoo + min\_aoo}
+#' \deqn{(1 - truncated\_ normal\_ cdf(liability = liability, lower = lower , upper = upper)) * max\_ aoo + min\_ aoo}
 #' under the truncated normal distribution.
 #' 
 #' @param liability A number representing the individual's 

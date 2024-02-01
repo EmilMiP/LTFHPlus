@@ -32,7 +32,7 @@ rate from a person's age.
 Given a person's age, \code{convert_age_to_cir} can be used
 to compute the cumulative incidence rate (cir), which is given
 by the formula
-\deqn{pop\_prev / (1 + exp((mid\_point - age) * slope))}
+\deqn{pop\_ prev / (1 + exp((mid\_ point - age) * slope))}
 }
 \examples{
 curve(sapply(age, convert_age_to_cir), from = 10, to = 110, xname = "age")
