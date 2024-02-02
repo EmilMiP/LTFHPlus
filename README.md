@@ -1,5 +1,5 @@
 Emil M. Pedersen
-10/03/2022
+01/02/2024
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -25,6 +25,12 @@ You can install LTFHPlus by:
 
 ``` r
 devtools::install_github("EmilMiP/LTFHPlus")
+```
+
+or for the CRAN version:
+
+``` r
+install.packages("LTFHPlus")
 ```
 
 <!-- badges: start -->
