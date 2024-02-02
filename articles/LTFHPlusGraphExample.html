@@ -203,16 +203,16 @@ families.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 31 × 3</span></span></span>
 <span><span class="co">##    id       lower upper</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid          2     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib       -<span style="color: #BB0000;">Inf</span>     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs       -<span style="color: #BB0000;">Inf</span>   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid          2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib          2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs       -<span style="color: #BB0000;">Inf</span>     2</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs          2     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom       -<span style="color: #BB0000;">Inf</span>     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad       -<span style="color: #BB0000;">Inf</span>     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2         2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt        2     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin     2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt   -<span style="color: #BB0000;">Inf</span>   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom          2     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad          2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2      -<span style="color: #BB0000;">Inf</span>     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt        2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin  -<span style="color: #BB0000;">Inf</span>   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt      2   <span style="color: #BB0000;">Inf</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 21 more rows</span></span></span></code></pre>
 </div>
 <div class="section level3">
@@ -228,9 +228,9 @@ specified in <code>family</code> and attach the information in
 <span>                      mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span>
 <span>                      icol <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 76d3c3f DN-- 31 44 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH bc4669c DN-- 31 44 -- </span></span>
 <span><span class="co">## + attr: name (v/c), lower (v/n), upper (v/n)</span></span>
-<span><span class="co">## + edges from 76d3c3f (vertex names):</span></span>
+<span><span class="co">## + edges from bc4669c (vertex names):</span></span>
 <span><span class="co">##  [1] dad     -&gt;pid        mom     -&gt;pid        dad     -&gt;sib       </span></span>
 <span><span class="co">##  [4] mom     -&gt;sib        dad2    -&gt;mhs        mom     -&gt;mhs       </span></span>
 <span><span class="co">##  [7] dad     -&gt;phs        mom2    -&gt;phs        mgf     -&gt;mom       </span></span>
@@ -326,16 +326,16 @@ way:</p>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 31 × 4</span></span></span>
 <span><span class="co">##    fam_ID   pid      genetic_est genetic_se</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid      pid            1.36     0.001<span style="text-decoration: underline;">52</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib      sib            0.959    0.002<span style="text-decoration: underline;">46</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs      mhs            1.09     0.003<span style="text-decoration: underline;">30</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs      phs            1.25     0.001<span style="text-decoration: underline;">62</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom      mom            0.799    0.003<span style="text-decoration: underline;">10</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad      dad            1.49     0.002<span style="text-decoration: underline;">05</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2     dad2           1.37     0.001<span style="text-decoration: underline;">98</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt    paunt          1.70     0.001<span style="text-decoration: underline;">70</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin pacousin       1.51     0.002<span style="text-decoration: underline;">02</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt  hspaunt        1.64     0.003<span style="text-decoration: underline;">12</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid      pid            2.14     0.001<span style="text-decoration: underline;">89</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib      sib            2.14     0.002<span style="text-decoration: underline;">14</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs      mhs            0.969    0.002<span style="text-decoration: underline;">82</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs      phs            1.81     0.001<span style="text-decoration: underline;">56</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom      mom            1.80     0.001<span style="text-decoration: underline;">60</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad      dad            2.24     0.001<span style="text-decoration: underline;">89</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2     dad2           0.406    0.003<span style="text-decoration: underline;">16</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt    paunt          2.02     0.002<span style="text-decoration: underline;">24</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin pacousin       1.38     0.002<span style="text-decoration: underline;">93</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt  hspaunt        1.87     0.002<span style="text-decoration: underline;">04</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 21 more rows</span></span></span></code></pre>
 </div>
   </div>
