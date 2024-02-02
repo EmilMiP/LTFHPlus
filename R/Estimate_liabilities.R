@@ -849,7 +849,7 @@ The lower and upper thresholds will be swapped...")
 #' @param out A character or numeric vector indicating whether the genetic component
 #' of the full liability, the full liability or both should be returned. If \code{out = c(1)} or 
 #' \code{out = c("genetic")}, the genetic liability is estimated and returned. If \code{out = c(2)} or 
-#' \code{out = c("full")}, the full liability is estimated and returned. If code{out = c(1,2)} or 
+#' \code{out = c("full")}, the full liability is estimated and returned. If \code{out = c(1,2)} or 
 #' \code{out = c("genetic", "full")}, both components are estimated and returned. 
 #' Defaults to \code{c(1)}.
 #' @param tol A number that is used as the convergence criterion for the Gibbs sampler.
