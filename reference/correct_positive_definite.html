@@ -22,7 +22,7 @@ covariance matrix."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -208,9 +208,9 @@ multiplying all off-diagonal entries in the correlation matrices by a given numb
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"phenotype_names")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "phenotype1" "phenotype2"</span>
 <span class="r-in"><span><span class="fu">correct_positive_definite</span><span class="op">(</span><span class="va">cov</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The specified covariance matrix is not positive definite. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Trying to correct the covariance matrix...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The correction was performed successfully! All off-diagonal entries are corrected by0.656.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The specified covariance matrix is not positive definite. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Trying to correct the covariance matrix...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The correction was performed successfully! All off-diagonal entries are corrected by0.656.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              g_phenotype1 o_phenotype1 m_phenotype1 f_phenotype1 g_phenotype2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> g_phenotype1    0.6000000    0.6000000    0.3000000    0.3000000    0.2360373</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> o_phenotype1    0.6000000    1.0000000    0.3000000    0.3000000    0.2360373</span>

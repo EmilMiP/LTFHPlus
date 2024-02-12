@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2024-02-02</h4>
+            <h4 data-toc-skip class="date">2024-02-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/LTFHPlusGraphExample.Rmd" class="external-link"><code>vignettes/LTFHPlusGraphExample.Rmd</code></a></small>
       <div class="hidden name"><code>LTFHPlusGraphExample.Rmd</code></div>
@@ -204,14 +204,14 @@ families.</p>
 <span><span class="co">##    id       lower upper</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid          2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib          2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs       -<span style="color: #BB0000;">Inf</span>     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs          2     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom          2     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib       -<span style="color: #BB0000;">Inf</span>   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs          2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs          2   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom          2   <span style="color: #BB0000;">Inf</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad          2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2      -<span style="color: #BB0000;">Inf</span>     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt        2   <span style="color: #BB0000;">Inf</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin  -<span style="color: #BB0000;">Inf</span>   <span style="color: #BB0000;">Inf</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2         2     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt        2     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin     2     2</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt      2   <span style="color: #BB0000;">Inf</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 21 more rows</span></span></span></code></pre>
 </div>
@@ -228,9 +228,9 @@ specified in <code>family</code> and attach the information in
 <span>                      mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span>
 <span>                      icol <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH bc4669c DN-- 31 44 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH e9058a3 DN-- 31 44 -- </span></span>
 <span><span class="co">## + attr: name (v/c), lower (v/n), upper (v/n)</span></span>
-<span><span class="co">## + edges from bc4669c (vertex names):</span></span>
+<span><span class="co">## + edges from e9058a3 (vertex names):</span></span>
 <span><span class="co">##  [1] dad     -&gt;pid        mom     -&gt;pid        dad     -&gt;sib       </span></span>
 <span><span class="co">##  [4] mom     -&gt;sib        dad2    -&gt;mhs        mom     -&gt;mhs       </span></span>
 <span><span class="co">##  [7] dad     -&gt;phs        mom2    -&gt;phs        mgf     -&gt;mom       </span></span>
@@ -322,20 +322,20 @@ way:</p>
 <span>  pid <span class="op">=</span> <span class="st">"pid"</span>,</span>
 <span>  family_graphs_col <span class="op">=</span> <span class="st">"fam_graph"</span></span>
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## The number of workers is 1</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 31 × 4</span></span></span>
+<pre><code><span><span class="co">## The number of workers is 1</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 31 × 4</span></span></span>
 <span><span class="co">##    fam_ID   pid      genetic_est genetic_se</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid      pid            2.14     0.001<span style="text-decoration: underline;">89</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib      sib            2.14     0.002<span style="text-decoration: underline;">14</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs      mhs            0.969    0.002<span style="text-decoration: underline;">82</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs      phs            1.81     0.001<span style="text-decoration: underline;">56</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom      mom            1.80     0.001<span style="text-decoration: underline;">60</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad      dad            2.24     0.001<span style="text-decoration: underline;">89</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2     dad2           0.406    0.003<span style="text-decoration: underline;">16</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt    paunt          2.02     0.002<span style="text-decoration: underline;">24</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin pacousin       1.38     0.002<span style="text-decoration: underline;">93</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt  hspaunt        1.87     0.002<span style="text-decoration: underline;">04</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid      pid             2.26    0.002<span style="text-decoration: underline;">18</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib      sib             2.03    0.002<span style="text-decoration: underline;">99</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs      mhs             1.99    0.002<span style="text-decoration: underline;">08</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs      phs             2.04    0.001<span style="text-decoration: underline;">97</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom      mom             1.93    0.002<span style="text-decoration: underline;">04</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad      dad             2.22    0.001<span style="text-decoration: underline;">97</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2     dad2            1.43    0.001<span style="text-decoration: underline;">59</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt    paunt           1.92    0.001<span style="text-decoration: underline;">49</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin pacousin        1.35    0.001<span style="text-decoration: underline;">57</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt  hspaunt         1.68    0.001<span style="text-decoration: underline;">99</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 21 more rows</span></span></span></code></pre>
 </div>
   </div>

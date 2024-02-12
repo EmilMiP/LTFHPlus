@@ -18,7 +18,7 @@ function for a truncated normal distribution."><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ function for a truncated normal distribution.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">truncated_normal_cdf</span><span class="op">(</span></span>
 <span>  <span class="va">liability</span>,</span>
-<span>  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>,</span>
+<span>  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">Inf</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -97,7 +97,7 @@ true underlying liability.</p></dd>
 <dt>lower</dt>
 <dd><p>A number representing the lower cutoff point for the
 truncated normal distribution. Defaults to 1.645
-(stats::qnorm(0.05, lower.tail = F)).</p></dd>
+(stats::qnorm(0.05, lower.tail = FALSE)).</p></dd>
 
 
 <dt>upper</dt>

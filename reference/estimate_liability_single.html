@@ -19,7 +19,7 @@ on their family history."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -225,7 +225,7 @@ full liability, the full liability or both. It is possible to input either</p>
 <span class="r-in"><span><span class="fu">estimate_liability_single</span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>, </span></span>
 <span class="r-in"><span>h2 <span class="op">=</span> <span class="fl">0.5</span>, pid <span class="op">=</span> <span class="st">"indiv_ID"</span>, fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>, role <span class="op">=</span> <span class="st">"role"</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID  genetic_est genetic_se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -242,13 +242,12 @@ full liability, the full liability or both. It is possible to input either</p>
 <span class="r-in"><span><span class="co"># </span></span></span>
 <span class="r-in"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
 <span class="r-in"><span>h2 <span class="op">=</span> <span class="fl">0.5</span>, n_sim<span class="op">=</span><span class="fl">10</span>, pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Warning message: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Neither fam_vec nor n_fam is specified...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Neither fam_vec nor n_fam is specified...</span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="fu">estimate_liability_single</span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>, </span></span>
 <span class="r-in"><span>h2 <span class="op">=</span> <span class="fl">0.5</span>, pid <span class="op">=</span> <span class="st">"indiv_ID"</span>, fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>, role <span class="op">=</span> <span class="st">"role"</span>,</span></span>
 <span class="r-in"><span>out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"genetic"</span><span class="op">)</span>, tol <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of workers is 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    fam_ID    indiv_ID  genetic_est genetic_se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -262,6 +261,7 @@ full liability, the full liability or both. It is possible to input either</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fam_ID_8  fam_ID_8    -<span style="color: #BB0000;">0.007</span><span style="color: #BB0000; text-decoration: underline;">38</span>     0.004<span style="text-decoration: underline;">05</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fam_ID_9  fam_ID_9    -<span style="color: #BB0000;">0.010</span><span style="color: #BB0000; text-decoration: underline;">5</span>      0.003<span style="text-decoration: underline;">66</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fam_ID_10 fam_ID_10   -<span style="color: #BB0000;">0.005</span><span style="color: #BB0000; text-decoration: underline;">41</span>     0.003<span style="text-decoration: underline;">65</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
