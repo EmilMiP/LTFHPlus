@@ -1,7 +1,7 @@
 Package: LTFHPlus
 Type: Package
-Title: Implementation of 'LT-FH++'
-Version: 2.1.0
+Title: Implementation of LT-FH++
+Version: 2.1.1
 Authors@R: c(
     person("Emil Michael", "Pedersen", email = "emp@ph.au.dk", role = c("aut", "cre")),
     person("Florian", "Privé", email = "florian.prive.21@gmail.com", role = c("aut", "ths")),
@@ -9,19 +9,19 @@ Authors@R: c(
     person("Esben", "Agerbo", email = "ea@econ.au.dk", role = "ths"),
     person("Jette", "Steinbach", , "jst@econ.au.dk", role = "aut"),
     person("Lucas", "Rasmussen", email = "lar.ncrr@au.dk", role = "ctb"))
-Description: Implementation of 'LT-FH++', an extension of 'LT-FH',
-    a liability threshold model conditioned on family history.
-    'LT-FH++' uses a Gibbs sampler for sampling from the truncated 
+Description: Implementation of LT-FH++, an extension of
+    the liability threshold family history (LT-FH) model.
+    LT-FH++ uses a Gibbs sampler for sampling from the truncated 
     multivariate normal distribution and allows for 
-    flexible family structures. 'LT-FH++' was first described in 
+    flexible family structures. LT-FH++ was first described in 
     Pedersen, Emil M., et al. (2022) 
     <https://pure.au.dk/ws/portalfiles/portal/353346245/> 
     as an extension to LT-FH with more flexible family structures, 
-    and again as "ADuLT" 
+    and again as the age-dependent liability threshold (ADuLT) model
     Pedersen, Emil M., et al. (2023) 
     <https://www.nature.com/articles/s41467-023-41210-z> 
-    as an alternative to traditional time-to-event GWAS, 
-    where family history was not considered.
+    as an alternative to traditional time-to-event genome-wide
+    association studies, where family history was not considered.
 License: GPL-3
 Imports: 
     batchmeans,
@@ -36,7 +36,6 @@ Imports:
     tibble,
     tmvtnorm,
     tidyselect,
-    utils,
     igraph,
     xgboost,
     tidyr

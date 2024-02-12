@@ -12,7 +12,7 @@ convert_age_to_thresh(
   slope = 1/8,
   min_age = 10,
   max_age = 90,
-  lower = stats::qnorm(0.05, lower.tail = F),
+  lower = stats::qnorm(0.05, lower.tail = FALSE),
   upper = Inf
 )
 }
@@ -42,7 +42,7 @@ Must be greater than min_aoo. Defaults to 90.}
 
 \item{lower}{Only necessary if dist = "normal". A number representing the lower cutoff point for the
 truncated normal distribution. Defaults to 1.645
-(stats::qnorm(0.05, lower.tail = F)).}
+(stats::qnorm(0.05, lower.tail = FALSE)).}
 
 \item{upper}{Only necessary if dist = "normal". A number representing the upper cutoff point of the
 truncated normal distribution. Must be greater or equal to lower.

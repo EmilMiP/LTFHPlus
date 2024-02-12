@@ -6,7 +6,7 @@
 \usage{
 truncated_normal_cdf(
   liability,
-  lower = stats::qnorm(0.05, lower.tail = F),
+  lower = stats::qnorm(0.05, lower.tail = FALSE),
   upper = Inf
 )
 }
@@ -16,7 +16,7 @@ true underlying liability.}
 
 \item{lower}{A number representing the lower cutoff point for the
 truncated normal distribution. Defaults to 1.645
-(stats::qnorm(0.05, lower.tail = F)).}
+(stats::qnorm(0.05, lower.tail = FALSE)).}
 
 \item{upper}{A number representing the upper cutoff point of the
 truncated normal distribution. Must be greater or equal to lower.

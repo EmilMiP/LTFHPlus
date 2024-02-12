@@ -77,7 +77,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   # Checking whether all eigenvalues are positive
   if(any(eigen(covmat)$values < 0)){
     
-    cat("The specified covariance matrix is not positive definite. \n")
+    message("The specified covariance matrix is not positive definite. \n")
   }else{
     
     return(covmat)
@@ -111,7 +111,7 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   if(!is.numeric(correction_limit)) stop("correction_limit must be numeric!")
   if(correction_limit <= 0) stop("Correction limit must be positive!")
   
-  cat("Trying to correct the covariance matrix...\n")
+  message("Trying to correct the covariance matrix...\n")
   
   # The covariance matrix will be modified at most correction_limit times.
   n <- 0
@@ -145,11 +145,11 @@ correct_positive_definite = function(covmat, correction_val = .99, correction_li
   # If the matrix has been modified correction_limit times, 
   # the correction step is aborted
   if(n > correction_limit){
-    cat("The covariance matrix could not be corrected. Consider revisiting it.\n")
+    message("The covariance matrix could not be corrected. Consider revisiting it.\n")
     return(old_covmat)
   }
   
-  cat(paste0("The correction was performed successfully! All off-diagonal entries are corrected by", round(correction_val^n,digits = 3),".\n"))
+  message(paste0("The correction was performed successfully! All off-diagonal entries are corrected by", round(correction_val^n,digits = 3),".\n"))
   
   return(covmat)
 }
@@ -200,7 +200,7 @@ correct_positive_definite_simplified = function(covmat, correction_limit = 100, 
 #' true underlying liability. 
 #' @param lower A number representing the lower cutoff point for the 
 #' truncated normal distribution. Defaults to 1.645 
-#' (stats::qnorm(0.05, lower.tail = F)).
+#' (stats::qnorm(0.05, lower.tail = FALSE)).
 #' @param upper A number representing the upper cutoff point of the 
 #' truncated normal distribution. Must be greater or equal to lower.
 #' Defaults to Inf.
@@ -215,7 +215,7 @@ correct_positive_definite_simplified = function(covmat, correction_limit = 100, 
 #'  xname = "liability")
 #'  
 #' @export
-truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
+truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail = FALSE), upper = Inf) {
   
   # Checking that the liability is valid
   if(!is.numeric(liability) && !is.integer(liability)) stop("The liability must be numeric!")
@@ -223,7 +223,7 @@ truncated_normal_cdf = function(liability, lower = stats::qnorm(0.05, lower.tail
   if(!is.numeric(lower)&& !is.integer(lower)) stop("The lower cutoff point must be numeric!")
   if(!is.numeric(upper) && !is.integer(upper)) stop("The upper cutoff point must be numeric!")
   if(upper < lower){
-    cat("The upper cutoff point is below the lower cutoff point! \n 
+    warning("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
     
     temp <- lower
@@ -318,7 +318,7 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' Must be greater than min_aoo. Defaults to 90.
 #' @param lower Only necessary if dist = "normal". A number representing the lower cutoff point for the 
 #' truncated normal distribution. Defaults to 1.645 
-#' (stats::qnorm(0.05, lower.tail = F)).
+#' (stats::qnorm(0.05, lower.tail = FALSE)).
 #' @param upper Only necessary if dist = "normal". A number representing the upper cutoff point of the 
 #' truncated normal distribution. Must be greater or equal to lower.
 #' Defaults to Inf.
@@ -331,7 +331,7 @@ convert_age_to_cir = function(age, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' curve(sapply(age, convert_age_to_thresh), from = 10, to = 110, xname = "age")
 #' @export
 convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
-                                 min_age = 10, max_age = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf) {
+                                 min_age = 10, max_age = 90, lower = stats::qnorm(0.05, lower.tail = FALSE), upper = Inf) {
   # Checking that age is valid
   if(!is.numeric(age)&& !is.integer(age)) stop("The age must be numeric!")
   if(age<0) stop("The age must be non-negative!")
@@ -348,10 +348,10 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
   # Checking whether dist is empty or of length >1.
   if(length(valid_is) == 0){
     
-    cat("Warning message: \n dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
+    warning("dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
     dist <- "logistic"
   }else {
-    if(length(valid_is) > 1) cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
+    if(length(valid_is) > 1) warning("dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
     dist <- dist[valid_is[1]]
   }
   
@@ -384,7 +384,7 @@ convert_age_to_thresh = function(age, dist = "logistic", pop_prev = .1, mid_poin
     if(min_age <= 0) stop("The earliest age min_age must be positive!")
     if(max_age <= 0) stop("The latest age max_age must be positive!")
     if(min_age > max_age){
-      cat("The latest age max_age is below the earliest age min_age! \n 
+      warning("The latest age max_age is below the earliest age min_age! \n 
 The earliest and latest age will be swapped...")
       
       min_age <- min_age + max_age
@@ -396,7 +396,7 @@ The earliest and latest age will be swapped...")
     if(!is.numeric(lower) && !is.integer(lower)) stop("The lower cutoff point must be numeric!")
     if(!is.numeric(upper) && !is.integer(upper)) stop("The upper cutoff point must be numeric!")
     if(upper < lower){
-      cat("The upper cutoff point is below the lower cutoff point! \n 
+      warning("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
       
       temp <- lower
@@ -500,7 +500,7 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' Must be greater than min_aoo. Defaults to 90.
 #' @param lower Only necessary if dist = "normal". A number representing the lower cutoff point for the 
 #' truncated normal distribution. Defaults to 1.645 
-#' (stats::qnorm(0.05, lower.tail = F)).
+#' (stats::qnorm(0.05, lower.tail = FALSE)).
 #' @param upper Only necessary if dist = "normal". A number representing the upper cutoff point of the 
 #' truncated normal distribution. Must be greater or equal to lower.
 #' Defaults to Inf.
@@ -516,7 +516,7 @@ convert_cir_to_age = function(cir, pop_prev = .1, mid_point = 60, slope = 1/8) {
 #' 
 #' @export
 convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1, mid_point = 60, slope = 1/8,
-                                    min_aoo = 10, max_aoo = 90, lower = stats::qnorm(0.05, lower.tail = F), upper = Inf ) {
+                                    min_aoo = 10, max_aoo = 90, lower = stats::qnorm(0.05, lower.tail = FALSE), upper = Inf ) {
   
   # Checking that liability is valid
   if(!is.numeric(liability) && !is.integer(liability)) stop("The liability must be numeric!")
@@ -533,11 +533,11 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
   # Checking whether dist is empty or of length >1.
   if(length(valid_is) == 0){
     
-    cat("Warning message: \n dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
+    warning("dist is not of the required format! \n The function will use the logistic function to compute the age of onset!")
     dist <- "logistic"
   }else {
     
-    if(length(valid_is) > 1) cat("Warning message: \n dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
+    if(length(valid_is) > 1) warning("dist is not of the required format! \n The function will use the first valid entry to compute the age of onset!")
     dist <- dist[valid_is[1]]
   }
   
@@ -577,7 +577,7 @@ convert_liability_to_aoo = function(liability, dist = "logistic", pop_prev = .1,
     if(min_aoo <= 0) stop("The earliest age of onset min_aoo must be positive!")
     if(max_aoo <= 0) stop("The latest age of onset max_aoo must be positive!")
     if(min_aoo > max_aoo){
-      cat("The latest age of onset max_aoo is below the earliest age of onset min_aoo! \n 
+      warning("The latest age of onset max_aoo is below the earliest age of onset min_aoo! \n 
 The earliest and latest age of onset will be swapped...")
       
       min_aoo <- min_aoo + max_aoo
@@ -589,7 +589,7 @@ The earliest and latest age of onset will be swapped...")
     if(!is.numeric(lower) && !is.integer(lower)) stop("The lower cutoff point must be numeric!")
     if(!is.numeric(upper) && !is.integer(upper)) stop("The upper cutoff point must be numeric!")
     if(upper < lower){
-      cat("The upper cutoff point is below the lower cutoff point! \n 
+      warning("The upper cutoff point is below the lower cutoff point! \n 
 The upper and lower cutoff points will be swapped...")
 
       temp <- lower

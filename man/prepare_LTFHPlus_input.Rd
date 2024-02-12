@@ -12,7 +12,7 @@ prepare_LTFHPlus_input(
   CIP_merge_columns = c("sex", "birth_year", "age"),
   CIP_cip_col = "cip",
   status_col = "status",
-  use_fixed_case_thr = F,
+  use_fixed_case_thr = FALSE,
   fam_id_col = "fam_id",
   personal_id_col = "pid",
   interpolation = NULL,

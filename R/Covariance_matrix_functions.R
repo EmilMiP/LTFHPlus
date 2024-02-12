@@ -244,7 +244,7 @@ construct_covmat_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","
   # and the full liability for the individual.
   if (is.null(fam_vec) && is.null(n_fam)) {
     
-    cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
+    warning("Neither fam_vec nor n_fam is specified...\n")
     # Constructing the simple 2x2 matrix
     covmat <- matrix(c(h2,h2,h2,1), nrow = 2)
     # Naming the columns and rows
@@ -515,7 +515,7 @@ construct_covmat_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","p
   # for all phenotypes
   if (is.null(fam_vec) && is.null(n_fam)) {
     
-    cat("Warning message: \n Neither fam_vec nor n_fam is specified...\n")
+    warning("\n Neither fam_vec nor n_fam is specified...\n")
     # Constructing a simple covariance matrix
     covmat <- matrix(NA, nrow = 2*num_phen, ncol = 2*num_phen)
     # Filling in all entries

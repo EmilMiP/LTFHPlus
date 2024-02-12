@@ -159,7 +159,7 @@ estimate_liability_single <- function(.tbl = NULL,
   
   # Checking whether out is empty
   if (length(out) == 0) {
-    cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
+    warning("out is not of the required format! \n The function will return the estimated genetic liability!")
     out <- c(1)
   }
   
@@ -201,7 +201,7 @@ estimate_liability_single <- function(.tbl = NULL,
     # Finally, we also check whether all lower thresholds are
     # smaller than or equal to the upper thresholds
     if (any(pull(.tbl, lower) > pull(.tbl, upper))) {
-      cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+      warning("Some lower thresholds are larger than the corresponding upper thresholds! \n
   The lower and upper thresholds will be swapped...")
       
       swapping_indx <- which(pull(.tbl, lower) > pull(.tbl, upper))
@@ -238,7 +238,7 @@ estimate_liability_single <- function(.tbl = NULL,
   } else ( stop("no valid input used.") )
   
   # how many workers are we using?
-  cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
+  message(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
   # actual liability estimates happen below
   gibbs_res <- future.apply::future_lapply(X = 1:length(fam_list), FUN = function(i){
@@ -528,7 +528,7 @@ estimate_liability_multi <- function(.tbl = NULL,
   # Checking whether out is empty
   if (length(out) == 0) {
     
-    cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
+    warning("out is not of the required format! \n The function will return the estimated genetic liability!")
     out <- c(1)
     
   }
@@ -573,7 +573,7 @@ Does all columns have the required names?")
       
       
       if (any(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))) {
-        cat("Warning message: \n Some lower thresholds are larger than the corresponding upper thresholds! \n
+        warning("Some lower thresholds are larger than the corresponding upper thresholds! \n
 The lower and upper thresholds will be swapped...")
         
         swapping_indx <- which(pull(.tbl, !!as.symbol(paste0("lower_", pheno))) > pull(.tbl, !!as.symbol(paste0("upper_", pheno))))
@@ -611,7 +611,7 @@ The lower and upper thresholds will be swapped...")
   } else ( stop("no valid input used.") )
   
   # how many workers are we using?
-  cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
+  message(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
   
   # actual liability estimates happen below
   gibbs_res <- future.apply::future_lapply(X = 1:length(fam_list), FUN = function(i){

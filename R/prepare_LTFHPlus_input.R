@@ -53,7 +53,7 @@ convert_format = function(family, threshs, personal_id_col = "pid", role_col = N
       family[[role_col]] = strsplit(family[[personal_id_col]], "_(?=[^_]+$)", perl=TRUE) %>% sapply(., function(x) x[2])
       family[[personal_id_col]] = strsplit(family[[personal_id_col]], "_(?=[^_]+$)", perl=TRUE) %>% sapply(., function(x) x[1])
       
-      cat("We've tried converting from list entries to a long format internally. If you see this print, please run prepare_LTFHPlus_input and use the .tbl input going forward! \n")
+      warning("We've tried converting from list entries to a long format internally. If you see this print, please run prepare_LTFHPlus_input and use the .tbl input going forward! \n")
     } else {
       if (is.null(role_col)) stop("Please provide family roles for each family member. e.g. father(f), mother(m), siblings (s1-s9), etc.") 
       stop("We weren't able to convert data input automatically. Please use prepare_LTFHPlus_input and use the .tbl input!\n")
@@ -117,7 +117,7 @@ prepare_LTFHPlus_input = function(.tbl,
                                   CIP_merge_columns = c("sex", "birth_year", "age"), 
                                   CIP_cip_col = "cip", 
                                   status_col = "status", 
-                                  use_fixed_case_thr = F, 
+                                  use_fixed_case_thr = FALSE, 
                                   fam_id_col = "fam_id", 
                                   personal_id_col = "pid",
                                   interpolation = NULL,
@@ -176,14 +176,14 @@ prepare_LTFHPlus_input = function(.tbl,
     
     # get the predicted CIP value based on the merge columns.
     .tbl$cip_pred = .tbl %>% 
-      mutate(age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = T)) %>% 
+      mutate(age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = TRUE)) %>% 
       select(all_of(c(CIP_merge_columns, age_col))) %>% 
       as.matrix() %>% 
       predict(xgb,.) %>% 
       pmax(min_CIP_value)
     
     .tbl %>% 
-      mutate(event_age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = T)) %>% 
+      mutate(event_age = pmin(!!as.symbol(age_col), !!as.symbol(aoo_col), na.rm = TRUE)) %>% 
       group_by(across(all_of(setdiff(CIP_merge_columns, c(age_col, aoo_col))))) %>% 
       arrange(event_age) %>% 
       mutate(cip_pred = cummax(cip_pred)) %>% 

@@ -72,7 +72,7 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper,
   if(length(lower)!= length(upper)) stop("The lower and upper cutoff point(s) differ in length!")
   if(length(lower)!= 1 && length(lower)!= ncol(covmat)) stop("The length of the lower and upper cutoff point(s) must be 1 or equal to the dimension of the multivariable normal distribution!")
   if(any(upper < lower)){
-    cat("Warning message: \n Some lower cutoff points are larger than the corresponding upper cutoff points! \n
+    warning("Some lower cutoff points are larger than the corresponding upper cutoff points! \n
         The lower and upper cutoff points will be swapped...")
     
     swapping_indx <- which(upper < lower)
@@ -97,7 +97,7 @@ rtmvnorm.gibbs <- function(n_sim = 1e+05, covmat, lower = -Inf, upper,
   # Checking whether out is empty
   if(length(out) == 0){
     
-    cat("Warning message: \n out is not of the required format! \n The function will return the first estimated variable!")
+    warning("out is not of the required format! \n The function will return the first estimated variable!")
     out <- c(1)
   }
   # Sorting out

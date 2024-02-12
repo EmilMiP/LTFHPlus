@@ -117,7 +117,7 @@ estimate_liability_prevalence = function(status, h2_vec, genetic_corrmat, full_c
   # Checking whether out is empty
   if(length(out) == 0){
     
-    cat("Warning message: \n out is not of the required format! \n The function will return the estimated genetic liability!")
+    warning("out is not of the required format! \n The function will return the estimated genetic liability!")
     out <- c(1)
   }
   
@@ -136,40 +136,17 @@ Does all columns have the required names?")
   pheno_names <- colnames(status)[-1]
   
   
-  # If parallel = T, future_lapply needs to be installed 
+  # If parallel = TRUE, future_lapply needs to be installed 
   if(parallel){
     if(!("future.apply" %in% library()$results[,1])){
-      
-      count <- 1
-      ver <- "a"
-      while(!(ver %in% c("y","n"))){
-        
-        if(count < 4){
-          
-          count <- count + 1 
-          ver <- readline(prompt="In order to use a parallelized version of this function, the package future.apply must be installed. \n 
-                          Do you want to install future.apply now [y/n]?: ")
-        }else{
-          
-          stop("Function aborted...")
-        }
-      }
-      
-      if(ver == "y"){
-        
-        utils::install.packages("future.apply")
-      }else{
-        
-        parallel <- FALSE
-      }
+      stop("In order to use a parallelized version of this function, the package future.apply must be installed.")
     }
   }
-
 
   
   if(parallel){
     
-    cat(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
+    message(paste0("The number of workers is ", future::nbrOfWorkers(), "\n"))
     
     # As all families have the same structure (each family solely includes
     # the individual itself), we can use the same covariance matrix for 
