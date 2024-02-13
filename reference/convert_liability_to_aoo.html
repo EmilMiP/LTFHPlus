@@ -19,7 +19,7 @@ either the logistic function or the truncated normal distribution."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -43,13 +43,13 @@ either the logistic function or the truncated normal distribution."><!-- mathjax
       <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
     </li>
     <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
-    </li>
-    <li>
-      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
     </li>
   </ul></li>
 <li>
@@ -90,7 +90,7 @@ either the logistic function or the truncated normal distribution.</p>
 <span>  slope <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">8</span>,</span>
 <span>  min_aoo <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max_aoo <span class="op">=</span> <span class="fl">90</span>,</span>
-<span>  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  lower <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.05</span>, lower.tail <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">Inf</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -138,7 +138,7 @@ Must be greater than min_aoo. Defaults to 90.</p></dd>
 <dt>lower</dt>
 <dd><p>Only necessary if dist = "normal". A number representing the lower cutoff point for the
 truncated normal distribution. Defaults to 1.645
-(stats::qnorm(0.05, lower.tail = FALSE)).</p></dd>
+(stats::qnorm(0.05, lower.tail = F)).</p></dd>
 
 
 <dt>upper</dt>

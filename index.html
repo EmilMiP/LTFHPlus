@@ -12,19 +12,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Implementation of LT-FH++">
-<meta property="og:description" content="Implementation of LT-FH++, an extension of
-    the liability threshold family history (LT-FH) model.
-    LT-FH++ uses a Gibbs sampler for sampling from the truncated 
-    multivariate normal distribution and allows for 
-    flexible family structures. LT-FH++ was first described in 
-    Pedersen, Emil M., et al. (2022) 
-    &lt;https://pure.au.dk/ws/portalfiles/portal/353346245/&gt; 
-    as an extension to LT-FH with more flexible family structures, 
-    and again as the age-dependent liability threshold (ADuLT) model
-    Pedersen, Emil M., et al. (2023) 
-    &lt;https://www.nature.com/articles/s41467-023-41210-z&gt; 
-    as an alternative to traditional time-to-event genome-wide
-    association studies, where family history was not considered.">
+<meta property="og:description" content="Implementation of LT-FH++, an extension of LT-FH
+    which uses a Gibbs sampler for sampling from the truncated
+    multivariate normal distribution. LT-FH++ allows for 
+    flexible family structures.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -45,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -71,18 +62,15 @@
       <a href="articles/FromTrioToFamilies.html">From trio information to full families</a>
     </li>
     <li>
+      <a href="articles/inputFormatExample.html">How the covariance is constructed</a>
+    </li>
+    <li>
       <a href="articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
       <a href="articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
-    <li>
-      <a href="articles/inputFormatExample.html">How the covariance is constructed</a>
-    </li>
   </ul>
-</li>
-<li>
-  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -105,23 +93,20 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<p>Emil M. Pedersen 01/02/2024</p>
+<p>Emil M. Pedersen 10/03/2022</p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <div class="section level1">
 <div class="page-header"><h1 id="ltfhplus">LTFHPlus<a class="anchor" aria-label="anchor" href="#ltfhplus"></a>
 </h1></div>
 <p>LTFHPlus implements the method LT-FH++, an extension of the liability threshold model conditioned on family history <a href="https://doi.org/10.1038/s41588-020-0613-6" class="external-link">(LT-FH)</a>. It accounts for information such as right censoring, age of onset, sex, and cohort effects, and allows for flexible family structures.</p>
-<p>LT-FH++ can be used to estimate an individual’s genetic component of the full liability, the full liability or both by accounting for the family history and population prevalences. It utilises an efficient Gibbs sampler, which is implemented with <a href="https://www.rcpp.org/" class="external-link">Rcpp</a> and is highly scaleable. A detailed description of the liability threshold model conditioned on family history, age of onset and sex can be found <a href="https://doi.org/10.1016/j.ajhg.2022.01.009" class="external-link">here</a>.</p>
+<p>LT-FH++ can be used to estimate an individual’s genetic component of the full liability, the full liability or both by accounting for the family history and population prevalences. It utilises an efficient Gibbs sampler, which is implemented with <a href="http://www.rcpp.org/" class="external-link">Rcpp</a> and is highly scaleable. A detailed description of the liability threshold model conditioned on family history, age of onset and sex can be found <a href="https://doi.org/10.1016/j.ajhg.2022.01.009" class="external-link">here</a>.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
 <p>You can install LTFHPlus by:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"EmilMiP/LTFHPlus"</span><span class="op">)</span></span></code></pre></div>
-<p>or for the CRAN version:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"LTFHPlus"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"EmilMiP/LTFHPlus"</span><span class="op">)</span></span></code></pre></div>
 <!-- badges: start -->
 
 </div>
@@ -142,16 +127,14 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=LTFHPlus" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/EmilMiP/LTFHPlus/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
+<li>GPL (&gt;= 2)</li>
 </ul>
 </div>
 

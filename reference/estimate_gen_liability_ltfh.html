@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -41,18 +41,15 @@
       <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
     </li>
     <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
-    <li>
-      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
-    </li>
   </ul></li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -143,25 +140,8 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">phen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>CHILD_STATUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>P1_STATUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>P2_STATUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>SIB_STATUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>NUM_SIBS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">h2</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span></span>
-<span class="r-in"><span><span class="va">child_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span></span>
-<span class="r-in"><span><span class="va">parent_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">estimate_gen_liability_ltfh</span><span class="op">(</span><span class="va">h2</span>, <span class="va">phen</span>, <span class="va">child_threshold</span>, <span class="va">parent_threshold</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   CHILD_STATUS P1_STATUS P2_STATUS SIB_STATUS NUM_SIBS post_gen_liab</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1            0         1         0          1        2     0.1556253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2            0         1         1          0        0     0.3476219</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   post_gen_liab_se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0.003051023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0.003225214</span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See R/Example/example_nosib.R for an example of use and input.</span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>

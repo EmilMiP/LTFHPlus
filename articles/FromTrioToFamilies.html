@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -59,18 +59,15 @@
       <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
     </li>
     <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
-    <li>
-      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
-    </li>
   </ul>
-</li>
-<li>
-  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -97,7 +94,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2024-02-13</h4>
+            <h4 data-toc-skip class="date">2024-01-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/FromTrioToFamilies.Rmd" class="external-link"><code>vignettes/FromTrioToFamilies.Rmd</code></a></small>
       <div class="hidden name"><code>FromTrioToFamilies.Rmd</code></div>
@@ -171,9 +168,9 @@ family links.</p>
 <span>                      mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span>
 <span>                      icol <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH cd027f5 DN-- 31 44 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 8439f2b DN-- 31 44 -- </span></span>
 <span><span class="co">## + attr: name (v/c), lower (v/n), upper (v/n)</span></span>
-<span><span class="co">## + edges from cd027f5 (vertex names):</span></span>
+<span><span class="co">## + edges from 8439f2b (vertex names):</span></span>
 <span><span class="co">##  [1] dad     -&gt;pid        mom     -&gt;pid        dad     -&gt;sib       </span></span>
 <span><span class="co">##  [4] mom     -&gt;sib        dad2    -&gt;mhs        mom     -&gt;mhs       </span></span>
 <span><span class="co">##  [7] dad     -&gt;phs        mom2    -&gt;phs        mgf     -&gt;mom       </span></span>
@@ -210,10 +207,6 @@ this:</p>
 <p>In particular, individuals such as paternal uncle’s child (i.e a
 cousin, coded as pucousin above) is not present with this relatedness
 cut-off as such family members are of degree <span class="math inline">\(3\)</span>.</p>
-</div>
-<div class="section level3">
-<h3 id="calculate-kinship-matrix">Calculate kinship matrix<a class="anchor" aria-label="anchor" href="#calculate-kinship-matrix"></a>
-</h3>
 <p>Finally, the kinship matrix can be calculated with
 <code><a href="../reference/get_kinship.html">get_kinship()</a></code> (output made nicer with round) in the
 following way:</p>

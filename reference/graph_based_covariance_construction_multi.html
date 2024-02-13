@@ -18,7 +18,7 @@ and extracts the threshold information from the graph."><!-- mathjax --><script 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">LTFHPlus</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.4</span>
       </span>
     </div>
 
@@ -42,18 +42,15 @@ and extracts the threshold information from the graph."><!-- mathjax --><script 
       <a href="../articles/FromTrioToFamilies.html">From trio information to full families</a>
     </li>
     <li>
+      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
+    </li>
+    <li>
       <a href="../articles/LTFHPlusExample.html">LT-FH++ Example</a>
     </li>
     <li>
       <a href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a>
     </li>
-    <li>
-      <a href="../articles/inputFormatExample.html">How the covariance is constructed</a>
-    </li>
   </ul></li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/EmilMiP/LTFHPlus/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -136,67 +133,6 @@ cov, is the covariance matrix of the local graph centred on the current proband.
 which is the order of ids from pid and phen_names pasted together, such that order can be enforced elsewhere too.</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>fam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pid"</span>, <span class="st">"mom"</span>, <span class="st">"dad"</span>, <span class="st">"pgf"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>dadcol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dad"</span>, <span class="fl">0</span>, <span class="st">"pgf"</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>momcol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mom"</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">thresholds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pid"</span>, <span class="st">"mom"</span>, <span class="st">"dad"</span>, <span class="st">"pgf"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  lower_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0.8</span>, <span class="fl">0.7</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  upper_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="fl">0.7</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  lower_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0.3</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0.2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  upper_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_graph.html">prepare_graph</a></span><span class="op">(</span><span class="va">fam</span>, icol <span class="op">=</span> <span class="st">"id"</span>, fcol <span class="op">=</span> <span class="st">"dadcol"</span>, mcol <span class="op">=</span> <span class="st">"momcol"</span>, thresholds <span class="op">=</span> <span class="va">thresholds</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">ntrait</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="va">genetic_corrmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.2</span>, ncol <span class="op">=</span> <span class="va">ntrait</span>, nrow <span class="op">=</span> <span class="va">ntrait</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">genetic_corrmat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="va">full_corrmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.3</span>, ncol <span class="op">=</span> <span class="va">ntrait</span>, nrow <span class="op">=</span> <span class="va">ntrait</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">full_corrmat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="va">h2_vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="va">ntrait</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">graph_based_covariance_construction_multi</span><span class="op">(</span>fam_id <span class="op">=</span> <span class="st">"fam"</span>,</span></span>
-<span class="r-in"><span>                                          pid <span class="op">=</span> <span class="st">"id"</span>,</span></span>
-<span class="r-in"><span>                                          cur_proband_id <span class="op">=</span> <span class="st">"pid"</span>,</span></span>
-<span class="r-in"><span>                                          cur_family_graph <span class="op">=</span> <span class="va">graph</span>,</span></span>
-<span class="r-in"><span>                                          h2_vec <span class="op">=</span> <span class="va">h2_vec</span>,</span></span>
-<span class="r-in"><span>                                          genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>,</span></span>
-<span class="r-in"><span>                                          phen_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $temp_tbl</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   fam   id    lower_1 lower_2 upper_1 upper_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> pid   pid_g  -<span style="color: #BB0000;">Inf</span>    -<span style="color: #BB0000;">Inf</span>     <span style="color: #BB0000;">Inf</span>     <span style="color: #BB0000;">Inf</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> pid   pid    -<span style="color: #BB0000;">Inf</span>    -<span style="color: #BB0000;">Inf</span>       0.8     0.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> pid   mom    -<span style="color: #BB0000;">Inf</span>       0.3     0.8     0.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> pid   dad       0.8  -<span style="color: #BB0000;">Inf</span>       0.8     0.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> pid   pgf       0.7     0.2     0.7     0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $cov</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         pid_g_1 pid_1 mom_1 dad_1 pgf_1 pid_g_2 pid_2 mom_2 dad_2 pgf_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pid_g_1    0.60  0.60  0.30  0.30  0.15    0.12  0.12  0.06  0.06  0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pid_1      0.60  1.00  0.30  0.30  0.15    0.12  0.12  0.06  0.06  0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mom_1      0.30  0.30  1.00  0.00  0.00    0.06  0.06  0.12  0.00  0.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dad_1      0.30  0.30  0.00  1.00  0.30    0.06  0.06  0.00  0.12  0.06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pgf_1      0.15  0.15  0.00  0.30  1.00    0.03  0.03  0.00  0.06  0.12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pid_g_2    0.12  0.12  0.06  0.06  0.03    0.60  0.60  0.30  0.30  0.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pid_2      0.12  0.12  0.06  0.06  0.03    0.60  1.00  0.30  0.30  0.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mom_2      0.06  0.06  0.12  0.00  0.00    0.30  0.30  1.00  0.00  0.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dad_2      0.06  0.06  0.00  0.12  0.06    0.30  0.30  0.00  1.00  0.30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pgf_2      0.03  0.03  0.00  0.06  0.12    0.15  0.15  0.00  0.30  1.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $newOrder</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "pid_g_1" "pid_1"   "mom_1"   "dad_1"   "pgf_1"   "pid_g_2" "pid_2"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "mom_2"   "dad_2"   "pgf_2"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

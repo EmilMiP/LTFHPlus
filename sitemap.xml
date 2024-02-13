@@ -10,6 +10,12 @@
     <loc>EmilMiP.github.io/LTFHPlus/articles/FromTrioToFamilies.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/articles/inputFormatExample.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/articles/LTFHPlus.html</loc>
   </url>
   <url>
@@ -19,22 +25,19 @@
     <loc>EmilMiP.github.io/LTFHPlus/articles/LTFHPlusGraphExample.html</loc>
   </url>
   <url>
-    <loc>EmilMiP.github.io/LTFHPlus/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>EmilMiP.github.io/LTFHPlus/articles/inputFormatExample.html</loc>
-  </url>
-  <url>
     <loc>EmilMiP.github.io/LTFHPlus/authors.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/index.html</loc>
   </url>
   <url>
-    <loc>EmilMiP.github.io/LTFHPlus/news/index.html</loc>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/add_gen_liab_to_graph.html</loc>
   </url>
   <url>
-    <loc>EmilMiP.github.io/LTFHPlus/reference/LTFHPlus-package.html</loc>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/add_missing_roles_for_proband.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/construct_aoo.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/construct_covmat.html</loc>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/construct_covmat_single.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/construct_thresholds.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/convert_age_to_cir.html</loc>
@@ -67,6 +73,12 @@
     <loc>EmilMiP.github.io/LTFHPlus/reference/correct_positive_definite.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/correct_positive_definite_simplified.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_gen_liability.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_gen_liability_ltfh.html</loc>
   </url>
   <url>
@@ -76,10 +88,25 @@
     <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_liability_multi.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_liability_prevalence.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/estimate_liability_single.html</loc>
   </url>
   <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/generate_cov_matrix_noFH.html</loc>
+  </url>
+  <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_all_combs.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/get_between_trait_cov.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/get_cov.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/get_full_cov.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/get_kinship.html</loc>
@@ -97,10 +124,13 @@
     <loc>EmilMiP.github.io/LTFHPlus/reference/index.html</loc>
   </url>
   <url>
-    <loc>EmilMiP.github.io/LTFHPlus/reference/prepare_LTFHPlus_input.html</loc>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/LTFHPlus-package.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/prepare_graph.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/prepare_LTFHPlus_input.html</loc>
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/rtmvnorm.gibbs.html</loc>
@@ -116,5 +146,14 @@
   </url>
   <url>
     <loc>EmilMiP.github.io/LTFHPlus/reference/truncated_normal_cdf.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/validate_correlation_matrix.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/validate_proportion.html</loc>
+  </url>
+  <url>
+    <loc>EmilMiP.github.io/LTFHPlus/reference/validate_relatives.html</loc>
   </url>
 </urlset>
