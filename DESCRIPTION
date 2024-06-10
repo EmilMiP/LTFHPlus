@@ -48,6 +48,6 @@ LinkingTo: Rcpp
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Language: "en-GB"
+Language: en-GB
 URL: https://github.com/EmilMiP/LTFHPlus
 BugReports: https://github.com/EmilMiP/LTFHPlus/issues
