@@ -15,7 +15,7 @@ Description: Implementation of LT-FH++, an extension of
     multivariate normal distribution and allows for 
     flexible family structures. LT-FH++ was first described in 
     Pedersen, Emil M., et al. (2022) 
-    <https://www.sciencedirect.com/science/article/pii/S000292972200009X> 
+    <https://doi.org/10.1016/j.ajhg.2022.01.009> 
     as an extension to LT-FH with more flexible family structures, 
     and again as the age-dependent liability threshold (ADuLT) model
     Pedersen, Emil M., et al. (2023) 
