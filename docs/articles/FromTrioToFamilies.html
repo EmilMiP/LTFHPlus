@@ -76,7 +76,8 @@ Pedersen</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilMiP/LTFHPlus" class="external-link">LTFHPlus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cran.r-project.org/package=kinship2" class="external-link">kinship2</a></span><span class="op">)</span></span></code></pre></div>
 <p>In this document, we will present how we can go from trio information
 to full families that can be used to calculate kinship matrices. By trio
 information, we specifically mean knowing the id of the child and the id
@@ -144,9 +145,9 @@ family links.</p>
 <span>                      mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span>
 <span>                      icol <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 0343541 DN-- 31 44 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 73ea30e DN-- 31 44 -- </span></span>
 <span><span class="co">## + attr: name (v/c), lower (v/n), upper (v/n), sex (v/c)</span></span>
-<span><span class="co">## + edges from 0343541 (vertex names):</span></span>
+<span><span class="co">## + edges from 73ea30e (vertex names):</span></span>
 <span><span class="co">##  [1] dad     -&gt;pid        mom     -&gt;pid        dad     -&gt;sib       </span></span>
 <span><span class="co">##  [4] mom     -&gt;sib        dad2    -&gt;mhs        mom     -&gt;mhs       </span></span>
 <span><span class="co">##  [7] dad     -&gt;phs        mom2    -&gt;phs        mgf     -&gt;mom       </span></span>
@@ -180,8 +181,8 @@ like this:</p>
 <span>     vertex.size <span class="op">=</span> <span class="fl">27.5</span>,</span>
 <span>     vertex.shape <span class="op">=</span> <span class="st">"rectangle"</span>,</span>
 <span>     vertex.label.cex <span class="op">=</span> <span class="fl">.75</span>,</span>
-<span>     edge.arrow.size <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<span>     edge.arrow.size <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> </span></code></pre></div>
+<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-4-1.png" alt="Plot of the identified pedigree. Pedigree plotted with igraph package." width="700"></p>
 <p>In particular, individuals such as paternal uncle’s child (i.e a
 cousin, coded as pucousin above) is not present with this relatedness
 cut-off as such family members are of degree
@@ -242,7 +243,7 @@ in the kinship2 package.</p>
 <code class="sourceCode R"><span><span class="va">pedigree</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">trio</span>,<span class="fu">kinship2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kinship2/man/pedigree.html" class="external-link">pedigree</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">id</span>, dadid <span class="op">=</span> <span class="va">dadid</span>,momid <span class="op">=</span>  <span class="va">momid</span>,sex <span class="op">=</span>  <span class="va">sex</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pedigree</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-7-1.png" alt="Plot of the identified pedigree. Pedigree plotted with kinship2 package." width="700"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

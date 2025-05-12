@@ -9,6 +9,7 @@ output: html_document
 library(LTFHPlus)
 library(dplyr)
 library(igraph)
+library(kinship2)
 ```
 
 
@@ -72,7 +73,7 @@ The object `graph` is a directed graph constructed from the trio information in 
 
 We can construct a kinship matrix from all family members present in `family`, or we can consider only the family members that are of degree $n$. We can identify the family members of degree $2$ like this:
 
-```{r}
+```{r, fig.alt = "Plot of the identified pedigree. Pedigree plotted with igraph package."}
 # make_ego_graph returns list, even for node input of length 1
 fam_graph = make_ego_graph(graph = graph, 
                            order = 2,
@@ -81,7 +82,7 @@ plot(fam_graph, layout = layout_as_tree,
      vertex.size = 27.5,
      vertex.shape = "rectangle",
      vertex.label.cex = .75,
-     edge.arrow.size = .3)
+     edge.arrow.size = .3) 
 ```
 
   In particular, individuals such as paternal uncle's child (i.e a cousin, coded as pucousin above) is not present with this relatedness cut-off as such family members are of degree $3$. 
@@ -102,7 +103,7 @@ trio = graph_to_trio(graph = fam_graph, fixParents = TRUE)
 trio
 ```
 which can be used to utilise the powerful plotting tool kit available in the kinship2 package.
-```{r}
+```{r, fig.alt = "Plot of the identified pedigree. Pedigree plotted with kinship2 package."}
 pedigree = with(trio,kinship2::pedigree(id = id, dadid = dadid,momid =  momid,sex =  sex))
 
 plot(pedigree)
