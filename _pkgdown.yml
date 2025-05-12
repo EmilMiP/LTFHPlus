@@ -12,6 +12,7 @@ reference:
     contents:
     - prepare_LTFHPlus_input
     - prepare_graph
+    - graph_to_trio
     - convert_age_to_cir
     - convert_age_to_thresh
     - convert_cir_to_age
@@ -43,7 +44,9 @@ reference:
     - estimate_liability_single
     - simulate_under_LTM_multi
     - simulate_under_LTM_single
+    - fixSexCoding
 template:
+  bootstrap: 5
   params:
     bootswatch: darkly
 development:

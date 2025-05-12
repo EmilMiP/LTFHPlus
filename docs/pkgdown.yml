@@ -1,5 +1,5 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   FromCIPFamilyToLTFHPlusInput: FromCIPFamilyToLTFHPlusInput.html
@@ -8,8 +8,7 @@ articles:
   LTFHPlus: LTFHPlus.html
   LTFHPlusExample: LTFHPlusExample.html
   LTFHPlusGraphExample: LTFHPlusGraphExample.html
-last_built: 2024-01-15T12:34Z
+last_built: 2025-05-12T10:57Z
 urls:
   reference: EmilMiP.github.io/LTFHPlus/reference
   article: EmilMiP.github.io/LTFHPlus/articles
-

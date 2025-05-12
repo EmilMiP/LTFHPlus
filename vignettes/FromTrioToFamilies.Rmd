@@ -46,7 +46,12 @@ family = tribble(
 thrs =  tibble(
  id = family %>% select(1:3) %>% unlist() %>% unique(),
  lower = sample(c(-Inf, 2), size = length(id), replace = TRUE),
- upper = sample(c(2, Inf), size = length(id), replace = TRUE))
+ upper = sample(c(2, Inf), size = length(id), replace = TRUE),
+ sex = case_when(
+   id %in% family$momcol ~ "F",
+   id %in% family$dadcol ~ "M",
+   TRUE ~ NA)) %>% 
+  mutate(sex = sapply(sex, function(x) ifelse(is.na(x), sample(c("M", "F"), 1), x)))
 ```
 
 The object `family` is meant to represent the trio information that can be found in registers. It is possible to have multiple families in the same input data or single individuals with no family links.
@@ -89,3 +94,16 @@ Finally, the kinship matrix can be calculated with `get_kinship()` (output made 
 round(get_kinship(fam_graph, h2 = 1, index_id = "pid", add_ind = FALSE) * 100, 2)
 ```
 
+
+A function called `graph_to_trio()` has been included in the package, which can convert from the graph object back into a trio object. This function is useful if you want to use the functionality of other packages that rely on trio information. One such example is using the plotting functionality of pedigrees in kinship2.
+
+```{r}
+trio = graph_to_trio(graph = fam_graph, fixParents = TRUE)
+trio
+```
+which can be used to utilise the powerful plotting tool kit available in the kinship2 package.
+```{r}
+pedigree = with(trio,kinship2::pedigree(id = id, dadid = dadid,momid =  momid,sex =  sex))
+
+plot(pedigree)
+```
