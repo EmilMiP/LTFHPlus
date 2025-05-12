@@ -43,6 +43,7 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
+    kinship2,
     testthat
 LinkingTo: Rcpp
 Encoding: UTF-8
