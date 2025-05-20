@@ -60,7 +60,7 @@ The object `family` is meant to represent the trio information that can be found
 
 ```{r}
 graph = prepare_graph(.tbl = family, 
-                      thresholds = thrs,
+                      node_attributes = thrs,
                       fcol = "dadcol",
                       mcol = "momcol",
                       icol = "id")

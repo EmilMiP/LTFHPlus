@@ -201,80 +201,82 @@ prepare_LTFHPlus_input = function(.tbl,
 
 
 #' Construct graph from register information
-#' 
-#' \code{prepare_graph} constructs a graph based on mother, father, and offspring links. 
+#'
+#' \code{prepare_graph} constructs a graph based on mother, father, and offspring links.
 #'
 #' @param .tbl tibble with columns icol, fcol, mcol. Additional columns will be attributes in the constructed graph.
 #' @param icol column name of column with proband ids.
 #' @param fcol column name of column with father ids.
 #' @param mcol column name of column with mother ids.
-#' @param thresholds tibble with icol, lower_col and upper_col. Used to assign lower and upper thresholds to individuals in the graph as attributes.
-#' @param lower_col Column name of column with proband's lower threshold.
-#' @param upper_col Column name of column with proband's upper threshold.
-#' @param missingID_patterns string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$".
-#' 
-#' @return An igraph object. A (directed) graph object based on the links provided in .tbl with the lower and upper thresholds stored as attributes. 
-#' 
+#' @param node_attributes tibble with icol and any additional information, such as sex, lower threshold, and upper threshold. Used to assign attributes to each node in the graph, e.g. lower and upper thresholds to individuals in the graph.
+#' @param missingID_patterns string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$". OBS: "0" is NOT enough, since it relies on regex.
+#'
+#' @return An igraph object. A (directed) graph object based on the links provided in .tbl, potentially with provided attributes stored for each node.
+#'
 #' @importFrom dplyr %>% rename relocate mutate filter group_by summarise select bind_rows pull
-#' 
+#'
 #' @examples
 #' fam <- data.frame(
 #'   id = c("pid", "mom", "dad", "pgf"),
 #'   dadcol = c("dad", 0, "pgf", 0),
 #'   momcol = c("mom", 0, 0, 0))
-#' 
+#'
 #' thresholds <- data.frame(
 #'   id = c("pid", "mom", "dad", "pgf"),
 #'   lower = c(-Inf, -Inf, 0.8, 0.7),
 #'   upper = c(0.8, 0.8, 0.8, 0.7))
-#' 
-#' prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
-#' 
+#'
+#' prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thresholds)
+#'
 #' @export
-prepare_graph = function(.tbl, icol, fcol, mcol, thresholds, lower_col = "lower", upper_col = "upper", missingID_patterns = "^0$") {
- 
+prepare_graph = function(.tbl, icol, fcol, mcol, node_attributes = NA, missingID_patterns = "^0$") {
+  
+  # helper boolean to check if node_attributes is provided, since an offered node_attributes may have NA values in one or more
+  # entries, hence the check on class of the object. NAs are logical and will lead to a FALSE.
+  attachAttributes = any(class(node_attributes) %in% c("data.frame", "tibble", "matrix", "data.table", "tbl_df", "tbl"))
+  
   # formatting .tbl from trio info to graph compatible input
-  prep = .tbl %>% 
+  prep = .tbl %>%
     # making from column
-    tidyr::pivot_longer(cols = c(!!as.symbol(fcol), !!as.symbol(mcol)), 
+    tidyr::pivot_longer(cols = c(!!as.symbol(fcol), !!as.symbol(mcol)),
                         values_to = "from") %>%
     # renaming id to "to"
-    rename(to = !!as.symbol(icol)) %>% 
+    rename(to = !!as.symbol(icol)) %>%
     # reloacting to and from columns to first two columns
-    select(from, to) %>% # directed graph -> order is important! 
+    select(from, to) %>% # directed graph -> order is important!
     # replacing "0"s with NA to ease later computation and reflect true data set
     # with missing / unknown links
     mutate(to = ifelse(str_detect(to, missingID_patterns), NA, to),
-           from = ifelse(str_detect(from, missingID_patterns), NA, from)) 
+           from = ifelse(str_detect(from, missingID_patterns), NA, from))
   
   # remove connections with unknown links, i.e. only known links / edges
-  parent_links = prep %>% 
-    filter(!is.na(to), !is.na(from)) %>% 
+  parent_links = prep %>%
+    filter(!is.na(to), !is.na(from)) %>%
     # ensure from and to are character vectors
     mutate(from = as.character(from),
            to = as.character(to))
   
   # we need to add a direct link between (full) siblings
-  sibling_links = .tbl %>% 
-    select(!!as.symbol(icol), !!as.symbol(fcol), !!as.symbol(mcol)) %>% 
-    filter(str_detect(!!as.symbol(fcol), missingID_patterns, negate = TRUE), 
-           str_detect(!!as.symbol(mcol), missingID_patterns, negate = TRUE)) %>% 
+  sibling_links = .tbl %>%
+    select(!!as.symbol(icol), !!as.symbol(fcol), !!as.symbol(mcol)) %>%
+    filter(str_detect(!!as.symbol(fcol), missingID_patterns, negate = TRUE),
+           str_detect(!!as.symbol(mcol), missingID_patterns, negate = TRUE)) %>%
     mutate(parent_id = purrr::map2_chr(
       .x = !!as.symbol(fcol),
       .y = !!as.symbol(mcol),
       ~ paste0(sort(c(.x, .y)), collapse = "_")
-    )) %>% 
-    group_by(parent_id) %>% 
-    summarise(children = list(!!as.symbol(icol))) %>% 
-    mutate(nchildren = sapply(children, length)) %>% 
-    filter(nchildren > 1) %>% 
-    mutate(all_combinations = purrr::map(.x = children, ~ get_all_combs(.x))) %>% 
+    )) %>%
+    group_by(parent_id) %>%
+    summarise(children = list(!!as.symbol(icol))) %>%
+    mutate(nchildren = sapply(children, length)) %>%
+    filter(nchildren > 1) %>%
+    mutate(all_combinations = purrr::map(.x = children, ~ get_all_combs(.x))) %>%
     # avoiding many duplicate rows by selecting only columns to unnest
-    select(all_combinations) %>% 
-    tidyr::unnest(cols = c(all_combinations)) %>% 
+    select(all_combinations) %>%
+    tidyr::unnest(cols = c(all_combinations)) %>%
     mutate(ph = str_split(all_combinations, "_"),
            from = sapply(ph, function(x) x[1]),
-           to = sapply(ph, function(x) x[2])) %>% 
+           to = sapply(ph, function(x) x[2])) %>%
     select(from, to)
   
   # combining sibling and parent links
@@ -287,23 +289,28 @@ prepare_graph = function(.tbl, icol, fcol, mcol, thresholds, lower_col = "lower"
   # extract unique list of ids of individuals in graph input; graph_input has only 2 columns.
   present_ids = unlist(graph_input) %>% unique()
   
-  graph = igraph::graph_from_data_frame(d = graph_input, 
-                                        #use unique id list to attach threshold info
-                                        vertices = filter(thresholds, !!as.symbol(icol) %in% present_ids))
+  # if node_attributes is provided, we will attach the node information to the graph.
+  if (attachAttributes) {
+    graph = igraph::graph_from_data_frame(d = graph_input,
+                                          #use unique id list to attach threshold info
+                                          vertices = filter(node_attributes, !!as.symbol(icol) %in% present_ids))
+  } else {
+    graph = igraph::graph_from_data_frame(d = graph_input)
+  }
   
   # isolating potential solo nodes: where to or from column is NA
   # extracting only node names
-  solo = prep %>% 
-    mutate(comb = purrr::map2_chr(.x = from, 
+  solo = prep %>%
+    mutate(comb = purrr::map2_chr(.x = from,
                                   .y = to,
-                                  ~ paste0(sort(c(.x, .y)), collapse = "_"))) %>% 
-    filter(str_detect(comb, "_", negate = TRUE)) %>% 
+                                  ~ paste0(sort(c(.x, .y)), collapse = "_"))) %>%
+    filter(str_detect(comb, "_", negate = TRUE)) %>%
     pull(comb)
   
   # all linked nodes; no NAs in to or from,
   # just a list of node names
-  duos = graph_input %>% 
-    filter(!is.na(from) & !is.na(to)) %>% 
+  duos = graph_input %>%
+    filter(!is.na(from) & !is.na(to)) %>%
     select(from, to) %>% unlist() %>% unique()
   
   # which nodes appear only in solo nodes, but not in duo nodes?
@@ -311,7 +318,11 @@ prepare_graph = function(.tbl, icol, fcol, mcol, thresholds, lower_col = "lower"
   solo_points = setdiff(solo, as.character(duos))
   # only run the below code if solo_points has any solo points to add.
   if (length(solo_points) > 0) {
-     graph = igraph::add.vertices(graph, nv = length(solo_points), name = solo_points, attr = filter(thresholds, !!as.symbol(icol) %in% solo_points)) 
+    if (attachAttributes) {
+      graph = igraph::add.vertices(graph, nv = length(solo_points), name = solo_points, attr = filter(node_attributes, !!as.symbol(icol) %in% solo_points))
+    } else {
+      graph = igraph::add.vertices(graph, nv = length(solo_points), name = solo_points)
+    }
   }
   return(graph)
 }

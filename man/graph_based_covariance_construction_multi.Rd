@@ -56,7 +56,7 @@ thresholds <- data.frame(
   lower_2 = c(-Inf, 0.3, -Inf, 0.2),
   upper_2 = c(0.3, 0.3, 0.3, 0.2))
 
-graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thresholds)
 
 ntrait <- 2
 genetic_corrmat <- matrix(0.2, ncol = ntrait, nrow = ntrait)

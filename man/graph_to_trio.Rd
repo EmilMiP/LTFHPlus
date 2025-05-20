@@ -70,8 +70,8 @@ thrs =  tibble(
     TRUE ~ NA)) \%>\%
   mutate(sex = sapply(sex, function(x) ifelse(is.na(x), 
   sample(c("M", "F"), 1), x)))
-graph = LTFHPlus::prepare_graph(.tbl = family, 
-icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thrs)
+graph = prepare_graph(.tbl = family, 
+icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thrs)
 }
 
 }

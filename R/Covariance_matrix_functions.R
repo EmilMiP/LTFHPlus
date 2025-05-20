@@ -813,7 +813,8 @@ construct_covmat <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm","pgf"), 
 #'   lower = c(-Inf, -Inf, 0.8, 0.7),
 #'   upper = c(0.8, 0.8, 0.8, 0.7))
 #' 
-#' graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+#' graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol",
+#'  node_attributes = thresholds)
 #' 
 #' graph_based_covariance_construction(pid = "id",
 #'                                     cur_proband_id = "pid",
@@ -905,7 +906,8 @@ graph_based_covariance_construction = function(pid,
 #'   lower_2 = c(-Inf, 0.3, -Inf, 0.2),
 #'   upper_2 = c(0.3, 0.3, 0.3, 0.2))
 #' 
-#' graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+#' graph <- prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol",
+#'  node_attributes = thresholds)
 #' 
 #' ntrait <- 2
 #' genetic_corrmat <- matrix(0.2, ncol = ntrait, nrow = ntrait)

@@ -61,7 +61,7 @@ With the above input, we can construct the graph for the population specified in
 
 ```{r}
 graph = prepare_graph(.tbl = family, 
-                      thresholds = thrs,
+                      node_attributes = thrs,
                       fcol = "dadcol",
                       mcol = "momcol",
                       icol = "id")

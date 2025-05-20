@@ -9,9 +9,7 @@ prepare_graph(
   icol,
   fcol,
   mcol,
-  thresholds,
-  lower_col = "lower",
-  upper_col = "upper",
+  node_attributes = NA,
   missingID_patterns = "^0$"
 )
 }
@@ -24,16 +22,12 @@ prepare_graph(
 
 \item{mcol}{column name of column with mother ids.}
 
-\item{thresholds}{tibble with icol, lower_col and upper_col. Used to assign lower and upper thresholds to individuals in the graph as attributes.}
+\item{node_attributes}{tibble with icol and any additional information, such as sex, lower threshold, and upper threshold. Used to assign attributes to each node in the graph, e.g. lower and upper thresholds to individuals in the graph.}
 
-\item{lower_col}{Column name of column with proband's lower threshold.}
-
-\item{upper_col}{Column name of column with proband's upper threshold.}
-
-\item{missingID_patterns}{string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$".}
+\item{missingID_patterns}{string of missing values in the ID columns. Multiple values can be used, but must be separated by "|". Defaults to "^0$". OBS: "0" is NOT enough, since it relies on regex.}
 }
 \value{
-An igraph object. A (directed) graph object based on the links provided in .tbl with the lower and upper thresholds stored as attributes.
+An igraph object. A (directed) graph object based on the links provided in .tbl, potentially with provided attributes stored for each node.
 }
 \description{
 \code{prepare_graph} constructs a graph based on mother, father, and offspring links.
@@ -49,6 +43,6 @@ thresholds <- data.frame(
   lower = c(-Inf, -Inf, 0.8, 0.7),
   upper = c(0.8, 0.8, 0.8, 0.7))
 
-prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", thresholds = thresholds)
+prepare_graph(fam, icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thresholds)
 
 }

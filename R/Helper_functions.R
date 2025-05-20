@@ -779,9 +779,10 @@ add_gen_liab_to_graph = function(fam_graph, index_id) {
 #'   upper = c(0.8, 0.8, 0.8, 0.7)
 #' )
 #' 
-#' graph <- prepare_graph(fam, icol = "i", fcol = "f", mcol = "m", thresholds = thresholds)
+#' graph <- prepare_graph(fam, icol = "i", fcol = "f", mcol = "m", node_attributes = thresholds)
 #' 
 #' get_kinship(graph, h2 = 0.5, index_id = "1")
+#' get_kinship(graph, h2 = 1, add_ind = FALSE)
 #' 
 #' @export
 #' 
