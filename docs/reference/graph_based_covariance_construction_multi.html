@@ -9,7 +9,7 @@ and extracts the threshold information from the graph."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">LTFHPlus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,8 @@ which is the order of ids from pid and phen_names pasted together, such that ord
 <span class="r-in"><span>  lower_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0.3</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0.2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  upper_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_graph.html">prepare_graph</a></span><span class="op">(</span><span class="va">fam</span>, icol <span class="op">=</span> <span class="st">"id"</span>, fcol <span class="op">=</span> <span class="st">"dadcol"</span>, mcol <span class="op">=</span> <span class="st">"momcol"</span>, node_attributes <span class="op">=</span> <span class="va">thresholds</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_graph.html">prepare_graph</a></span><span class="op">(</span><span class="va">fam</span>, icol <span class="op">=</span> <span class="st">"id"</span>, fcol <span class="op">=</span> <span class="st">"dadcol"</span>, mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span></span>
+<span class="r-in"><span> node_attributes <span class="op">=</span> <span class="va">thresholds</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ntrait</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="va">genetic_corrmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.2</span>, ncol <span class="op">=</span> <span class="va">ntrait</span>, nrow <span class="op">=</span> <span class="va">ntrait</span><span class="op">)</span></span></span>
