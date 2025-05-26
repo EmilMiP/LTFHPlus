@@ -62,16 +62,15 @@ family = tribble(
 
 thrs =  tibble(
   id = family \%>\% select(1:3) \%>\% unlist() \%>\% unique(),
-  lower = sample(c(-Inf, 2), size = length(id), replace = TRUE),
-  upper = sample(c(2, Inf), size = length(id), replace = TRUE),
  sex = case_when(
    id \%in\% family$momcol ~ "F",
-    id \%in\% family$dadcol ~ "M",
+   id \%in\% family$dadcol ~ "M",
     TRUE ~ NA)) \%>\%
   mutate(sex = sapply(sex, function(x) ifelse(is.na(x), 
   sample(c("M", "F"), 1), x)))
 graph = prepare_graph(.tbl = family, 
 icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thrs)
+graph_to_trio(graph)
 }
 
 }

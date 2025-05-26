@@ -49,20 +49,23 @@ utils::globalVariables("sortedID")
 #' 
 #' thrs =  tibble(
 #'   id = family %>% select(1:3) %>% unlist() %>% unique(),
-#'   lower = sample(c(-Inf, 2), size = length(id), replace = TRUE),
-#'   upper = sample(c(2, Inf), size = length(id), replace = TRUE),
 #'  sex = case_when(
 #'    id %in% family$momcol ~ "F",
-#'     id %in% family$dadcol ~ "M",
+#'    id %in% family$dadcol ~ "M",
 #'     TRUE ~ NA)) %>%
 #'   mutate(sex = sapply(sex, function(x) ifelse(is.na(x), 
 #'   sample(c("M", "F"), 1), x)))
 #' graph = prepare_graph(.tbl = family, 
 #' icol = "id", fcol = "dadcol", mcol = "momcol", node_attributes = thrs)
+#' graph_to_trio(graph)
 #' }
 #' 
 graph_to_trio = function(graph, id = "id", dadid = "dadid", momid = "momid", sex = "sex", fixParents = TRUE) {
   graph_attr = vertex.attributes(graph) %>% as_tibble() %>% select(name, sex)
+  if (typeof(graph_attr[[sex]]) %in% c("integer", "numeric", "double")) {
+    graph_attr[[sex]] = c("F", "M")[graph_attr[[sex]] + 1] # assuming sex is coded as 0 for female and 1 for male
+    # now, we can work solely with characters
+  }
   # get end points of edges
   ph = str_split(attributes(E(graph))$vnames, "\\|")
   
@@ -87,9 +90,12 @@ graph_to_trio = function(graph, id = "id", dadid = "dadid", momid = "momid", sex
     select(-sortedID) %>%
     # formatting to pedigree format
     tidyr::pivot_wider(names_from = !!as.symbol(sex), values_from = "from") %>%
+    # if either M or F does not exist, we will create them here:
+    mutate("M" = if(!"M" %in% names(.)) NA else M,
+           "F" = if(!"F" %in% names(.)) NA else F) %>%
     rename(!!as.symbol(id) := to,
-           !!as.symbol(dadid) := M,
-           !!as.symbol(momid) := F) %>%
+           !!as.symbol(dadid) := "M",
+           !!as.symbol(momid) := "F") %>%
     left_join(graph_attr, setNames(c("name"), id))
   
   
@@ -157,7 +163,7 @@ graph_to_trio = function(graph, id = "id", dadid = "dadid", momid = "momid", sex
       if (length(missingIndxf) > 0) {
         to_add_f = max_id + 1:length(missingIndxf)
         trio[[dadid]][missingIndxf] <- to_add_f
-        trio %>% bind_rows(
+        trio = trio %>% bind_rows(
           tibble(!!as.symbol(id) := to_add_f,
                  !!as.symbol(sex) := fixSexCoding(x = dadid, sex_coding = sex_coding, dadid = dadid, momid = momid), 
                  !!as.symbol(dadid) := 0,
@@ -166,9 +172,9 @@ graph_to_trio = function(graph, id = "id", dadid = "dadid", momid = "momid", sex
       }
       
     }
-
-   
-   }
+    
+    
+  }
   return(trio)
 }
 
