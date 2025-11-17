@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">LTFHPlus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a></li>
     <li><a class="dropdown-item" href="../articles/FromTrioToFamilies.html">From trio information to full families</a></li>
+    <li><a class="dropdown-item" href="../articles/identify_and_plot_relatives.html">Identifying, labelling, and plotting family relations from graphs</a></li>
     <li><a class="dropdown-item" href="../articles/inputFormatExample.html">How the covariance is constructed</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusExample.html">LT-FH++ Example</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a></li>
@@ -65,7 +66,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2025-05-26</h4>
+            <h4 data-toc-skip class="date">2025-11-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/master/vignettes/inputFormatExample.Rmd" class="external-link"><code>vignettes/inputFormatExample.Rmd</code></a></small>
       <div class="d-none name"><code>inputFormatExample.Rmd</code></div>
@@ -116,9 +117,16 @@ can also be used. See the documentation for
 <span>                            add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                            h2 <span class="op">=</span> <span class="fl">0.5</span>, </span>
 <span>                            n_sim <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>                            pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sims</span><span class="op">$</span><span class="va">sim_obs</span></span></code></pre></div>
+<span>                            pop_prev <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: There was 1 warning in `mutate()`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In argument: `max_age = purrr::invoke(pmax, select(., ends_with("_age")))`.</span></span>
+<span><span class="co">## Caused by warning:</span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> `invoke()` was deprecated in purrr 1.0.0.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Please use `exec()` instead.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">LTFHPlus</span> package.</span></span>
+<span><span class="co">##   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/EmilMiP/LTFHPlus/issues&gt;</span>.</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sims</span><span class="op">$</span><span class="va">sim_obs</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 14</span></span></span>
 <span><span class="co">##    fam_ID          g      o       m       f     s1 o_status m_status f_status</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span></span>
@@ -134,7 +142,7 @@ can also be used. See the documentation for
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> fam_ID_10  1.53    0.752  0.708   0.248  -<span style="color: #BB0000;">1.44</span>  FALSE    FALSE    FALSE   </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: s1_status &lt;lgl&gt;, o_aoo &lt;dbl&gt;, m_aoo &lt;dbl&gt;, f_aoo &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   s1_aoo &lt;dbl&gt;</span></span></span></code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 40 × 5</span></span></span>
 <span><span class="co">##    fam_ID    indiv_ID    role  lower upper</span></span>
@@ -179,7 +187,7 @@ provide some examples. If no family information is available, but the
 age of onset information is still available, we can use the simplest
 covariance, which only contains the genetic and full liability of the
 index person:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># no family members</span></span>
 <span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="cn">NULL</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, h2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in construct_covmat_single(fam_vec = fam_vec, n_fam = n_fam, add_ind = add_ind, : Neither fam_vec nor n_fam is specified...</span></span></code></pre>
@@ -197,7 +205,7 @@ index person:</p>
 <span><span class="co">## [1] 0.5</span></span></code></pre>
 <p>The default family contains the index person as well as a father,
 mother, one sibling, both maternal and paternal grandparents.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##         g     o    m    f    s1   mgm   mgf   pgm   pgf</span></span>
 <span><span class="co">## g   0.500 0.500 0.25 0.25 0.250 0.125 0.125 0.125 0.125</span></span>
@@ -220,7 +228,7 @@ mother, one sibling, both maternal and paternal grandparents.</p>
 <span><span class="co">## attr(,"h2")</span></span>
 <span><span class="co">## [1] 0.5</span></span></code></pre>
 <p>With only a mother and a father</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"f"</span><span class="op">)</span>, h2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      g    o    m    f</span></span>
 <span><span class="co">## g 0.50 0.50 0.25 0.25</span></span>
@@ -240,7 +248,7 @@ mother, one sibling, both maternal and paternal grandparents.</p>
 <p>In this example, we illustrate the covariance accounting for family
 members on either the mother’s or father’s side. Assuming there is no
 genetic overlap between the two sides of the family.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/construct_covmat.html">construct_covmat</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"m"</span>, <span class="st">"mgm"</span>, <span class="st">"pgm"</span>, <span class="st">"mhs1"</span>, <span class="st">"phs1"</span>, <span class="st">"mau"</span>, <span class="st">"pau"</span><span class="op">)</span>, h2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          g     o    f    m   mgm   pgm  mhs1  phs1   mau   pau</span></span>
 <span><span class="co">## g    0.500 0.500 0.25 0.25 0.125 0.125 0.125 0.125 0.125 0.125</span></span>
@@ -275,7 +283,7 @@ genetic overlap between the two sides of the family.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

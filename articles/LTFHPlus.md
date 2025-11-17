@@ -1,0 +1,38 @@
+# LTFHPlus
+
+In the examples, we will go over how the package ***LTFHPlus*** can be
+used to estimate a refined phenotype with the LT-FH++ package. More
+specifically, we will provide reproducible examples with explanations of
+the method and its code, such that users will be able to play around
+with the functions themselves. The code will be based on packages from
+the ***tidyverse***, if the reader is not familiar with packages such as
+***dplyr***, then a line-by-line understanding might not be possible,
+however the overall point should hopefully still be clear.
+
+## A word on the examples
+
+The examples included here are meant to represent a simple application
+of the method, such that users are able to get a good idea of how to use
+the functions in the package and what to expect as output. The genetic
+liabilities are meant to be used as a phenotype for genome-wide
+association studies(GWAS). We recommend using software such as
+[PLINK](https://www.cog-genomics.org/plink/),
+[BOLT](https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLT-LMM_manual.html),
+[Regenie](https://doi.org/10.1038/s41588-021-00870-7), or R-based
+methods such as [bigsnpr](https://privefl.github.io/bigsnpr/) to perform
+the GWAS.
+
+## What would you like to read about?
+
+Here is an overview of what you can learn more about:
+
+- From CIP and family pedigree to input
+  - What does the CIP and family information look like?
+  - What the input format is like
+- How the covariance matrix is constructed
+  - What format should the family relationship be like
+  - How does the covariance matrix use the family relationship
+  - Example
+- LT-FH++ Example
+  - Simulate phenotypic data under the liability threshold
+  - Estimating genetic liability with parallelization
