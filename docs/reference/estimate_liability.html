@@ -13,7 +13,7 @@ estimate_liability_single and estimate_liability_multi."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">LTFHPlus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@ estimate_liability_single and estimate_liability_multi."></head><body>
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a></li>
     <li><a class="dropdown-item" href="../articles/FromTrioToFamilies.html">From trio information to full families</a></li>
+    <li><a class="dropdown-item" href="../articles/identify_and_plot_relatives.html">Identifying, labelling, and plotting family relations from graphs</a></li>
     <li><a class="dropdown-item" href="../articles/inputFormatExample.html">How the covariance is constructed</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusExample.html">LT-FH++ Example</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a></li>
@@ -247,6 +248,13 @@ full liability, the full liability or both for a variable number of traits.</p>
 <span class="r-in"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_under_LTM.html">simulate_under_LTM</a></span><span class="op">(</span>fam_vec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"f"</span><span class="op">)</span>, n_fam <span class="op">=</span> <span class="cn">NULL</span>, add_ind <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
 <span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_corrmat</span>, h2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>,<span class="fl">3</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>n_sim <span class="op">=</span> <span class="fl">1</span>, pop_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There was 1 warning in `mutate()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In argument: `max_age = purrr::invoke(pmax, select(., ends_with("_age")))`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `invoke()` was deprecated in purrr 1.0.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `exec()` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">LTFHPlus</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;</span><a href="https://github.com/EmilMiP/LTFHPlus/issues" class="external-link"><span style="color: #0000BB; font-style: italic;">https://github.com/EmilMiP/LTFHPlus/issues</span></a><span style="color: #0000BB; font-style: italic;">&gt;</span>.</span>
 <span class="r-in"><span><span class="fu">estimate_liability</span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">sims</span><span class="op">$</span><span class="va">thresholds</span>, h2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>,<span class="fl">3</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>genetic_corrmat <span class="op">=</span> <span class="va">genetic_corrmat</span>, full_corrmat <span class="op">=</span> <span class="va">full_corrmat</span>,</span></span>
 <span class="r-in"><span>pid <span class="op">=</span> <span class="st">"indiv_ID"</span>, fam_id <span class="op">=</span> <span class="st">"fam_ID"</span>, role <span class="op">=</span> <span class="st">"role"</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, </span></span>
@@ -255,7 +263,7 @@ full liability, the full liability or both for a variable number of traits.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fam_ID   indiv_ID genetic_phenotype1_est genetic_phenotype1_se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> fam_ID_1 fam_ID_1                  0.248               0.005<span style="text-decoration: underline;">88</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> fam_ID_1 fam_ID_1                -<span style="color: #BB0000;">0.031</span><span style="color: #BB0000; text-decoration: underline;">8</span>               0.007<span style="text-decoration: underline;">73</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: genetic_phenotype2_est &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype2_se &lt;dbl&gt;, genetic_phenotype3_est &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   genetic_phenotype3_se &lt;dbl&gt;</span></span>
@@ -271,7 +279,7 @@ full liability, the full liability or both for a variable number of traits.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

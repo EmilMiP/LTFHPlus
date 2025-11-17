@@ -11,6 +11,7 @@ Implementation of LT-FH++, an extension of the liability threshold family histor
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://emilmip.github.io/LTFHPlus/}
   \item \url{https://github.com/EmilMiP/LTFHPlus}
   \item Report bugs at \url{https://github.com/EmilMiP/LTFHPlus/issues}
 }

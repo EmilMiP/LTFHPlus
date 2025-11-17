@@ -11,6 +11,8 @@ utils::globalVariables("to")
 utils::globalVariables("event_age")
 utils::globalVariables("cip_pred")
 utils::globalVariables("thr")
+utils::globalVariables("attrs")
+
 
 #' Attempts to convert the list entry input format to a long format
 #' 
@@ -327,3 +329,144 @@ prepare_graph = function(.tbl, icol, fcol, mcol, node_attributes = NA, missingID
   return(graph)
 }
 
+#' Automatically identify family members of degree n
+#'
+#' This function identifies individuals ndegree-steps away from the proband in the population graph.
+#'
+#' @param pop_graph Population graph from prepare_graph()
+#' @param ndegree Number of steps away from proband to include
+#' @param proband_vec Vector of proband ids to create family graphs for. Must be strings.
+#' @param fid Column name of proband ids in the output.
+#' @param fam_graph_col Column name of family graphs in the output.
+#' @param mindist Minimum distance from proband to exclude in the graph (experimental, untested), defaults to 0, passed directly to make_neighborhood_graph.
+#' @param mode Type of distance measure in the graph (experimental, untested), defaults to "all", passed directly to make_neighborhood_graph.
+#'
+#' @returns Tibble with two columns, family ids (fid) and family graphs (fam_graph_col).
+#' @export
+#'
+#' @examples
+#' # See Vignettes.
+get_family_graphs = function(pop_graph, ndegree, proband_vec, fid = "fid", fam_graph_col = "fam_graph", mindist = 0, mode = "all") {
+  ## TODO: mindist > 0, will get_covmat still work?
+  
+  # later computations with igraph seem to internally convert ids to strings
+  # we will enforce string format for IDs here.
+  if (typeof(proband_vec) != "character") {
+    warning("get_family_graphs: proband_vec is not a character vector. Converting to character.")
+    proband_vec = as.character(proband_vec)
+  }
+  
+  
+  tibble(
+    !!as.symbol(fid) := proband_vec,
+    !!as.symbol(fam_graph_col) := igraph::make_neighborhood_graph(pop_graph, order = ndegree, mindist = mindist, nodes = proband_vec, mode = mode)
+  )
+}
+
+
+
+#' Attach attributes to a family graphs
+#'
+#' This function attaches attributes to family graphs, such as lower and upper thresholds, for each family member. This allows for a user-friendly way to attach personalised thresholds and other per-family specific attributes to the family graphs.
+#'
+#' @param cur_fam_graph An igraph object (neighbourhood graph around a proband) with family members up to degree n.
+#' @param cur_proband Current proband id (center of the neighbourhood graph).
+#' @param pid Column name of personal id (within a family).
+#' @param attr_tbl Tibble with family id and attributes for each family member.
+#' @param attr_names Names of attributes to be assigned to each node (family member) in the graph.
+#' @param proband_cols_to_censor Which columns should be made uninformative for the proband? Defaults to NA. Used to exclude proband's information for prediction with, e.g. c("lower", "upper").
+#'
+#' @returns igraph object (neighbourhood graph around a proband) with updated attributes for each node in the graph.
+#'
+#' @export
+
+attach_attributes = function(cur_fam_graph, cur_proband, pid, attr_tbl, attr_names, proband_cols_to_censor = NA) {
+  # get node names
+  graph_vertex_names = igraph::vertex_attr(cur_fam_graph)$name
+  
+  # which nodes are present in thresholds?
+  to_keep_indx = which(graph_vertex_names %in% attr_tbl[[pid]])
+  # get names of present nodes
+  to_keep = graph_vertex_names[to_keep_indx]
+  
+  # order attributes after graph
+  attr_tbl_matched = attr_tbl %>% slice(match(to_keep, !!as.symbol(pid)))
+  
+  # any attr_names columns not in attr_tbl?
+  if (any(!(attr_names %in% colnames(attr_tbl_matched)))) {
+    warning(paste0("attach_attributes: Not all attributes are present in attr_tbl!\n",
+                   " Missing attributes: ", paste(setdiff(attr_names, colnames(attr_tbl_matched)), collapse = ", ")))
+  }
+  
+  # only include columns of attr_tbl that are in attr_names
+  for (attr in attr_names) {
+    cur_fam_graph <- igraph::set_vertex_attr(graph = cur_fam_graph, name = attr, value = attr_tbl_matched[[attr]])
+  }
+  
+  # censor proband thresholds if requested
+  if (is.character(proband_cols_to_censor) & any(!is.na(proband_cols_to_censor))) {
+    # are any cols to censor not present?
+    if (any(!(proband_cols_to_censor %in% colnames(attr_tbl)))) {
+      warning(paste0("attach_attributes: Not all proband_cols_to_censor are present in attr_tbl!\n",
+                     " Missing columns: ", paste(setdiff(proband_cols_to_censor, colnames(attr_tbl)), collapse = ", ")))
+    }
+    
+    for (attr in proband_cols_to_censor) {
+      cur_fam_graph = igraph::set_vertex_attr(
+        graph = cur_fam_graph,
+        index = cur_proband,
+        name = attr,
+        value = case_when(
+          str_detect(attr, "lower") ~ -Inf,
+          str_detect(attr, "upper") ~ Inf,
+          TRUE ~ NA
+        )
+      )
+    }
+  }
+  
+  return(cur_fam_graph)
+}
+
+
+#' Wrapper to attach attributes to family graphs
+#'
+#' This function can attach attributes to family graphs, such as lower and upper thresholds, for each family member. This allows for personalised thresholds and other per-family specific attributes.
+#' This function wraps around attach_attributes to ease the process of attaching attributes to family graphs in the standard format.
+#'
+#' @param family_graphs tibble with family ids and family graphs
+#' @param fam_attr tibble with attributes for each family member
+#' @param fam_graph_col column name of family graphs in family_graphs. defailts to "fam_graph"
+#' @param attached_fam_graph_col column name of the updated family graphs with attached attributes. defaults to "masked_fam_graph".
+#' @param fid column name of family id. Typically contains the name of the proband that a family graph is centred on. defaults to "fid".
+#' @param pid personal identifier for each individual in a family. Allows for multiple instances of the same individual across families. Defaults to "pid".
+#' @param cols_to_attach columns to attach to the family graphs from fam_attr, typically lower and upper thresholds. Mixture input also requires K_i and K_pop.
+#' @param proband_cols_to_censor Should proband's upper and lower thresholds be made uninformative? Defaults to TRUE. Used to exclude proband's information for prediction.
+#'
+#' @returns tibble with family ids and an updated family graph with attached attributes. If lower and upper thresholds are specified, the input is ready for estimate_liability().
+#'
+#' @export
+#'
+#' @examples
+#' # See Vignettes.
+familywise_attach_attributes = function(family_graphs,
+                                        fam_attr,
+                                        fam_graph_col = "fam_graph",
+                                        attached_fam_graph_col = "masked_fam_graph",
+                                        fid = "fid",
+                                        pid = "pid",
+                                        cols_to_attach = c("lower", "upper"),
+                                        proband_cols_to_censor = NA) {
+  fam_attr %>%
+    tidyr::nest(attrs = -fid) %>%
+    left_join(family_graphs, ., by = fid) %>%
+    mutate(
+      !!as.symbol(attached_fam_graph_col) := purrr::pmap(
+        .l = list(!!as.symbol(fid), !!as.symbol(fam_graph_col), attrs),
+        ~ attach_attributes(
+          cur_fam_graph = ..2,
+          attr_tbl = ..3, cur_proband = ..1,
+          pid = pid, attr_names = cols_to_attach,
+          proband_cols_to_censor  = proband_cols_to_censor))) %>%
+    select(-attrs, -!!as.symbol(fam_graph_col))
+}

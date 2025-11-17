@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">LTFHPlus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/FromCIPFamilyToLTFHPlusInput.html">From CIP and family to LT-FH++ input</a></li>
     <li><a class="dropdown-item" href="../articles/FromTrioToFamilies.html">From trio information to full families</a></li>
+    <li><a class="dropdown-item" href="../articles/identify_and_plot_relatives.html">Identifying, labelling, and plotting family relations from graphs</a></li>
     <li><a class="dropdown-item" href="../articles/inputFormatExample.html">How the covariance is constructed</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusExample.html">LT-FH++ Example</a></li>
     <li><a class="dropdown-item" href="../articles/LTFHPlusGraphExample.html">LT-FH++ Graph Example</a></li>
@@ -65,7 +66,7 @@
                         <h4 data-toc-skip class="author">Emil M.
 Pedersen</h4>
             
-            <h4 data-toc-skip class="date">2025-05-26</h4>
+            <h4 data-toc-skip class="date">2025-11-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EmilMiP/LTFHPlus/blob/HEAD/vignettes/FromTrioToFamilies.Rmd" class="external-link"><code>vignettes/FromTrioToFamilies.Rmd</code></a></small>
       <div class="d-none name"><code>FromTrioToFamilies.Rmd</code></div>
@@ -74,7 +75,7 @@ Pedersen</h4>
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilMiP/LTFHPlus" class="external-link">LTFHPlus</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emilmip.github.io/LTFHPlus/">LTFHPlus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cran.r-project.org/package=kinship2" class="external-link">kinship2</a></span><span class="op">)</span></span></code></pre></div>
@@ -102,9 +103,16 @@ family role manually.</p>
 half-aunts and -uncles, as well as cousins and individuals that have
 married into the family. An example is <em>mgm</em> meaning <em>maternal
 grandmother</em>, <em>hspaunt</em> meaning <em>paternal half-aunt</em>,
-or <em>hsmuncleW</em> meaning <em>maternal half-uncle’s wife</em>.</p>
+or <em>hsmuncleW</em> meaning <em>maternal half-uncle’s wife</em>. We
+construct the example dataset with tribble because it enables row-wise
+construction, which mirrors how trio information is typically stored and
+helps readability in small example datasets.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">family</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Setting seed:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">555</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># constructing family (trio) data</span></span>
+<span><span class="va">family</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">id</span>, <span class="op">~</span><span class="va">momcol</span>, <span class="op">~</span><span class="va">dadcol</span>,</span>
 <span>  <span class="st">"pid"</span>, <span class="st">"mom"</span>, <span class="st">"dad"</span>,</span>
 <span>  <span class="st">"sib"</span>, <span class="st">"mom"</span>, <span class="st">"dad"</span>,</span>
@@ -125,10 +133,9 @@ or <em>hsmuncleW</em> meaning <em>maternal half-uncle’s wife</em>.</p>
 <span>  <span class="st">"hsmucousin"</span>, <span class="st">"hsmuncleW"</span>, <span class="st">"hsmuncle"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># simulating sex status on ambiguous individuals</span></span>
 <span><span class="va">thrs</span> <span class="op">=</span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span> id <span class="op">=</span> <span class="va">family</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span> lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">2</span><span class="op">)</span>, size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span> upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">Inf</span><span class="op">)</span>, size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span> sex <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>   <span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">family</span><span class="op">$</span><span class="va">momcol</span> <span class="op">~</span> <span class="st">"F"</span>,</span>
 <span>   <span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">family</span><span class="op">$</span><span class="va">dadcol</span> <span class="op">~</span> <span class="st">"M"</span>,</span>
@@ -145,9 +152,9 @@ family links.</p>
 <span>                      mcol <span class="op">=</span> <span class="st">"momcol"</span>,</span>
 <span>                      icol <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH c8357cf DN-- 31 44 -- </span></span>
-<span><span class="co">## + attr: name (v/c), lower (v/n), upper (v/n), sex (v/c)</span></span>
-<span><span class="co">## + edges from c8357cf (vertex names):</span></span>
+<pre><code><span><span class="co">## IGRAPH 08de485 DN-- 31 44 -- </span></span>
+<span><span class="co">## + attr: name (v/c), sex (v/c)</span></span>
+<span><span class="co">## + edges from 08de485 (vertex names):</span></span>
 <span><span class="co">##  [1] dad     -&gt;pid        mom     -&gt;pid        dad     -&gt;sib       </span></span>
 <span><span class="co">##  [4] mom     -&gt;sib        dad2    -&gt;mhs        mom     -&gt;mhs       </span></span>
 <span><span class="co">##  [7] dad     -&gt;phs        mom2    -&gt;phs        mgf     -&gt;mom       </span></span>
@@ -173,16 +180,40 @@ We can identify the family members of degree
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math>
 like this:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># make_ego_graph returns list, even for node input of length 1</span></span>
-<span><span class="va">fam_graph</span> <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/ego.html" class="external-link">make_ego_graph</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">graph</span>, </span>
-<span>                           order <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>                           nodes <span class="op">=</span> <span class="st">"pid"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fam_graph</span>, layout <span class="op">=</span> <span class="va">layout_as_tree</span>,</span>
+<code class="sourceCode R"><span><span class="co"># get_family_graphs wraps make_ego_graph returns a formatted tbl</span></span>
+<span><span class="va">fam_graph</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_family_graphs.html">get_family_graphs</a></span><span class="op">(</span>pop_graph <span class="op">=</span> <span class="va">graph</span>,</span>
+<span>                              ndegree <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                              proband_vec <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">graph</span><span class="op">)</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
+<span><span class="va">fam_graph</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 31 × 2</span></span></span>
+<span><span class="co">##    fid      fam_graph</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> dad      <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> dad2     <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> paunt    <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> pacousin <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> hspaunt  <span style="color: #949494;">&lt;igraph&gt;</span> </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 21 more rows</span></span></span></code></pre>
+<p><code>fam_graph</code> is a tibble with one row per proband (here all
+individuals in the graph are probands). The first column is the family
+ID, typically the name of the proband the family graph is centred
+around, and a column <code>fam_graph</code> containing the corresponding
+family graphs as igraph objects. We can plot one of the identified
+family graphs with the standard plot function from the igraph package,
+however it is not ideal for pedigrees past a certain size.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fam_graph</span><span class="op">$</span><span class="va">fam_graph</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="co"># choosing pid's family graph </span></span>
+<span>     layout <span class="op">=</span> <span class="va">layout_as_tree</span>,</span>
 <span>     vertex.size <span class="op">=</span> <span class="fl">27.5</span>,</span>
 <span>     vertex.shape <span class="op">=</span> <span class="st">"rectangle"</span>,</span>
 <span>     vertex.label.cex <span class="op">=</span> <span class="fl">.75</span>,</span>
 <span>     edge.arrow.size <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-4-1.png" alt="Plot of the identified pedigree. Pedigree plotted with igraph package." width="700"></p>
+<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="Plot of the identified pedigree. Pedigree plotted with igraph package." width="700"></p>
 <p>In particular, individuals such as paternal uncle’s child (i.e a
 cousin, coded as pucousin above) is not present with this relatedness
 cut-off as such family members are of degree
@@ -192,39 +223,37 @@ cut-off as such family members are of degree
 <h3 id="calculate-kinship-matrix">Calculate kinship matrix<a class="anchor" aria-label="anchor" href="#calculate-kinship-matrix"></a>
 </h3>
 <p>Finally, the kinship matrix can be calculated with
-<code><a href="../reference/get_kinship.html">get_kinship()</a></code> (output made nicer with round) in the
-following way:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># the kinship matrix is multiplied by 100 and rounded for illustrative purposes!</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_kinship.html">get_kinship</a></span><span class="op">(</span><span class="va">fam_graph</span>, h2 <span class="op">=</span> <span class="fl">1</span>, index_id <span class="op">=</span> <span class="st">"pid"</span>, add_ind <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##        pid sib mhs phs mom dad paunt puncle maunt mgm pgm mgf pgf</span></span>
-<span><span class="co">## pid    100  50  25  25  50  50    25     25    25  25  25  25  25</span></span>
-<span><span class="co">## sib     50 100  25  25  50  50    25     25    25  25  25  25  25</span></span>
-<span><span class="co">## mhs     25  25 100   0  50   0     0      0    25  25   0  25   0</span></span>
-<span><span class="co">## phs     25  25   0 100   0  50    25     25     0   0  25   0  25</span></span>
-<span><span class="co">## mom     50  50  50   0 100   0     0      0    50  50   0  50   0</span></span>
-<span><span class="co">## dad     50  50   0  50   0 100    50     50     0   0  50   0  50</span></span>
-<span><span class="co">## paunt   25  25   0  25   0  50   100     50     0   0  50   0  50</span></span>
-<span><span class="co">## puncle  25  25   0  25   0  50    50    100     0   0  50   0  50</span></span>
-<span><span class="co">## maunt   25  25  25   0  50   0     0      0   100  50   0  50   0</span></span>
-<span><span class="co">## mgm     25  25  25   0  50   0     0      0    50 100   0   0   0</span></span>
-<span><span class="co">## pgm     25  25   0  25   0  50    50     50     0   0 100   0   0</span></span>
-<span><span class="co">## mgf     25  25  25   0  50   0     0      0    50   0   0 100   0</span></span>
-<span><span class="co">## pgf     25  25   0  25   0  50    50     50     0   0   0   0 100</span></span></code></pre>
+<code><a href="../reference/get_kinship.html">get_kinship()</a></code> in the following way:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_kinship.html">get_kinship</a></span><span class="op">(</span><span class="va">fam_graph</span><span class="op">$</span><span class="va">fam_graph</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, h2 <span class="op">=</span> <span class="fl">1</span>, index_id <span class="op">=</span> <span class="st">"pid"</span>, add_ind <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##         pid  sib  mhs  phs mom dad paunt puncle maunt  mgm  pgm  mgf  pgf</span></span>
+<span><span class="co">## pid    1.00 0.50 0.25 0.25 0.5 0.5  0.25   0.25  0.25 0.25 0.25 0.25 0.25</span></span>
+<span><span class="co">## sib    0.50 1.00 0.25 0.25 0.5 0.5  0.25   0.25  0.25 0.25 0.25 0.25 0.25</span></span>
+<span><span class="co">## mhs    0.25 0.25 1.00 0.00 0.5 0.0  0.00   0.00  0.25 0.25 0.00 0.25 0.00</span></span>
+<span><span class="co">## phs    0.25 0.25 0.00 1.00 0.0 0.5  0.25   0.25  0.00 0.00 0.25 0.00 0.25</span></span>
+<span><span class="co">## mom    0.50 0.50 0.50 0.00 1.0 0.0  0.00   0.00  0.50 0.50 0.00 0.50 0.00</span></span>
+<span><span class="co">## dad    0.50 0.50 0.00 0.50 0.0 1.0  0.50   0.50  0.00 0.00 0.50 0.00 0.50</span></span>
+<span><span class="co">## paunt  0.25 0.25 0.00 0.25 0.0 0.5  1.00   0.50  0.00 0.00 0.50 0.00 0.50</span></span>
+<span><span class="co">## puncle 0.25 0.25 0.00 0.25 0.0 0.5  0.50   1.00  0.00 0.00 0.50 0.00 0.50</span></span>
+<span><span class="co">## maunt  0.25 0.25 0.25 0.00 0.5 0.0  0.00   0.00  1.00 0.50 0.00 0.50 0.00</span></span>
+<span><span class="co">## mgm    0.25 0.25 0.25 0.00 0.5 0.0  0.00   0.00  0.50 1.00 0.00 0.00 0.00</span></span>
+<span><span class="co">## pgm    0.25 0.25 0.00 0.25 0.0 0.5  0.50   0.50  0.00 0.00 1.00 0.00 0.00</span></span>
+<span><span class="co">## mgf    0.25 0.25 0.25 0.00 0.5 0.0  0.00   0.00  0.50 0.00 0.00 1.00 0.00</span></span>
+<span><span class="co">## pgf    0.25 0.25 0.00 0.25 0.0 0.5  0.50   0.50  0.00 0.00 0.00 0.00 1.00</span></span></code></pre>
 <p>A function called <code><a href="../reference/graph_to_trio.html">graph_to_trio()</a></code> has been included in
 the package, which can convert from the graph object back into a trio
 object. This function is useful if you want to use the functionality of
 other packages that rely on trio information. One such example is using
 the plotting functionality of pedigrees in kinship2.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trio</span> <span class="op">=</span> <span class="fu"><a href="../reference/graph_to_trio.html">graph_to_trio</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">fam_graph</span>, fixParents <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trio</span> <span class="op">=</span> <span class="fu"><a href="../reference/graph_to_trio.html">graph_to_trio</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">fam_graph</span><span class="op">$</span><span class="va">fam_graph</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, fixParents <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">trio</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 15 × 4</span></span></span>
 <span><span class="co">##    id      momid     dadid     sex  </span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>dad<span style="color: #949494;">"</span>     M    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>dad<span style="color: #949494;">"</span>     F    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>added_2<span style="color: #949494;">"</span> M    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> pid     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>dad<span style="color: #949494;">"</span>     F    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> sib     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>dad<span style="color: #949494;">"</span>     M    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> mhs     <span style="color: #949494;">"</span>mom<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>added_2<span style="color: #949494;">"</span> F    </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 4</span> phs     <span style="color: #949494;">"</span>added_1<span style="color: #949494;">"</span> <span style="color: #949494;">"</span>dad<span style="color: #949494;">"</span>     F    </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 5</span> mom     <span style="color: #949494;">"</span>mgm<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>mgf<span style="color: #949494;">"</span>     F    </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 6</span> maunt   <span style="color: #949494;">"</span>mgm<span style="color: #949494;">"</span>     <span style="color: #949494;">"</span>mgf<span style="color: #949494;">"</span>     F    </span></span>
@@ -239,11 +268,11 @@ the plotting functionality of pedigrees in kinship2.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">15</span> added_2 <span style="color: #949494;">""</span>        <span style="color: #949494;">""</span>        M</span></span></code></pre>
 <p>which can be used to utilise the powerful plotting tool kit available
 in the kinship2 package.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pedigree</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">trio</span>,<span class="fu">kinship2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kinship2/man/pedigree.html" class="external-link">pedigree</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">id</span>, dadid <span class="op">=</span> <span class="va">dadid</span>,momid <span class="op">=</span>  <span class="va">momid</span>,sex <span class="op">=</span>  <span class="va">sex</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pedigree</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-7-1.png" alt="Plot of the identified pedigree. Pedigree plotted with kinship2 package." width="700"></p>
+<p><img src="FromTrioToFamilies_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="Plot of the identified pedigree. Pedigree plotted with kinship2 package." width="700"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -256,7 +285,7 @@ in the kinship2 package.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

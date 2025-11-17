@@ -1,0 +1,86 @@
+---
+title: "Identifying, labelling, and plotting family relations from graphs"
+author: "Emil Pedersen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+library(LTFHPlus)
+library(dplyr)
+library(igraph)
+```
+
+## Introduction
+
+This vignette demonstrates how to identify, label, and plot the total and/or average number of family relations per proband from graphs using the `LTFHPlus` package in R. We will use the minnbreast data set included in the kinship2 or Pedixplorer packages as example data. See documentation in one of those packages for details on the minnbreast data.
+
+
+```{r}
+# load minnbreast data
+data("minnbreast", package = "kinship2")
+#printing a viewable version of the tibble:
+rmarkdown::paged_table(minnbreast)
+```
+The `minnbreast` data has several columns, but the important ones for this application is the columns `id`, `motherid`, and `fatherid`, which contains the individual IDs and their parents' IDs, respectively. The column `proband` indicates which individuals are probands (1 = proband, 0 = non-proband) in the `minnbreast` data. We will use this information later to only get family relations for the probands. We will create a graph with all individuals in the data and their familial links. We will refer to this graph as a population graph, as it contains all individuals in the population considered. 
+```{r}
+# create a (population) graph, with all individuals and all familial links
+pop_graph = prepare_graph(.tbl = select(minnbreast, id, motherid, fatherid),
+                          icol = "id",
+                          fcol = "fatherid",
+                          mcol = "motherid")
+```
+The population graph adds dummy links between siblings for kinship calculations. Removing these links means it is possible to read the number of individuals in the data and the number of identified familial links.
+```{r}
+delete_edges(pop_graph, E(pop_graph)[which_mutual(pop_graph)])
+```
+The `minnbreast` data has 28081 individuals and 30720 familial links.
+
+The population graph can now be used to extract family graphs centred on a set of probands. The function `get_family_graphs()` allows us to specify a vector of proband IDs and the degree of relatives we want to include in the family graphs. The function `get_family_graphs()` also formats the data into a tibble with the columns `fid` and `fam_graph` (default names). The values in the column `fid` are the proband IDs, and the values in the column `fam_graph` are the corresponding neighbourhood graphs of the specified degree centred on each proband. These graphs are referred to as family graphs and are stored as igraph objects. Here, we will extract family graphs for all probands in the `minnbreast` data, including up to 10th degree relatives to ensure we capture all possible family members in the data. 
+
+```{r}
+# get family graphs for all probands in minnbreast data
+family_graphs = get_family_graphs(pop_graph = pop_graph,
+                                  ndegree = 10, # picking 10th degree relatives, to ensure we get all possible family members in the data
+                                  proband_vec = as.character(minnbreast$id))
+family_graphs
+
+```
+We extract all probands next and identify and label their family relations using the `get_relations()` function. The function takes as input the family graphs and a vector of proband IDs. The output is a tibble with the columns `fid`, `id1`, `id2`, `gen.x`, `gen.y`, `k`, and `lab`. In order, they refer to the family the relation originiates from, the target indivial, the individual the label refers to, generations up, generations down, kinship, and label. In other words, `id2`'s relation to `id1` is specified in the label column, `lab`, with additional information such as kinship and generational steps. The generational steps are used for plotting later. 
+```{r}
+# extracting just the set of individuals labelled as "proband" in the minnbreast data
+proband_ids = minnbreast %>% filter(proband == 1) %>%
+  pull(id)
+
+labelled_data = get_relations(family_graphs = family_graphs, family_id_vec = proband_ids)
+labelled_data
+```
+
+The labels are short-hand notation for familial relations. A list of the labels and what they mean can be seen here:
+
+* P: Proband
+* S: Sibling
+* GP: grandparents
+* 2GP: great-grandparents (and 3GP for great-great-grandparents, etc.)
+* Ch: Child
+* GCh: Grandchild (and 2GCh for great-grandchild, etc.)
+* Pib: "Pibling" (parental sibling; aunt/uncle)
+* GPib: GrandPibling (grandparent's sibling; 2GPib for great-grandparent's sibling, etc.)
+* Nib: "Nibling" (sibling's child; niece/nephew)
+* GNib: grandNibling (sibling's grandchild; grand-niece/grand-nephew, etc.)
+* 1C: First cousin
+* 2C: Second cousin (and 3C for third cousin, etc.)
+* 1C1R: First cousin once removed (and 2C1R for second cousin once removed, etc.)
+* 1C2R: First cousin twice removed (and 2C2R for second cousin twice removed, etc.)
+* H-prefix: Half-relations, e.g. HS for half-sibling, H1C for half-first cousin, etc.
+
+```{r, out.width="100%", fig.width=7.5, fig.height=7.5, fig.alt = "Plot of the identified relations per proband."}
+p2 = Relation_per_proband_plot(labelled_relations = labelled_data, proband_vec = proband_ids)
+p2 # can be modified with ggplot2 functions
+```
+
+The function `Relation_per_proband_plot()` creates takes the labels in `labelled_data` and creates a plot with information from each proband specified in `proband_vec` by restricting to only the observations where these individuals appear in the `id1` column. The default labels for each relation prints the label, the total number observed, and the average number observed. Alternatively, the `report_label` argument can be used to report only the total or only the average. The plot can be modified using ggplot2 functions as needed.

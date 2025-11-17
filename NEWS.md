@@ -1,4 +1,14 @@
 
+# Changes in v2.2.0
+
+* Added several functions to assist labelling relatives, summarising per-family relatives, and summary pedigree information visualisation
+  - get_generations()
+  - label_relatives()
+  - get_relations()
+  - get_family_graphs()
+  - Relation_per_proband_plot() 
+* Added vignette on pedigree visualisation and labelling relatives
+
 # Changes in v2.1.4
 
 Updated prepare_graph() to accept the argument node_attributes instead of threshold to more easily convey the nature of the attributes.

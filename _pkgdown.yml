@@ -1,4 +1,4 @@
-url: EmilMiP.github.io/LTFHPlus
+url: https://emilmip.github.io/LTFHPlus/
 
 reference:
   - title: "Estimating (Genetic) Liability"
@@ -13,6 +13,9 @@ reference:
     - prepare_LTFHPlus_input
     - prepare_graph
     - graph_to_trio
+    - attach_attributes
+    - familywise_attach_attributes
+    - get_family_graphs
     - convert_age_to_cir
     - convert_age_to_thresh
     - convert_cir_to_age
@@ -27,7 +30,11 @@ reference:
     contents:
     - rtmvnorm.gibbs
     - get_kinship
+    - get_generations
+    - get_relations
     - get_relatedness
+    - label_relatives
+    - Relation_per_proband_plot
     - construct_covmat_single
     - construct_covmat_multi
     - construct_covmat
