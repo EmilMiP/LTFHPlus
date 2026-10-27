@@ -151,7 +151,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   
   if(any(str_detect(colnames(liabs), ".*_age$"))){
     
-    liabs <- liabs %>% mutate(., max_age = purrr::invoke(pmax, select(., ends_with("_age"))))
+    liabs <- liabs %>% mutate(., max_age = do.call(pmax, select(., ends_with("_age"))))
   }else{
     
     liabs <- mutate(liabs, max_age = 0)
@@ -170,7 +170,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   # if children are available.
   if(any(str_detect(colnames(liabs), ".*_age$"))){
     
-    liabs <- liabs %>% mutate(., max_age = purrr::invoke(pmax, select(., ends_with("_age"))))
+    liabs <- liabs %>% mutate(., max_age = do.call(pmax, select(., ends_with("_age"))))
   }else{
     
     liabs <- mutate(liabs, max_age = 0)
@@ -189,7 +189,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   # if children are available.
   if(any(str_detect(colnames(liabs), "^m_age$") | str_detect(colnames(liabs), "^mau[0-9]*_age$"))){
     
-    liabs <- liabs %>% mutate(., m_max_age = purrr::invoke(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
+    liabs <- liabs %>% mutate(., m_max_age = do.call(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, m_max_age = 25)
@@ -197,7 +197,7 @@ simulate_under_LTM_single <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm"
   
   if(any(str_detect(colnames(liabs), "^f_age$") | str_detect(colnames(liabs), "^pau[0-9]*_age$"))){
     
-    liabs <- liabs %>% mutate(., p_max_age = purrr::invoke(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
+    liabs <- liabs %>% mutate(., p_max_age = do.call(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, p_max_age = 25)
@@ -437,7 +437,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
   if(any(str_detect(colnames(liabs), ".*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., max_age = purrr::invoke(pmax, select(., ends_with("_age"))))
+      mutate(., max_age = do.call(pmax, select(., ends_with("_age"))))
   }else{
     
     liabs <- mutate(liabs, max_age = 0)
@@ -457,7 +457,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
   if(any(str_detect(colnames(liabs), ".*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., max_age = purrr::invoke(pmax, select(., ends_with("_age"))))
+      mutate(., max_age = do.call(pmax, select(., ends_with("_age"))))
   }else{
     
     liabs <- mutate(liabs, max_age = 0)
@@ -477,7 +477,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
   if(any(str_detect(colnames(liabs), "^m_age$") | str_detect(colnames(liabs), "^mau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., m_max_age = purrr::invoke(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
+      mutate(., m_max_age = do.call(pmax, select(., matches("^m_age$"), matches("^mau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, m_max_age = 25)
@@ -486,7 +486,7 @@ simulate_under_LTM_multi <- function(fam_vec = c("m","f","s1","mgm","mgf","pgm",
   if(any(str_detect(colnames(liabs), "^f_age$") | str_detect(colnames(liabs), "^pau[0-9]*_age$"))){
     
     liabs <- liabs %>% 
-      mutate(., p_max_age = purrr::invoke(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
+      mutate(., p_max_age = do.call(pmax, select(., matches("^f_age$"), matches("^pau[0-9]*_age$"))))
   }else{
     
     liabs <- mutate(liabs, p_max_age = 25)
